@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace BlockGameSolver.Core
@@ -70,42 +71,6 @@ namespace BlockGameSolver.Core
             return output;
         }
 
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            sb.Append("*\t");
-
-            for (int i = 0; i < GameSettings.Columns; i++)
-            {
-                sb.Append(i);
-                sb.Append(" ");
-            }
-
-            sb.Append("\r\n\r\n");
-
-            for (int i = 0; i < GameSettings.Rows; i++)
-            {
-                sb.Append(i);
-                sb.Append("\t");
-
-                for (int j = 0; j < GameSettings.Columns; j++)
-                {
-                    if (pieces[i, j] != null)
-                    {
-                        sb.Append(pieces[i, j].Color);
-                    }
-                    else
-                    {
-                        sb.Append("*");
-                    }
-                    sb.Append(" ");
-                }
-                sb.Append("\r\n");
-            }
-            return sb.ToString();
-        }
-
         /// <summary>
         /// Determines the size of the group located at the given coordinate.
         /// </summary>
@@ -151,6 +116,8 @@ namespace BlockGameSolver.Core
                 {
                     //No more groups to remove.
                     Score += (1 - PieceCount / (GameSettings.Rows * GameSettings.Columns)) * 100;
+                    Debug.Assert(Score != 0, "The score is 0 after a removal");
+
                     return 0;
                 }
                 for (int i = -range; i <= range; i++)
@@ -185,6 +152,8 @@ namespace BlockGameSolver.Core
                             }
                             FillEmptySpaces();
                             Score += count * count;
+                            Debug.Assert(Score != 0, "The score is 0 after a removal");
+
                             return count;
                         }
                     }
@@ -246,6 +215,42 @@ namespace BlockGameSolver.Core
         public void SaveBoard()
         {
             Array.Copy(pieces, backupPieces, pieces.Length);
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("*\t");
+
+            for (int i = 0; i < GameSettings.Columns; i++)
+            {
+                sb.Append(i);
+                sb.Append(" ");
+            }
+
+            sb.Append("\r\n\r\n");
+
+            for (int i = 0; i < GameSettings.Rows; i++)
+            {
+                sb.Append(i);
+                sb.Append("\t");
+
+                for (int j = 0; j < GameSettings.Columns; j++)
+                {
+                    if (pieces[i, j] != null)
+                    {
+                        sb.Append(pieces[i, j].Color);
+                    }
+                    else
+                    {
+                        sb.Append("*");
+                    }
+                    sb.Append(" ");
+                }
+                sb.Append("\r\n");
+            }
+            return sb.ToString();
         }
 
         public void LoadOldBoard()

@@ -7,14 +7,21 @@ namespace BlockGameSolver.Core
     public class Population
     {
         private readonly List<Genome> currentPopulation = new List<Genome>();
+        private int generationNum;
         private List<Genome> newPopulation = new List<Genome>();
 
+        private readonly Results populationResults = new Results();
+
         private PopulationSettings settings;
-        private int generationNum;
 
         public Population(PopulationSettings settings)
         {
             this.settings = settings;
+        }
+
+        public Results PopulationResults
+        {
+            get { return populationResults; }
         }
 
         private void GenerateInitialPopulation()
@@ -28,49 +35,65 @@ namespace BlockGameSolver.Core
 
         private void RunCurrentGeneration()
         {
-            Results.Instance.AddMessage("Running the current generation.");
+            PopulationResults.AddMessage("Running the current generation.");
             foreach (Genome genome in currentPopulation)
             {
                 genome.Evaluate();
-                Results.Instance.AddEvaluationResult(generationNum, genome.Moves, genome.Fitness);
+                PopulationResults.AddEvaluationResult(generationNum, genome.Moves, genome.Fitness);
             }
         }
 
         private void CreateNextGeneration()
         {
-            Results.Instance.AddMessage("Creating the next generation.");
+            PopulationResults.AddMessage("Creating the next generation.");
             MersenneTwister rng = RandomSource.Instance;
             currentPopulation.Clear();
+            //Add in the ones that were kept.
             foreach (Genome genome in newPopulation)
             {
                 currentPopulation.Add(genome);
             }
+            int crossovers = 0;
+            int mutations = 0;
             for (int i = 0; i < settings.PopulationSize - settings.FilterSize; i++)
             {
                 if (rng.NextDouble() < settings.MutateCrossRatio)
                 {
                     //Mutate
-                    Genome genome = newPopulation[rng.Next(0, settings.FilterSize)];
-                    genome.Mutate();
+                    mutations++;
+                    int genomeNum = rng.Next(0, settings.FilterSize);
+                    Genome genome = newPopulation[genomeNum];
+                    int mutatePoint = genome.Mutate();
                     currentPopulation.Add(genome);
+
+                    PopulationResults.AddMessage(string.Format("Mutation occurred for genome {0} at point {1}", genomeNum, mutatePoint));
+
                 }
                 else
                 {
                     //Crossover
-                    Genome genome1 = newPopulation[rng.Next(0, settings.FilterSize)];
-                    Genome genome2 = newPopulation[rng.Next(0, settings.FilterSize)];
+                    crossovers++;
+                    int genomeNum1 = rng.Next(0, settings.FilterSize);
+                    int genomeNum2= rng.Next(0, settings.FilterSize);
 
-                    genome1.Crossover(ref genome2);
+                    Genome genome1 = newPopulation[genomeNum1];
+                    Genome genome2 = newPopulation[genomeNum2];
+
+                    int swapPoint = genome1.Crossover(ref genome2);
 
                     currentPopulation.Add(genome2);
                     currentPopulation.Add(genome1);
+
+                    PopulationResults.AddMessage(string.Format("Crossover occurred from genome {0} to {1} at point {2}", genomeNum1, genomeNum2, swapPoint));
+
                 }
             }
+            PopulationResults.AddMessage(string.Format("Mutations: {0}\tCrosses: {1}",mutations, crossovers));
         }
 
         private void FilterCurrentGeneration()
         {
-            Results.Instance.AddMessage("Filtering the current generation.");
+            PopulationResults.AddMessage("Filtering the current generation.");
             int keepers = settings.PopulationSize * settings.FilterSize;
 
             newPopulation = currentPopulation.OrderBy(c => c.Fitness).Take(keepers).ToList();
@@ -80,13 +103,16 @@ namespace BlockGameSolver.Core
         private void ContinueEvaluation()
         {
             RunCurrentGeneration();
-            FilterCurrentGeneration();
-            CreateNextGeneration();
+            if (generationNum < settings.MaxGenerations)
+            {
+                FilterCurrentGeneration();
+                CreateNextGeneration();
+            }
         }
 
         public void BeginGeneticProcess()
         {
-            Results.Instance.AddHeader("Beginning the process");
+            PopulationResults.AddHeader("Beginning the process");
 
             GenerateInitialPopulation();
             for (int i = 0; i < settings.MaxGenerations; i++)
@@ -94,6 +120,7 @@ namespace BlockGameSolver.Core
                 generationNum = i + 1;
                 ContinueEvaluation();
             }
+            PopulationResults.FinishOutput();
             InvokePopulationFinished(EventArgs.Empty);
         }
 

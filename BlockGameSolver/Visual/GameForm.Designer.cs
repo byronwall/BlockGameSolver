@@ -47,6 +47,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.btnGapTest = new System.Windows.Forms.Button();
             this.grpSimulation = new System.Windows.Forms.GroupBox();
+            this.chkDelete = new System.Windows.Forms.CheckBox();
+            this.btnViewResults = new System.Windows.Forms.Button();
             this.btnRun = new System.Windows.Forms.Button();
             this.grpGrouping.SuspendLayout();
             this.grpSimulation.SuspendLayout();
@@ -220,6 +222,8 @@
             // 
             // grpSimulation
             // 
+            this.grpSimulation.Controls.Add(this.chkDelete);
+            this.grpSimulation.Controls.Add(this.btnViewResults);
             this.grpSimulation.Controls.Add(this.btnRun);
             this.grpSimulation.Location = new System.Drawing.Point(216, 291);
             this.grpSimulation.Name = "grpSimulation";
@@ -227,6 +231,28 @@
             this.grpSimulation.TabIndex = 5;
             this.grpSimulation.TabStop = false;
             this.grpSimulation.Text = "simulation";
+            // 
+            // chkDelete
+            // 
+            this.chkDelete.AutoSize = true;
+            this.chkDelete.Checked = true;
+            this.chkDelete.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkDelete.Location = new System.Drawing.Point(7, 73);
+            this.chkDelete.Name = "chkDelete";
+            this.chkDelete.Size = new System.Drawing.Size(76, 17);
+            this.chkDelete.TabIndex = 1;
+            this.chkDelete.Text = "delete files";
+            this.chkDelete.UseVisualStyleBackColor = true;
+            // 
+            // btnViewResults
+            // 
+            this.btnViewResults.Location = new System.Drawing.Point(7, 46);
+            this.btnViewResults.Name = "btnViewResults";
+            this.btnViewResults.Size = new System.Drawing.Size(75, 23);
+            this.btnViewResults.TabIndex = 0;
+            this.btnViewResults.Text = "view results";
+            this.btnViewResults.UseVisualStyleBackColor = true;
+            this.btnViewResults.Click += new System.EventHandler(this.btnOpen_Click);
             // 
             // btnRun
             // 
@@ -255,9 +281,11 @@
             this.Controls.Add(this.txtBoard);
             this.Name = "GameForm";
             this.Text = "GameForm";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GameForm_FormClosing);
             this.grpGrouping.ResumeLayout(false);
             this.grpGrouping.PerformLayout();
             this.grpSimulation.ResumeLayout(false);
+            this.grpSimulation.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -285,5 +313,7 @@
         private System.Windows.Forms.Button btnGapTest;
         private System.Windows.Forms.GroupBox grpSimulation;
         private System.Windows.Forms.Button btnRun;
+        private System.Windows.Forms.Button btnViewResults;
+        private System.Windows.Forms.CheckBox chkDelete;
     }
 }

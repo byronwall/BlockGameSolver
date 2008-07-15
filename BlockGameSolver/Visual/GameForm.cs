@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using BlockGameSolver.Core;
@@ -61,25 +62,53 @@ namespace BlockGameSolver.Visual
             population.PopulationFinished += population_PopulationFinished;
 
             btnRun.Enabled = false;
+            btnViewResults.Enabled = false;
 
             new Thread(population.BeginGeneticProcess).Start();
-
         }
 
-        void population_PopulationFinished(object sender, EventArgs e)
+        private void population_PopulationFinished(object sender, EventArgs e)
         {
             EnableButton();
-
         }
 
         private void EnableButton()
         {
             if (!InvokeRequired)
+            {
                 btnRun.Enabled = true;
+                btnViewResults.Enabled = true;
+            }
             else
+            {
                 Invoke(new EnabledButton(EnableButton));
+            }
         }
 
+        private void btnOpen_Click(object sender, EventArgs e)
+        {
+            population.PopulationResults.OpenWithExecutable();
+        }
+
+        private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (chkDelete.Checked)
+            {
+                population.PopulationResults.Dispose();
+                if (population.PopulationResults.Filename != null)
+                {
+                    if (File.Exists(population.PopulationResults.Filename))
+                    {
+                        File.Delete(population.PopulationResults.Filename);
+                    }
+                }
+            }
+        }
+
+        #region Nested type: EnabledButton
+
         private delegate void EnabledButton();
+
+        #endregion
     }
 }
