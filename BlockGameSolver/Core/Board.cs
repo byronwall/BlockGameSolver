@@ -201,10 +201,10 @@ namespace BlockGameSolver.Core
                 int removed = RemoveGroup(i / GameSettings.Columns, i % GameSettings.Columns);
                 if (removed == 0)
                 {
-                    return Score;
+                    break;
                 }
             }
-            return 0;
+            return Score;
         }
 
         private static Board CreateRandomBoard()

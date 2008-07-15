@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BlockGameSolver.Core
 {
-    public struct Genome
+    public class Genome
     {
         private double fitness;
         private List<int> moves;
@@ -35,30 +34,29 @@ namespace BlockGameSolver.Core
             set { fitness = value; }
         }
 
-        public int Crossover(ref Genome partner)
+        public int Crossover(Genome startPart, Genome endPart, ref Genome endChild)
         {
-            int swapPoint = RandomSource.Instance.Next(0, moves.Count);
+            int swapPoint = RandomSource.Instance.Next(0, startPart.moves.Count);
 
-            var originalStart = moves.Where((item, index) => index < swapPoint);
-            var originalEnd = moves.Where((item, index) => index >= swapPoint);
-            var targetStart = partner.moves.Where((item, index) => index < swapPoint);
-            var targetEnd = partner.moves.Where((item, index) => index >= swapPoint);
-
-            moves = originalStart.Concat(targetEnd).ToList();
-            partner.moves = targetStart.Concat(originalEnd).ToList();
-
+            for (int i = 0; i < startPart.moves.Count; i++)
+            {
+                moves.Add(i < swapPoint ? startPart.moves[i] : endPart.moves[i]);
+                endChild.moves.Add(i >= swapPoint ? startPart.moves[i] : endPart.moves[i]);
+            }
             return swapPoint;
         }
 
-        public int Mutate()
+        public int Mutate(Genome source)
         {
             Random rng = RandomSource.Instance;
 
-            int mutatePoint = rng.Next(0, Moves.Count);
+            int mutatePoint = rng.Next(0, source.moves.Count);
             int value = rng.Next(0, GameSettings.PieceCount);
 
-            moves[mutatePoint] = value;
-
+            for (int i = 0; i < source.moves.Count; i++)
+            {
+                moves.Add((i == mutatePoint) ? value : source.moves[i]);
+            }
             return mutatePoint;
         }
 

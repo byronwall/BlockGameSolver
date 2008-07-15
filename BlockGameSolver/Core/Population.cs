@@ -63,8 +63,11 @@ namespace BlockGameSolver.Core
                     mutations++;
                     int genomeNum = rng.Next(0, settings.FilterSize);
                     Genome genome = newPopulation[genomeNum];
-                    int mutatePoint = genome.Mutate();
-                    currentPopulation.Add(genome);
+
+                    Genome afterMutate = new Genome(false);
+
+                    int mutatePoint = afterMutate.Mutate(genome);
+                    currentPopulation.Add(afterMutate);
 
                     PopulationResults.AddMessage(string.Format("Mutation occurred for genome {0} at point {1}", genomeNum, mutatePoint));
 
@@ -74,29 +77,44 @@ namespace BlockGameSolver.Core
                     //Crossover
                     crossovers++;
                     int genomeNum1 = rng.Next(0, settings.FilterSize);
-                    int genomeNum2= rng.Next(0, settings.FilterSize);
+                    int genomeNum2 = rng.Next(0, settings.FilterSize);
 
                     Genome genome1 = newPopulation[genomeNum1];
                     Genome genome2 = newPopulation[genomeNum2];
 
-                    int swapPoint = genome1.Crossover(ref genome2);
+                    Genome frontChild = new Genome(false);
+                    Genome endChild = new Genome(false);
 
-                    currentPopulation.Add(genome2);
-                    currentPopulation.Add(genome1);
+                    int swapPoint = frontChild.Crossover(genome1, genome2, ref endChild);
+
+                    currentPopulation.Add(frontChild);
+                    currentPopulation.Add(endChild);
 
                     PopulationResults.AddMessage(string.Format("Crossover occurred from genome {0} to {1} at point {2}", genomeNum1, genomeNum2, swapPoint));
 
                 }
             }
-            PopulationResults.AddMessage(string.Format("Mutations: {0}\tCrosses: {1}",mutations, crossovers));
+            PopulationResults.AddMessage(string.Format("Mutations: {0}\tCrosses: {1}", mutations, crossovers));
         }
 
         private void FilterCurrentGeneration()
         {
             PopulationResults.AddMessage("Filtering the current generation.");
-            int keepers = settings.PopulationSize * settings.FilterSize;
+            int keepers = settings.FilterSize;
 
-            newPopulation = currentPopulation.OrderBy(c => c.Fitness).Take(keepers).ToList();
+            foreach (Genome genome in currentPopulation)
+            {
+                populationResults.AddMessage(string.Format("Genome has a fitness of {0} before the breeding.", genome.Fitness));
+            }
+
+            newPopulation = currentPopulation.OrderByDescending(c => c.Fitness).Take(keepers).ToList();
+
+            foreach (Genome genome in newPopulation)
+            {
+                populationResults.AddMessage(string.Format("Genome with fitness {0} survived.", genome.Fitness));
+
+            }
+
             currentPopulation.Clear();
         }
 
