@@ -102,11 +102,6 @@ namespace BlockGameSolver.Core
             PopulationResults.AddMessage("Filtering the current generation.");
             int keepers = settings.FilterSize;
 
-            foreach (Genome genome in currentPopulation)
-            {
-                populationResults.AddMessage(string.Format("Genome has a fitness of {0} before the breeding.", genome.Fitness));
-            }
-
             newPopulation = currentPopulation.OrderByDescending(c => c.Fitness).Take(keepers).ToList();
 
             foreach (Genome genome in newPopulation)
@@ -121,6 +116,8 @@ namespace BlockGameSolver.Core
         private void ContinueEvaluation()
         {
             RunCurrentGeneration();
+            InvokeGenerationCompleted(new GenerationEventArgs(generationNum));
+
             if (generationNum < settings.MaxGenerations)
             {
                 FilterCurrentGeneration();
@@ -152,5 +149,26 @@ namespace BlockGameSolver.Core
                 populationFinishedHandler(this, e);
             }
         }
+
+        public event EventHandler<GenerationEventArgs> GenerationCompleted;
+
+        private void InvokeGenerationCompleted(GenerationEventArgs e)
+        {
+            EventHandler<GenerationEventArgs> generationCompletedHandler = GenerationCompleted;
+            if (generationCompletedHandler != null)
+            {
+                generationCompletedHandler(this, e);
+            }
+        }
+    }
+
+    public class GenerationEventArgs : EventArgs
+    {
+        public GenerationEventArgs(int generationNumber)
+        {
+            GenerationNumber = generationNumber;
+        }
+
+        public int GenerationNumber { get; private set; }
     }
 }

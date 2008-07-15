@@ -8,68 +8,56 @@ namespace BlockGameSolver.Visual
 {
     public partial class GameForm : Form
     {
-        private Board gameBoard;
         private Population population;
-        private int removed;
 
         public GameForm()
         {
             InitializeComponent();
         }
 
-        private void btnNewBoard_Click(object sender, EventArgs e)
-        {
-            gameBoard = Board.CreateRandomBoard(null, null);
-            txtBoard.Text = gameBoard.ToString();
-        }
-
-        private void btnGetGroup_Click(object sender, EventArgs e)
-        {
-            int row = Convert.ToInt32(txtRow.Text);
-            int col = Convert.ToInt32(txtCol.Text);
-
-            txtCount.Text = gameBoard.DetermineGroup(row, col, Direction.None).ToString();
-        }
-
-        private void btnRemove_Click(object sender, EventArgs e)
-        {
-            txtBefore.Text = gameBoard.ToString();
-
-            int row = Convert.ToInt32(txtRow.Text);
-            int col = Convert.ToInt32(txtCol.Text);
-
-            removed += gameBoard.RemoveGroup(row, col);
-            txtBoard.Text = gameBoard.ToString();
-            txtCount.Text = gameBoard.PieceCount.ToString();
-            txtRemoveTotal.Text = removed.ToString();
-        }
-
-        private void btnGapTest_Click(object sender, EventArgs e)
-        {
-            gameBoard = Board.CreateRandomBoard(null, 2);
-            txtBefore.Text = gameBoard.ToString();
-
-            gameBoard.FillEmptySpaces();
-
-            txtBoard.Text = gameBoard.ToString();
-        }
-
         private void btnRun_Click(object sender, EventArgs e)
         {
-            PopulationSettings settings = new PopulationSettings(3, 100, 0.1d, 0.15d);
+            int popSize = (int) numPopSize.Value;
+            int generations = (int) numGenerations.Value;
+            double filterRate = (double) numFilterRate.Value;
+            double crossMutate = (double) numCrossMutate.Value;
+
+            PopulationSettings settings = new PopulationSettings(generations, popSize, crossMutate, filterRate);
 
             population = new Population(settings);
             population.PopulationFinished += population_PopulationFinished;
+            population.GenerationCompleted += population_GenerationCompleted;
 
             btnRun.Enabled = false;
             btnViewResults.Enabled = false;
 
+            progCompleted.Minimum = 0;
+            progCompleted.Maximum = generations;
+
             new Thread(population.BeginGeneticProcess).Start();
+        }
+
+        private void population_GenerationCompleted(object sender, GenerationEventArgs e)
+        {
+            UpdateProgress(e.GenerationNumber);
+
         }
 
         private void population_PopulationFinished(object sender, EventArgs e)
         {
             EnableButton();
+        }
+
+        private void UpdateProgress(int generation)
+        {
+            if (!InvokeRequired)
+            {
+                progCompleted.Value = generation;
+            }
+            else
+            {
+                Invoke(new UpdatedProgress(UpdateProgress),generation);
+            }
         }
 
         private void EnableButton()
@@ -92,15 +80,12 @@ namespace BlockGameSolver.Visual
 
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (chkDelete.Checked)
+            if (population.PopulationResults != null)
             {
                 population.PopulationResults.Dispose();
-                if (population.PopulationResults.Filename != null)
+                if (chkDelete.Checked && population.PopulationResults.Filename != null && File.Exists(population.PopulationResults.Filename))
                 {
-                    if (File.Exists(population.PopulationResults.Filename))
-                    {
-                        File.Delete(population.PopulationResults.Filename);
-                    }
+                    File.Delete(population.PopulationResults.Filename);
                 }
             }
         }
@@ -108,6 +93,8 @@ namespace BlockGameSolver.Visual
         #region Nested type: EnabledButton
 
         private delegate void EnabledButton();
+
+        private delegate void UpdatedProgress(int a);
 
         #endregion
     }
