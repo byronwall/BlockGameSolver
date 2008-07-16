@@ -3,7 +3,7 @@ namespace BlockGameSolver.Core
     public static class GameSettings
     {
         public static readonly int Columns = 10;
-        public static readonly int GroupSize = 3;
+        public static readonly int GroupSize = 2;
         public static readonly int Rows = 10;
 
         public static int PieceCount
@@ -13,7 +13,7 @@ namespace BlockGameSolver.Core
 
         public static int MaxMoves
         {
-            get { return PieceCount / GroupSize; }
+            get { return PieceCount / GroupSize / 2; }
         }
     }
 }

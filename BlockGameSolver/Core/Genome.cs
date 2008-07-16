@@ -1,28 +1,28 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace BlockGameSolver.Core
 {
     public class Genome
     {
         private double fitness;
-        private List<int> moves;
+        private int[] moves = new int[GameSettings.MaxMoves];
 
         public Genome(bool isRandom)
         {
-            moves = new List<int>(GameSettings.MaxMoves);
             if (isRandom)
             {
                 Random rng = RandomSource.Instance;
                 for (int i = 0; i < GameSettings.MaxMoves; i++)
                 {
-                    moves.Add(rng.Next(0, GameSettings.PieceCount));
+                    moves[i] = rng.Next(0, GameSettings.PieceCount);
                 }
             }
             fitness = 0d;
         }
 
-        public List<int> Moves
+        public int[] Moves
         {
             get { return moves; }
             set { moves = value; }
@@ -34,29 +34,42 @@ namespace BlockGameSolver.Core
             set { fitness = value; }
         }
 
-        public int Crossover(Genome startPart, Genome endPart, ref Genome endChild)
+        public int Crossover(Genome partner)
         {
-            int swapPoint = RandomSource.Instance.Next(0, startPart.moves.Count);
+            int swapPoint = RandomSource.Instance.Next(0, partner.moves.Length);
 
-            for (int i = 0; i < startPart.moves.Count; i++)
-            {
-                moves.Add(i < swapPoint ? startPart.moves[i] : endPart.moves[i]);
-                endChild.moves.Add(i >= swapPoint ? startPart.moves[i] : endPart.moves[i]);
-            }
+            int[] temp = new int[moves.Length];
+
+            moves.CopyTo(temp, 0);
+
+            Array.Copy(partner.Moves, swapPoint, moves, swapPoint, moves.Length - swapPoint);
+            Array.Copy(temp, swapPoint, partner.moves, swapPoint, moves.Length - swapPoint);
+
             return swapPoint;
         }
 
-        public int Mutate(Genome source)
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < moves.Length; i++)
+            {
+                sb.Append(moves[i]);
+                sb.Append(",");
+            }
+            return sb.ToString();
+        }
+
+        public int Mutate()
         {
             Random rng = RandomSource.Instance;
 
-            int mutatePoint = rng.Next(0, source.moves.Count);
+            int mutatePoint = rng.Next(0, moves.Length);
             int value = rng.Next(0, GameSettings.PieceCount);
 
-            for (int i = 0; i < source.moves.Count; i++)
-            {
-                moves.Add((i == mutatePoint) ? value : source.moves[i]);
-            }
+            moves[mutatePoint] = value;
+
+
             return mutatePoint;
         }
 

@@ -10,17 +10,25 @@ namespace BlockGameSolver.Core
     {
         private static readonly object locker = new object();
         private readonly FileStream fs;
+
+        private readonly List<List<double>> scoreData = new List<List<double>>();
         private readonly StreamWriter sw;
 
         public Results()
         {
-            Filename = string.Format("{0} - Results.log", DateTime.Now.Ticks);
+            ResultsFilename = string.Format("{0} - Results.log", DateTime.Now.Ticks);
 
-            fs = new FileStream(Filename, FileMode.Create);
+            fs = new FileStream(ResultsFilename, FileMode.Create);
             sw = new StreamWriter(fs);
         }
 
-        public string Filename { get; private set; }
+        public string ResultsFilename { get; private set; }
+        public string ScoreFilename { get; private set; }
+
+        public List<List<double>> ScoreData
+        {
+            get { return scoreData; }
+        }
 
         #region IDisposable Members
 
@@ -38,7 +46,7 @@ namespace BlockGameSolver.Core
 
         public void OpenWithExecutable(string executable)
         {
-            Process.Start(executable, Filename);
+            Process.Start(executable, ResultsFilename);
         }
 
         public void AddHeader(string header)
@@ -65,15 +73,15 @@ namespace BlockGameSolver.Core
             }
         }
 
-        public void AddEvaluationResult(int generationNum, List<int> moves, double fitness)
+        public void AddEvaluationResult(int generationNum, int[] moves, double fitness)
         {
             lock (locker)
             {
                 StringBuilder sb = new StringBuilder();
 
-                foreach (int i in moves)
+                for (int i = 0; i < moves.Length; i++)
                 {
-                    sb.Append(i);
+                    sb.Append(moves[i]);
                     sb.Append(",");
                 }
                 AddEvaluationResult(generationNum, sb.ToString(), fitness);
@@ -83,6 +91,31 @@ namespace BlockGameSolver.Core
         public void FinishOutput()
         {
             sw.Flush();
+        }
+
+        public string DumpScoreData()
+        {
+            if (ScoreFilename != null)
+            {
+                return ScoreFilename;
+            }
+            ScoreFilename = string.Format("{0} - Scores.log", DateTime.Now.Ticks);
+            using (FileStream dump = new FileStream(ScoreFilename, FileMode.Create))
+            {
+                using (StreamWriter dumpWriter = new StreamWriter(dump))
+                {
+                    for (int j = 0; j < scoreData[0].Count; j++)
+                    {
+                        for (int i = 0; i < scoreData.Count; i++)
+                        {
+                            dumpWriter.Write(scoreData[i][j]);
+                            dumpWriter.Write("\t");
+                        }
+                        dumpWriter.WriteLine();
+                    }
+                }
+            }
+            return ScoreFilename;
         }
     }
 }

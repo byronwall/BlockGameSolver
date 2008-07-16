@@ -18,5 +18,6 @@ namespace BlockGameSolver.Core
         public int Row { get; set; }
 
         public bool Checked { get; set; }
+        public bool StartedOn { get; set; }
     }
 }

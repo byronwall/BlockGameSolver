@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace BlockGameSolver.Core
@@ -35,12 +36,18 @@ namespace BlockGameSolver.Core
 
         private void RunCurrentGeneration()
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
             PopulationResults.AddMessage("Running the current generation.");
+            List<double> round = new List<double>(settings.PopulationSize);
+            populationResults.ScoreData.Add(round);
             foreach (Genome genome in currentPopulation)
             {
                 genome.Evaluate();
+                round.Add(genome.Fitness);
                 PopulationResults.AddEvaluationResult(generationNum, genome.Moves, genome.Fitness);
-            }
+            } stopwatch.Stop();
+            populationResults.AddMessage(string.Format("The run took {0} milliseconds.", stopwatch.ElapsedMilliseconds));
         }
 
         private void CreateNextGeneration()
@@ -66,10 +73,12 @@ namespace BlockGameSolver.Core
 
                     Genome afterMutate = new Genome(false);
 
-                    int mutatePoint = afterMutate.Mutate(genome);
+                    genome.Moves.CopyTo(afterMutate.Moves, 0);
+
+                    int mutatePoint = afterMutate.Mutate();
                     currentPopulation.Add(afterMutate);
 
-                    PopulationResults.AddMessage(string.Format("Mutation occurred for genome {0} at point {1}", genomeNum, mutatePoint));
+                    PopulationResults.AddMessage(string.Format("Mutation occurred for genome {0} at point {1} and produced {2}", genome, mutatePoint, afterMutate));
 
                 }
                 else
@@ -85,12 +94,15 @@ namespace BlockGameSolver.Core
                     Genome frontChild = new Genome(false);
                     Genome endChild = new Genome(false);
 
-                    int swapPoint = frontChild.Crossover(genome1, genome2, ref endChild);
+                    genome1.Moves.CopyTo(frontChild.Moves, 0);
+                    genome2.Moves.CopyTo(endChild.Moves, 0);
+
+                    int swapPoint = frontChild.Crossover(endChild);
 
                     currentPopulation.Add(frontChild);
                     currentPopulation.Add(endChild);
 
-                    PopulationResults.AddMessage(string.Format("Crossover occurred from genome {0} to {1} at point {2}", genomeNum1, genomeNum2, swapPoint));
+                    PopulationResults.AddMessage(string.Format("Crossover occurred from genome {0} to {1} at point {2} and got {3} and {4}", genome1, genome2, swapPoint, frontChild, endChild));
 
                 }
             }
@@ -135,6 +147,9 @@ namespace BlockGameSolver.Core
                 generationNum = i + 1;
                 ContinueEvaluation();
             }
+            populationResults.AddHeader(string.Format("Best plays had a score of {0}", currentPopulation.OrderByDescending(c => c.Fitness).Take(1).Single().Fitness));
+
+
             PopulationResults.FinishOutput();
             InvokePopulationFinished(EventArgs.Empty);
         }
