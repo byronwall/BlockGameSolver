@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace BlockGameSolver.Core
 {
     public class Genome
     {
-        private List<int> moves = new List<int>(GameSettings.MaxMoves);
+        private double fitness;
+        private int[] moves = new int[GameSettings.MaxMoves];
 
         public Genome(bool isRandom)
         {
@@ -16,39 +16,61 @@ namespace BlockGameSolver.Core
                 Random rng = RandomSource.Instance;
                 for (int i = 0; i < GameSettings.MaxMoves; i++)
                 {
-                    moves.Add(rng.Next(0, GameSettings.PieceCount));
+                    moves[i] = rng.Next(0, GameSettings.PieceCount);
                 }
             }
+            fitness = 0d;
         }
 
-        public List<int> Moves
+        public int[] Moves
         {
             get { return moves; }
             set { moves = value; }
         }
-        public double Fitness { get; set; }
 
-        public void Crossover(ref Genome partner)
+        public double Fitness
         {
-            int swapPoint = RandomSource.Instance.Next(0, moves.Count);
-
-            var originalStart = moves.Where((item, index) => index < swapPoint);
-            var originalEnd = moves.Where((item, index) => index >= swapPoint);
-            var targetStart = partner.moves.Where((item, index) => index < swapPoint);
-            var targetEnd = partner.moves.Where((item, index) => index >= swapPoint);
-
-            moves = originalStart.Concat(targetEnd).ToList();
-            partner.moves = targetStart.Concat(originalEnd).ToList();
+            get { return fitness; }
+            set { fitness = value; }
         }
 
-        public void Mutate()
+        public int Crossover(Genome partner)
+        {
+            int swapPoint = RandomSource.Instance.Next(0, partner.moves.Length);
+
+            int[] temp = new int[moves.Length];
+
+            moves.CopyTo(temp, 0);
+
+            Array.Copy(partner.Moves, swapPoint, moves, swapPoint, moves.Length - swapPoint);
+            Array.Copy(temp, swapPoint, partner.moves, swapPoint, moves.Length - swapPoint);
+
+            return swapPoint;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < moves.Length; i++)
+            {
+                sb.Append(moves[i]);
+                sb.Append(",");
+            }
+            return sb.ToString();
+        }
+
+        public int Mutate()
         {
             Random rng = RandomSource.Instance;
 
-            int mutatePoint = rng.Next(0, Moves.Count);
+            int mutatePoint = rng.Next(0, moves.Length);
             int value = rng.Next(0, GameSettings.PieceCount);
 
             moves[mutatePoint] = value;
+
+
+            return mutatePoint;
         }
 
         public void Evaluate()

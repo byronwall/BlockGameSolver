@@ -6,10 +6,12 @@ namespace BlockGameSolver.Core
         private readonly int maxGenerations;
         private readonly double mutateCrossRatio;
         private readonly int populationSize;
+        private readonly int initialPopulationSize;
 
-        public PopulationSettings(int maxGenerations, int populationSize, double mutateCrossRatio, double filterRate)
+        public PopulationSettings(int maxGenerations, int populationSize, double mutateCrossRatio, double filterRate, int initialPopulationSize)
         {
             this.maxGenerations = maxGenerations;
+            this.initialPopulationSize = initialPopulationSize;
             this.filterRate = filterRate;
             this.mutateCrossRatio = mutateCrossRatio;
             this.populationSize = populationSize;
