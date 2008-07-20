@@ -94,19 +94,21 @@ namespace BlockGameSolver.Core
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            //StringBuilder sb = new StringBuilder();
 
-            for (int i = 0; i < Moves.Length; i++)
-            {
-                if (Moves[i] == null)
-                {
-                    break;
-                }
+            //for (int i = 0; i < Moves.Length; i++)
+            //{
+            //    if (Moves[i] == null)
+            //    {
+            //        break;
+            //    }
 
-                sb.Append(Moves[i]);
-                sb.Append(",");
-            }
-            return sb.ToString();
+            //    sb.Append(Moves[i]);
+            //    sb.Append(",");
+            //}
+            //return sb.ToString();
+
+            return ID.ToString();
         }
 
         public int Mutate(double mutateRate)

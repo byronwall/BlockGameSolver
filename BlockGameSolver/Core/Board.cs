@@ -15,12 +15,14 @@ namespace BlockGameSolver.Core
         private readonly Piece[,] backupPieces = new Piece[GameSettings.Rows, GameSettings.Columns];
         private bool hasMoves = true;
 
+        private List<Piece> currentGroup = new List<Piece>(GameSettings.PieceCount);
+
         public int Score { get; private set; }
 
         public Piece this[int row, int col]
         {
-            get { return Pieces[row, col]; }
-            set { Pieces[row, col] = value; }
+            get { return pieces[row, col]; }
+            set { pieces[row, col] = value; }
         }
 
         public bool HasMoves
@@ -29,27 +31,12 @@ namespace BlockGameSolver.Core
             private set { hasMoves = value; }
         }
 
-        public List<Piece> PieceList
-        {
-            get
-            {
-                Piece[] temp = new Piece[pieces.Length];
-
-                int count = 0;
-                foreach (Piece piece in temp)
-                {
-                    temp[count++] = piece;
-                }
-                return temp.ToList();
-            }
-        }
-
         public int PieceCount
         {
             get
             {
                 int count = 0;
-                foreach (Piece piece in Pieces)
+                foreach (Piece piece in pieces)
                 {
                     if (piece != null)
                     {
@@ -110,11 +97,11 @@ namespace BlockGameSolver.Core
         public int DetermineGroup(int row, int col, Direction dirFrom)
         {
             int count = 1;
-            if (Pieces[row, col] == null)
+            if (pieces[row, col] == null)
             {
                 return 0;
             }
-            Pieces[row, col].Checked = true;
+            currentGroup.Add(pieces[row, col]);
 
             for (int i = 0; i < lookDirections.Length; i++)
             {
@@ -122,7 +109,7 @@ namespace BlockGameSolver.Core
 
                 //This code checks that the path is not backtracked, the rows and columns are within bounds, the new piece exists, the new piece has not been checked, and that the colors match.
 
-                if (dirFrom != Point.GetOppositeDirection(nextPoint.Dir) && (0 <= row + nextPoint.RowInc && row + nextPoint.RowInc < GameSettings.Rows) && 0 <= col + nextPoint.ColInc && col + nextPoint.ColInc < GameSettings.Columns && Pieces[row + nextPoint.RowInc, col + nextPoint.ColInc] != null && !Pieces[row + nextPoint.RowInc, col + nextPoint.ColInc].Checked && Pieces[row + nextPoint.RowInc, col + nextPoint.ColInc].Color == Pieces[row, col].Color)
+                if (dirFrom != Point.GetOppositeDirection(nextPoint.Dir) && (0 <= row + nextPoint.RowInc && row + nextPoint.RowInc < GameSettings.Rows) && 0 <= col + nextPoint.ColInc && col + nextPoint.ColInc < GameSettings.Columns && pieces[row + nextPoint.RowInc, col + nextPoint.ColInc] != null && !currentGroup.Contains(Pieces[row + nextPoint.RowInc, col + nextPoint.ColInc]) && Pieces[row + nextPoint.RowInc, col + nextPoint.ColInc].Color == Pieces[row, col].Color)
                 {
                     count += DetermineGroup(row + nextPoint.RowInc, col + nextPoint.ColInc, nextPoint.Dir);
                 }
@@ -162,13 +149,13 @@ namespace BlockGameSolver.Core
 
                     return null;
                 }
-                foreach (Piece piece in pieces)
-                {
-                    if (piece != null)
-                    {
-                        piece.StartedOn = false;
-                    }
-                }
+                //foreach (Piece piece in pieces)
+                //{
+                //    if (piece != null)
+                //    {
+                //        piece.StartedOn = false;
+                //    }
+                //}
                 for (int i = -range; i <= range; i++)
                 {
                     if (row + i >= GameSettings.Rows || row + i < 0)
@@ -186,26 +173,31 @@ namespace BlockGameSolver.Core
                         {
                             continue;
                         }
-                        if (pieces[row + i, col + j].StartedOn)
-                        {
-                            continue;
-                        }
-                        foreach (Piece piece in Pieces)
-                        {
-                            if (piece != null)
-                            {
-                                piece.Checked = false;
-                            }
-                        }
+                        //if (pieces[row + i, col + j].StartedOn)
+                        //{
+                        //    continue;
+                        //}
+                        //foreach (Piece piece in pieces)
+                        //{
+                        //    if (piece != null)
+                        //    {
+                        //        piece.Checked = false;
+                        //    }
+                        //}
+                        currentGroup.Clear();
                         int count = DetermineGroup(row + i, col + j, Direction.None);
                         if (count >= GameSettings.GroupSize)
                         {
-                            foreach (Piece piece in Pieces)
+                            //foreach (Piece piece in pieces)
+                            //{
+                            //    if (piece != null && piece.Checked)
+                            //    {
+                            //        pieces[piece.Row, piece.Col] = null;
+                            //    }
+                            //}
+                            foreach (Piece piece in currentGroup)
                             {
-                                if (piece != null && piece.Checked)
-                                {
-                                    Pieces[piece.Row, piece.Col] = null;
-                                }
+                                pieces[piece.Row, piece.Col] = null;
                             }
                             FillEmptySpaces();
                             Score += count * count;
@@ -213,7 +205,7 @@ namespace BlockGameSolver.Core
 
                             return GetNumberFromLocation(row + i, col + j);
                         }
-                        pieces[row + i, col + j].StartedOn = true;
+                        //pieces[row + i, col + j].StartedOn = true;
                     }
                 }
 
@@ -240,7 +232,7 @@ namespace BlockGameSolver.Core
                 bool colEmpty = true;
                 for (int j = GameSettings.Rows - 1; j >= 0; j--)
                 {
-                    if (Pieces[j, i] == null)
+                    if (pieces[j, i] == null)
                     {
                         rowGap++;
                         continue;
@@ -249,10 +241,10 @@ namespace BlockGameSolver.Core
 
                     if (rowGap > 0 || colGap > 0)
                     {
-                        Pieces[j + rowGap, i + colGap] = Pieces[j, i];
-                        Pieces[j + rowGap, i + colGap].Row = j + rowGap;
-                        Pieces[j + rowGap, i + colGap].Col = i + colGap;
-                        Pieces[j, i] = null;
+                        pieces[j + rowGap, i + colGap] = Pieces[j, i];
+                        pieces[j + rowGap, i + colGap].Row = j + rowGap;
+                        pieces[j + rowGap, i + colGap].Col = i + colGap;
+                        pieces[j, i] = null;
                     }
                 }
                 if (colEmpty)
@@ -304,7 +296,7 @@ namespace BlockGameSolver.Core
 
         public void SaveBoard()
         {
-            Array.Copy(Pieces, backupPieces, Pieces.Length);
+            Array.Copy(pieces, backupPieces, pieces.Length);
         }
 
         public override string ToString()
@@ -328,9 +320,9 @@ namespace BlockGameSolver.Core
 
                 for (int j = 0; j < GameSettings.Columns; j++)
                 {
-                    if (Pieces[i, j] != null)
+                    if (pieces[i, j] != null)
                     {
-                        sb.Append(Pieces[i, j].Color);
+                        sb.Append(pieces[i, j].Color);
                     }
                     else
                     {
@@ -348,14 +340,14 @@ namespace BlockGameSolver.Core
             Score = 0;
             hasMoves = true;
 
-            Array.Copy(backupPieces, Pieces, Pieces.Length);
+            Array.Copy(backupPieces, pieces, pieces.Length);
 
             for (int i = 0; i < GameSettings.Rows; i++)
             {
                 for (int j = 0; j < GameSettings.Columns; j++)
                 {
-                    Pieces[i, j].Row = i;
-                    Pieces[i, j].Col = j;
+                    pieces[i, j].Row = i;
+                    pieces[i, j].Col = j;
                 }
             }
         }

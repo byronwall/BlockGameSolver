@@ -16,5 +16,10 @@ namespace BlockGameSolver.Core
                 return instance;
             }
         }
+
+        public static void Reseed(int seed)
+        {
+            instance = new MersenneTwister(seed);
+        }
     }
 }
