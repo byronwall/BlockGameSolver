@@ -4,16 +4,20 @@ namespace BlockGameSolver.Core
     {
         private readonly double filterRate;
         private readonly int maxGenerations;
-        private readonly double mutateCrossRatio;
+        private readonly double mutateRatio;
+        private readonly double crossoverRatio;
         private readonly int populationSize;
         private readonly int initialPopulationSize;
+        private readonly int moveCache;
 
-        public PopulationSettings(int maxGenerations, int populationSize, double mutateCrossRatio, double filterRate, int initialPopulationSize)
+        public PopulationSettings(int maxGenerations, int populationSize, double mutateRatio, double filterRate, int initialPopulationSize, double crossoverRatio)
         {
+            moveCache = 50;
             this.maxGenerations = maxGenerations;
+            this.crossoverRatio = crossoverRatio;
             this.initialPopulationSize = initialPopulationSize;
             this.filterRate = filterRate;
-            this.mutateCrossRatio = mutateCrossRatio;
+            this.mutateRatio = mutateRatio;
             this.populationSize = populationSize;
         }
 
@@ -22,9 +26,9 @@ namespace BlockGameSolver.Core
             get { return (int) (populationSize * filterRate); }
         }
 
-        public double MutateCrossRatio
+        public double MutateRatio
         {
-            get { return mutateCrossRatio; }
+            get { return mutateRatio; }
         }
 
         public int MaxGenerations
@@ -35,6 +39,21 @@ namespace BlockGameSolver.Core
         public int PopulationSize
         {
             get { return populationSize; }
+        }
+
+        public int InitialPopulationSize
+        {
+            get { return initialPopulationSize; }
+        }
+
+        public double CrossoverRatio
+        {
+            get { return crossoverRatio; }
+        }
+
+        public int MoveCache
+        {
+            get { return moveCache; }
         }
     }
 }

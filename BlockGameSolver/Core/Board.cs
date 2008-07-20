@@ -10,9 +10,9 @@ namespace BlockGameSolver.Core
     {
         private static Board instance;
 
-        private readonly Point[] lookDirections = new[] {new Point(0, 1, Direction.Right), new Point(0, -1, Direction.Left), new Point(1, 0, Direction.Bottom), new Point(-1, 0, Direction.Top)};
-        private readonly Piece[,] pieces = new Piece[GameSettings.Rows,GameSettings.Columns];
-        private Piece[,] backupPieces = new Piece[GameSettings.Rows,GameSettings.Columns];
+        private readonly Point[] lookDirections = new[] { new Point(0, 1, Direction.Right), new Point(0, -1, Direction.Left), new Point(1, 0, Direction.Bottom), new Point(-1, 0, Direction.Top) };
+        private readonly Piece[,] pieces = new Piece[GameSettings.Rows, GameSettings.Columns];
+        private readonly Piece[,] backupPieces = new Piece[GameSettings.Rows, GameSettings.Columns];
         private bool hasMoves = true;
 
         public int Score { get; private set; }
@@ -133,10 +133,22 @@ namespace BlockGameSolver.Core
         /// <summary>
         /// Removes the closest group to the given coordinate.
         /// </summary>
+        /// <param name="number"></param>
+        /// <returns>The number of pieces that were removed.</returns>
+        public int? RemoveGroup(int number)
+        {
+            Point location = GetLocationFromNumber(number);
+
+            return RemoveGroup(location.RowInc, location.ColInc);
+        }
+
+        /// <summary>
+        /// Removes the closest group to the given coordinate.
+        /// </summary>
         /// <param name="row"></param>
         /// <param name="col"></param>
         /// <returns>The number of pieces that were removed.</returns>
-        public int RemoveGroup(int row, int col)
+        public int? RemoveGroup(int row, int col)
         {
             int range = 0;
             while (true)
@@ -144,17 +156,17 @@ namespace BlockGameSolver.Core
                 if (range >= GameSettings.Rows || range >= GameSettings.Columns)
                 {
                     //No more groups to remove.
-                    Score += (int) ((1 - (double) PieceCount / (GameSettings.Rows * GameSettings.Columns)) * 100);
+                    Score += (int)((1 - (double)PieceCount / (GameSettings.Rows * GameSettings.Columns)) * 100);
                     HasMoves = false;
                     Debug.Assert(Score != 0, "The score is 0 after a removal");
 
-                    return 0;
+                    return null;
                 }
                 foreach (Piece piece in pieces)
                 {
-                    if (piece!=null)
+                    if (piece != null)
                     {
-                        piece.StartedOn = false;   
+                        piece.StartedOn = false;
                     }
                 }
                 for (int i = -range; i <= range; i++)
@@ -199,7 +211,7 @@ namespace BlockGameSolver.Core
                             Score += count * count;
                             Debug.Assert(Score != 0, "The score is 0 after a removal");
 
-                            return count;
+                            return GetNumberFromLocation(row + i, col + j);
                         }
                         pieces[row + i, col + j].StartedOn = true;
                     }
@@ -207,6 +219,16 @@ namespace BlockGameSolver.Core
 
                 range++;
             }
+        }
+
+        public static int GetNumberFromLocation(int row, int col)
+        {
+            return row * GameSettings.Columns + col;
+        }
+
+        public static Point GetLocationFromNumber(int number)
+        {
+            return new Point(number / GameSettings.Columns, number % GameSettings.Columns);
         }
 
         public void FillEmptySpaces()
@@ -240,18 +262,39 @@ namespace BlockGameSolver.Core
             }
         }
 
-        public int RemoveGroups(int[] groups)
+        public int RemoveGroups(int?[] groups)
         {
+            int stopPoint = groups.Length;
             for (int i = 0; i < groups.Length; i++)
             {
-                int removed = RemoveGroup(groups[i] / GameSettings.Columns, groups[i] % GameSettings.Columns);
 
-                if (removed == 0)
+                if (hasMoves)
                 {
-                    break;
+                    if (groups[i] == null)
+                    {
+                        groups[i] = RandomSource.Instance.Next(0, GameSettings.PieceCount);
+
+                    }
+
+                    int? removed = RemoveGroup(groups[i].Value / GameSettings.Columns, groups[i].Value % GameSettings.Columns);
+
+                    if (removed == null)
+                    {
+                        groups[i] = null;
+                        stopPoint = i;
+                    }
+                    else
+                    {
+                        groups[i] = removed;
+                    }
+
+                }
+                else
+                {
+                    groups[i] = null;
                 }
             }
-            return Score;
+            return stopPoint;
         }
 
         public static Board CreateRandomBoard()

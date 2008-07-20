@@ -13,7 +13,7 @@ namespace BlockGameSolver.Core
 
         public static int MaxMoves
         {
-            get { return PieceCount / GroupSize / 2; }
+            get { return PieceCount / GroupSize ; }
         }
     }
 }

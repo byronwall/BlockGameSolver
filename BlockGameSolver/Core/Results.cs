@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 
 namespace BlockGameSolver.Core
 {
@@ -47,50 +46,34 @@ namespace BlockGameSolver.Core
         public void OpenWithExecutable(string executable)
         {
             Process.Start(executable, ResultsFilename);
+            Process.Start(executable, ScoreFilename);
+
         }
 
         public void AddHeader(string header)
         {
-            lock (locker)
-            {
-                sw.WriteLine(string.Format("*** {0} ***", header));
-            }
+            sw.WriteLine(string.Format("*** {0} ***", header));
         }
 
         public void AddEvaluationResult(int generationNum, string moves, double fitness)
         {
-            lock (locker)
-            {
-                sw.WriteLine(string.Format("{0}\t{1}\t{2}\t{3}", DateTime.Now.Ticks, generationNum, fitness, moves));
-            }
+            sw.WriteLine(string.Format("{0}\t{1}\t{2}\t{3}", DateTime.Now.Ticks, generationNum, fitness, moves));
         }
 
         public void AddMessage(string message)
         {
-            lock (locker)
-            {
-                sw.WriteLine(string.Format("{0}\t{1}", DateTime.Now.Ticks, message));
-            }
+            sw.WriteLine(string.Format("{0}\t{1}", DateTime.Now.Ticks, message));
         }
 
-        public void AddEvaluationResult(int generationNum, int[] moves, double fitness)
+        public void AddEvaluationResult(int generationNum, Genome genome, double fitness)
         {
-            lock (locker)
-            {
-                StringBuilder sb = new StringBuilder();
-
-                for (int i = 0; i < moves.Length; i++)
-                {
-                    sb.Append(moves[i]);
-                    sb.Append(",");
-                }
-                AddEvaluationResult(generationNum, sb.ToString(), fitness);
-            }
+            sw.WriteLine(string.Format("{0}\t{1}\t{2}\t{3}", DateTime.Now.Ticks, generationNum, fitness, genome));
         }
 
         public void FinishOutput()
         {
             sw.Flush();
+            DumpScoreData();
         }
 
         public string DumpScoreData()

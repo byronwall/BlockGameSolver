@@ -1,7 +1,17 @@
 namespace BlockGameSolver.Core
 {
-    internal struct Point
+    public struct Point
     {
+        private static readonly Direction[] opposite = new Direction[4];
+
+        static Point()
+        {
+            opposite[(int) Direction.Bottom] = Direction.Top;
+            opposite[(int) Direction.Left] = Direction.Right;
+            opposite[(int) Direction.Right] = Direction.Left;
+            opposite[(int) Direction.Top] = Direction.Bottom;
+        }
+
         private readonly int colInc;
         private readonly Direction dir;
         private readonly int rowInc;
@@ -11,6 +21,13 @@ namespace BlockGameSolver.Core
             this.rowInc = rowInc;
             this.dir = dir;
             this.colInc = colInc;
+        }
+
+        public Point(int row, int col)
+        {
+            rowInc = row;
+            colInc = col;
+            dir = Direction.None;
         }
 
         public Direction Dir
@@ -30,18 +47,7 @@ namespace BlockGameSolver.Core
 
         public static Direction GetOppositeDirection(Direction direction)
         {
-            switch (direction)
-            {
-                case Direction.Bottom:
-                    return Direction.Top;
-                case Direction.Left:
-                    return Direction.Right;
-                case Direction.Top:
-                    return Direction.Bottom;
-                case Direction.Right:
-                    return Direction.Left;
-            }
-            return Direction.None;
+            return opposite[(int) direction];
         }
     }
 }

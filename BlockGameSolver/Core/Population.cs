@@ -7,11 +7,11 @@ namespace BlockGameSolver.Core
 {
     public class Population
     {
-        private readonly List<Genome> currentPopulation = new List<Genome>();
+        private readonly Results populationResults = new Results();
+        private readonly Queue<Genome> upcomingMoves = new Queue<Genome>();
+        private List<Genome> currentPopulation = new List<Genome>();
         private int generationNum;
         private List<Genome> newPopulation = new List<Genome>();
-
-        private readonly Results populationResults = new Results();
 
         private PopulationSettings settings;
 
@@ -25,10 +25,15 @@ namespace BlockGameSolver.Core
             get { return populationResults; }
         }
 
+        public Genome GenomeBest
+        {
+            get { return currentPopulation.OrderByDescending(c => c.Fitness).Take(1).Single(); }
+        }
+
         private void GenerateInitialPopulation()
         {
             currentPopulation.Clear();
-            for (int i = 0; i < settings.PopulationSize; i++)
+            for (int i = 0; i < settings.InitialPopulationSize; i++)
             {
                 currentPopulation.Add(new Genome(true));
             }
@@ -45,84 +50,113 @@ namespace BlockGameSolver.Core
             {
                 genome.Evaluate();
                 round.Add(genome.Fitness);
-                PopulationResults.AddEvaluationResult(generationNum, genome.Moves, genome.Fitness);
-            } stopwatch.Stop();
+                PopulationResults.AddEvaluationResult(generationNum, genome, genome.Fitness);
+            }
+            stopwatch.Stop();
             populationResults.AddMessage(string.Format("The run took {0} milliseconds.", stopwatch.ElapsedMilliseconds));
+        }
+
+        /// <summary>
+        /// Selects a random genome using the roulette wheel method.
+        /// </summary>
+        /// <returns></returns>
+        private Genome SelectGenome()
+        {
+            if (upcomingMoves.Count == 0)
+            {
+                double totalFitness = 0;
+                foreach (Genome genome in currentPopulation)
+                {
+                    totalFitness += genome.Fitness;
+                }
+                for (int i = 0; i < settings.MoveCache; i++)
+                {
+                    double runningTotal = 0;
+                    double stopPoint = RandomSource.Instance.Next(0, (int) totalFitness);
+
+                    foreach (Genome genome in currentPopulation)
+                    {
+                        runningTotal += genome.Fitness;
+                        if (runningTotal > stopPoint)
+                        {
+                            upcomingMoves.Enqueue(genome);
+                            break;
+                        }
+                    }
+                }
+            }
+            return upcomingMoves.Dequeue();
         }
 
         private void CreateNextGeneration()
         {
             PopulationResults.AddMessage("Creating the next generation.");
             MersenneTwister rng = RandomSource.Instance;
+            newPopulation.Clear();
+            //Elite selection
+            newPopulation.AddRange(currentPopulation.OrderByDescending(c => c.Fitness).Take(settings.FilterSize));
+            ////Add in the ones that were kept.
+            //foreach (Genome genome in newPopulation)
+            //{
+            //    currentPopulation.Add(genome);
+            //}
+
+            for (int i = 0; i < settings.PopulationSize - settings.FilterSize; i++)
+            {
+                //Determine if a cross-over should occur
+                if (rng.NextDoublePositive() < settings.CrossoverRatio)
+                {
+                    //This indicates a cross over should occur
+
+                    Genome genome1 = SelectGenome();
+                    Genome genome2 = SelectGenome();
+
+                    Genome frontChild = Genome.FromGenome(genome1);
+                    Genome endChild = Genome.FromGenome(genome2);
+
+                    int swapPoint = frontChild.Crossover(endChild);
+
+                    newPopulation.Add(frontChild);
+                    newPopulation.Add(endChild);
+
+                    PopulationResults.AddMessage(
+                        string.Format("Crossover occurred from genome {0} to {1} at point {2} and got {3} and {4}",
+                                      genome1, genome2, swapPoint, frontChild, endChild));
+
+                    //Determine if the results should be mutated
+
+                    //Mutate the last crossover result
+                    frontChild.Mutate(settings.MutateRatio);
+                    endChild.Mutate(settings.MutateRatio);
+                }
+                else
+                {
+                    //This indicates that a direct replication should occur.
+                    Genome directCopy = SelectGenome();
+                    directCopy.Mutate(settings.MutateRatio);
+                    currentPopulation.Add(directCopy);
+                }
+            }
             currentPopulation.Clear();
-            //Add in the ones that were kept.
             foreach (Genome genome in newPopulation)
             {
                 currentPopulation.Add(genome);
             }
-            int crossovers = 0;
-            int mutations = 0;
-            for (int i = 0; i < settings.PopulationSize - settings.FilterSize; i++)
-            {
-                if (rng.NextDouble() < settings.MutateCrossRatio)
-                {
-                    //Mutate
-                    mutations++;
-                    int genomeNum = rng.Next(0, settings.FilterSize);
-                    Genome genome = newPopulation[genomeNum];
-
-                    Genome afterMutate = new Genome(false);
-
-                    genome.Moves.CopyTo(afterMutate.Moves, 0);
-
-                    int mutatePoint = afterMutate.Mutate();
-                    currentPopulation.Add(afterMutate);
-
-                    PopulationResults.AddMessage(string.Format("Mutation occurred for genome {0} at point {1} and produced {2}", genome, mutatePoint, afterMutate));
-
-                }
-                else
-                {
-                    //Crossover
-                    crossovers++;
-                    int genomeNum1 = rng.Next(0, settings.FilterSize);
-                    int genomeNum2 = rng.Next(0, settings.FilterSize);
-
-                    Genome genome1 = newPopulation[genomeNum1];
-                    Genome genome2 = newPopulation[genomeNum2];
-
-                    Genome frontChild = new Genome(false);
-                    Genome endChild = new Genome(false);
-
-                    genome1.Moves.CopyTo(frontChild.Moves, 0);
-                    genome2.Moves.CopyTo(endChild.Moves, 0);
-
-                    int swapPoint = frontChild.Crossover(endChild);
-
-                    currentPopulation.Add(frontChild);
-                    currentPopulation.Add(endChild);
-
-                    PopulationResults.AddMessage(string.Format("Crossover occurred from genome {0} to {1} at point {2} and got {3} and {4}", genome1, genome2, swapPoint, frontChild, endChild));
-
-                }
-            }
-            PopulationResults.AddMessage(string.Format("Mutations: {0}\tCrosses: {1}", mutations, crossovers));
         }
 
         private void FilterCurrentGeneration()
         {
             PopulationResults.AddMessage("Filtering the current generation.");
-            int keepers = settings.FilterSize;
 
-            newPopulation = currentPopulation.OrderByDescending(c => c.Fitness).Take(keepers).ToList();
+            newPopulation.AddRange(currentPopulation.OrderByDescending(c => c.Fitness).Take(settings.FilterSize));
+            // newPopulation = currentPopulation.OrderByDescending(c => c.Fitness).Take(keepers).ToList();
 
-            foreach (Genome genome in newPopulation)
-            {
-                populationResults.AddMessage(string.Format("Genome with fitness {0} survived.", genome.Fitness));
+            //foreach (Genome genome in newPopulation)
+            //{
+            //    populationResults.AddMessage(string.Format("Genome with fitness {0} survived.", genome.Fitness));
+            //}
 
-            }
-
-            currentPopulation.Clear();
+            //   currentPopulation.Clear();
         }
 
         private void ContinueEvaluation()
@@ -132,7 +166,7 @@ namespace BlockGameSolver.Core
 
             if (generationNum < settings.MaxGenerations)
             {
-                FilterCurrentGeneration();
+                //FilterCurrentGeneration();
                 CreateNextGeneration();
             }
         }
@@ -147,8 +181,9 @@ namespace BlockGameSolver.Core
                 generationNum = i + 1;
                 ContinueEvaluation();
             }
-            populationResults.AddHeader(string.Format("Best plays had a score of {0}", currentPopulation.OrderByDescending(c => c.Fitness).Take(1).Single().Fitness));
-
+            populationResults.AddHeader(string.Format("Best plays had a score of {0}",
+                                                      currentPopulation.OrderByDescending(c => c.Fitness).Take(1).Single
+                                                          ().Fitness));
 
             PopulationResults.FinishOutput();
             InvokePopulationFinished(EventArgs.Empty);

@@ -29,68 +29,99 @@
         private void InitializeComponent()
         {
             this.grpSimulation = new System.Windows.Forms.GroupBox();
+            this.btnPlayBest = new System.Windows.Forms.Button();
+            this.txtBestResult = new System.Windows.Forms.TextBox();
             this.progCompleted = new System.Windows.Forms.ProgressBar();
             this.grpSettings = new System.Windows.Forms.GroupBox();
             this.numGenerations = new System.Windows.Forms.NumericUpDown();
-            this.numCrossMutate = new System.Windows.Forms.NumericUpDown();
+            this.numMutateRatio = new System.Windows.Forms.NumericUpDown();
+            this.numCrossRate = new System.Windows.Forms.NumericUpDown();
             this.numFilterRate = new System.Windows.Forms.NumericUpDown();
+            this.numInitialSize = new System.Windows.Forms.NumericUpDown();
             this.numPopSize = new System.Windows.Forms.NumericUpDown();
             this.lblGenerations = new System.Windows.Forms.Label();
-            this.lblCrossMutate = new System.Windows.Forms.Label();
+            this.lblCross = new System.Windows.Forms.Label();
+            this.lblMutate = new System.Windows.Forms.Label();
             this.lblFilterRate = new System.Windows.Forms.Label();
+            this.lblInitSize = new System.Windows.Forms.Label();
             this.lblPopSize = new System.Windows.Forms.Label();
             this.chkDelete = new System.Windows.Forms.CheckBox();
-            this.btnScores = new System.Windows.Forms.Button();
             this.btnViewResults = new System.Windows.Forms.Button();
             this.btnRun = new System.Windows.Forms.Button();
-            this.tableBoard = new System.Windows.Forms.TableLayoutPanel();
             this.btnCreate = new System.Windows.Forms.Button();
             this.txtScore = new System.Windows.Forms.TextBox();
-            this.lblInitSize = new System.Windows.Forms.Label();
-            this.numInitialSize = new System.Windows.Forms.NumericUpDown();
             this.grpPlayingSurface = new System.Windows.Forms.GroupBox();
-            this.btnRefresh = new System.Windows.Forms.Button();
+            this.chkBoardLabels = new System.Windows.Forms.CheckBox();
+            this.tableBoard = new System.Windows.Forms.TableLayoutPanel();
+            this.lblPlayingMode = new System.Windows.Forms.Label();
+            this.btnNextMove = new System.Windows.Forms.Button();
+            this.txtBestFitness = new System.Windows.Forms.TextBox();
             this.grpSimulation.SuspendLayout();
             this.grpSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numGenerations)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numCrossMutate)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numMutateRatio)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numCrossRate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFilterRate)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numPopSize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numInitialSize)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numPopSize)).BeginInit();
             this.grpPlayingSurface.SuspendLayout();
             this.SuspendLayout();
             // 
             // grpSimulation
             // 
+            this.grpSimulation.Controls.Add(this.txtBestFitness);
+            this.grpSimulation.Controls.Add(this.btnPlayBest);
+            this.grpSimulation.Controls.Add(this.txtBestResult);
             this.grpSimulation.Controls.Add(this.progCompleted);
             this.grpSimulation.Controls.Add(this.grpSettings);
             this.grpSimulation.Controls.Add(this.chkDelete);
-            this.grpSimulation.Controls.Add(this.btnScores);
             this.grpSimulation.Controls.Add(this.btnViewResults);
             this.grpSimulation.Controls.Add(this.btnRun);
             this.grpSimulation.Location = new System.Drawing.Point(12, 12);
             this.grpSimulation.Name = "grpSimulation";
-            this.grpSimulation.Size = new System.Drawing.Size(294, 274);
+            this.grpSimulation.Size = new System.Drawing.Size(294, 303);
             this.grpSimulation.TabIndex = 5;
             this.grpSimulation.TabStop = false;
             this.grpSimulation.Text = "simulation";
+            // 
+            // btnPlayBest
+            // 
+            this.btnPlayBest.Enabled = false;
+            this.btnPlayBest.Location = new System.Drawing.Point(255, 242);
+            this.btnPlayBest.Name = "btnPlayBest";
+            this.btnPlayBest.Size = new System.Drawing.Size(31, 22);
+            this.btnPlayBest.TabIndex = 5;
+            this.btnPlayBest.Text = "-->";
+            this.btnPlayBest.UseVisualStyleBackColor = true;
+            this.btnPlayBest.Click += new System.EventHandler(this.btnPlayBest_Click);
+            // 
+            // txtBestResult
+            // 
+            this.txtBestResult.Location = new System.Drawing.Point(7, 242);
+            this.txtBestResult.Multiline = true;
+            this.txtBestResult.Name = "txtBestResult";
+            this.txtBestResult.ReadOnly = true;
+            this.txtBestResult.Size = new System.Drawing.Size(242, 55);
+            this.txtBestResult.TabIndex = 4;
             // 
             // progCompleted
             // 
             this.progCompleted.Location = new System.Drawing.Point(5, 207);
             this.progCompleted.Name = "progCompleted";
-            this.progCompleted.Size = new System.Drawing.Size(281, 61);
+            this.progCompleted.Size = new System.Drawing.Size(281, 28);
             this.progCompleted.TabIndex = 3;
             // 
             // grpSettings
             // 
             this.grpSettings.Controls.Add(this.numGenerations);
-            this.grpSettings.Controls.Add(this.numCrossMutate);
+            this.grpSettings.Controls.Add(this.numMutateRatio);
+            this.grpSettings.Controls.Add(this.numCrossRate);
             this.grpSettings.Controls.Add(this.numFilterRate);
             this.grpSettings.Controls.Add(this.numInitialSize);
             this.grpSettings.Controls.Add(this.numPopSize);
             this.grpSettings.Controls.Add(this.lblGenerations);
-            this.grpSettings.Controls.Add(this.lblCrossMutate);
+            this.grpSettings.Controls.Add(this.lblCross);
+            this.grpSettings.Controls.Add(this.lblMutate);
             this.grpSettings.Controls.Add(this.lblFilterRate);
             this.grpSettings.Controls.Add(this.lblInitSize);
             this.grpSettings.Controls.Add(this.lblPopSize);
@@ -108,7 +139,7 @@
             0,
             0,
             0});
-            this.numGenerations.Location = new System.Drawing.Point(89, 140);
+            this.numGenerations.Location = new System.Drawing.Point(90, 155);
             this.numGenerations.Maximum = new decimal(new int[] {
             500,
             0,
@@ -116,32 +147,55 @@
             0});
             this.numGenerations.Name = "numGenerations";
             this.numGenerations.Size = new System.Drawing.Size(104, 20);
-            this.numGenerations.TabIndex = 1;
+            this.numGenerations.TabIndex = 6;
             this.numGenerations.Value = new decimal(new int[] {
             15,
             0,
             0,
             0});
             // 
-            // numCrossMutate
+            // numMutateRatio
             // 
-            this.numCrossMutate.DecimalPlaces = 2;
-            this.numCrossMutate.Increment = new decimal(new int[] {
-            1,
+            this.numMutateRatio.DecimalPlaces = 3;
+            this.numMutateRatio.Increment = new decimal(new int[] {
+            5,
             0,
             0,
-            131072});
-            this.numCrossMutate.Location = new System.Drawing.Point(89, 114);
-            this.numCrossMutate.Maximum = new decimal(new int[] {
+            196608});
+            this.numMutateRatio.Location = new System.Drawing.Point(90, 129);
+            this.numMutateRatio.Maximum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.numCrossMutate.Name = "numCrossMutate";
-            this.numCrossMutate.Size = new System.Drawing.Size(104, 20);
-            this.numCrossMutate.TabIndex = 1;
-            this.numCrossMutate.Value = new decimal(new int[] {
-            15,
+            this.numMutateRatio.Name = "numMutateRatio";
+            this.numMutateRatio.Size = new System.Drawing.Size(104, 20);
+            this.numMutateRatio.TabIndex = 5;
+            this.numMutateRatio.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            // 
+            // numCrossRate
+            // 
+            this.numCrossRate.DecimalPlaces = 2;
+            this.numCrossRate.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.numCrossRate.Location = new System.Drawing.Point(90, 101);
+            this.numCrossRate.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numCrossRate.Name = "numCrossRate";
+            this.numCrossRate.Size = new System.Drawing.Size(104, 20);
+            this.numCrossRate.TabIndex = 4;
+            this.numCrossRate.Value = new decimal(new int[] {
+            85,
             0,
             0,
             131072});
@@ -154,7 +208,7 @@
             0,
             0,
             131072});
-            this.numFilterRate.Location = new System.Drawing.Point(90, 87);
+            this.numFilterRate.Location = new System.Drawing.Point(90, 75);
             this.numFilterRate.Maximum = new decimal(new int[] {
             1,
             0,
@@ -162,12 +216,34 @@
             0});
             this.numFilterRate.Name = "numFilterRate";
             this.numFilterRate.Size = new System.Drawing.Size(104, 20);
-            this.numFilterRate.TabIndex = 1;
+            this.numFilterRate.TabIndex = 3;
             this.numFilterRate.Value = new decimal(new int[] {
-            4,
+            10,
             0,
             0,
-            65536});
+            131072});
+            // 
+            // numInitialSize
+            // 
+            this.numInitialSize.Increment = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.numInitialSize.Location = new System.Drawing.Point(90, 47);
+            this.numInitialSize.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.numInitialSize.Name = "numInitialSize";
+            this.numInitialSize.Size = new System.Drawing.Size(104, 20);
+            this.numInitialSize.TabIndex = 2;
+            this.numInitialSize.Value = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
             // 
             // numPopSize
             // 
@@ -186,7 +262,7 @@
             this.numPopSize.Size = new System.Drawing.Size(104, 20);
             this.numPopSize.TabIndex = 1;
             this.numPopSize.Value = new decimal(new int[] {
-            150,
+            50,
             0,
             0,
             0});
@@ -194,29 +270,47 @@
             // lblGenerations
             // 
             this.lblGenerations.AutoSize = true;
-            this.lblGenerations.Location = new System.Drawing.Point(6, 142);
+            this.lblGenerations.Location = new System.Drawing.Point(7, 157);
             this.lblGenerations.Name = "lblGenerations";
             this.lblGenerations.Size = new System.Drawing.Size(62, 13);
             this.lblGenerations.TabIndex = 0;
             this.lblGenerations.Text = "generations";
             // 
-            // lblCrossMutate
+            // lblCross
             // 
-            this.lblCrossMutate.AutoSize = true;
-            this.lblCrossMutate.Location = new System.Drawing.Point(6, 116);
-            this.lblCrossMutate.Name = "lblCrossMutate";
-            this.lblCrossMutate.Size = new System.Drawing.Size(69, 13);
-            this.lblCrossMutate.TabIndex = 0;
-            this.lblCrossMutate.Text = "cross/mutate";
+            this.lblCross.AutoSize = true;
+            this.lblCross.Location = new System.Drawing.Point(7, 103);
+            this.lblCross.Name = "lblCross";
+            this.lblCross.Size = new System.Drawing.Size(55, 13);
+            this.lblCross.TabIndex = 0;
+            this.lblCross.Text = "cross ratio";
+            // 
+            // lblMutate
+            // 
+            this.lblMutate.AutoSize = true;
+            this.lblMutate.Location = new System.Drawing.Point(7, 131);
+            this.lblMutate.Name = "lblMutate";
+            this.lblMutate.Size = new System.Drawing.Size(62, 13);
+            this.lblMutate.TabIndex = 0;
+            this.lblMutate.Text = "mutate ratio";
             // 
             // lblFilterRate
             // 
             this.lblFilterRate.AutoSize = true;
-            this.lblFilterRate.Location = new System.Drawing.Point(7, 89);
+            this.lblFilterRate.Location = new System.Drawing.Point(7, 77);
             this.lblFilterRate.Name = "lblFilterRate";
             this.lblFilterRate.Size = new System.Drawing.Size(47, 13);
             this.lblFilterRate.TabIndex = 0;
-            this.lblFilterRate.Text = "filter rate";
+            this.lblFilterRate.Text = "elite rate";
+            // 
+            // lblInitSize
+            // 
+            this.lblInitSize.AutoSize = true;
+            this.lblInitSize.Location = new System.Drawing.Point(7, 49);
+            this.lblInitSize.Name = "lblInitSize";
+            this.lblInitSize.Size = new System.Drawing.Size(51, 13);
+            this.lblInitSize.TabIndex = 0;
+            this.lblInitSize.Text = "initial size";
             // 
             // lblPopSize
             // 
@@ -239,18 +333,9 @@
             this.chkDelete.Text = "delete files";
             this.chkDelete.UseVisualStyleBackColor = true;
             // 
-            // btnScores
-            // 
-            this.btnScores.Location = new System.Drawing.Point(6, 78);
-            this.btnScores.Name = "btnScores";
-            this.btnScores.Size = new System.Drawing.Size(75, 23);
-            this.btnScores.TabIndex = 0;
-            this.btnScores.Text = "view scores";
-            this.btnScores.UseVisualStyleBackColor = true;
-            this.btnScores.Click += new System.EventHandler(this.button1_Click);
-            // 
             // btnViewResults
             // 
+            this.btnViewResults.Enabled = false;
             this.btnViewResults.Location = new System.Drawing.Point(6, 49);
             this.btnViewResults.Name = "btnViewResults";
             this.btnViewResults.Size = new System.Drawing.Size(75, 23);
@@ -269,36 +354,6 @@
             this.btnRun.UseVisualStyleBackColor = true;
             this.btnRun.Click += new System.EventHandler(this.btnRun_Click);
             // 
-            // tableBoard
-            // 
-            this.tableBoard.AutoSize = true;
-            this.tableBoard.ColumnCount = 10;
-            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableBoard.Location = new System.Drawing.Point(6, 45);
-            this.tableBoard.Name = "tableBoard";
-            this.tableBoard.RowCount = 10;
-            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableBoard.Size = new System.Drawing.Size(50, 50);
-            this.tableBoard.TabIndex = 6;
-            // 
             // btnCreate
             // 
             this.btnCreate.Location = new System.Drawing.Point(112, 16);
@@ -307,74 +362,106 @@
             this.btnCreate.TabIndex = 0;
             this.btnCreate.Text = "restart";
             this.btnCreate.UseVisualStyleBackColor = true;
-            this.btnCreate.Click += new System.EventHandler(this.btnCreate_Click);
+            this.btnCreate.Click += new System.EventHandler(this.btnRestart_Click);
             // 
             // txtScore
             // 
             this.txtScore.Location = new System.Drawing.Point(6, 19);
             this.txtScore.Name = "txtScore";
+            this.txtScore.ReadOnly = true;
             this.txtScore.Size = new System.Drawing.Size(100, 20);
             this.txtScore.TabIndex = 8;
             // 
-            // lblInitSize
-            // 
-            this.lblInitSize.AutoSize = true;
-            this.lblInitSize.Location = new System.Drawing.Point(7, 49);
-            this.lblInitSize.Name = "lblInitSize";
-            this.lblInitSize.Size = new System.Drawing.Size(51, 13);
-            this.lblInitSize.TabIndex = 0;
-            this.lblInitSize.Text = "initial size";
-            // 
-            // numInitialSize
-            // 
-            this.numInitialSize.Increment = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            this.numInitialSize.Location = new System.Drawing.Point(90, 47);
-            this.numInitialSize.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.numInitialSize.Name = "numInitialSize";
-            this.numInitialSize.Size = new System.Drawing.Size(104, 20);
-            this.numInitialSize.TabIndex = 1;
-            this.numInitialSize.Value = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            // 
             // grpPlayingSurface
             // 
+            this.grpPlayingSurface.AutoSize = true;
+            this.grpPlayingSurface.Controls.Add(this.btnNextMove);
+            this.grpPlayingSurface.Controls.Add(this.lblPlayingMode);
             this.grpPlayingSurface.Controls.Add(this.tableBoard);
+            this.grpPlayingSurface.Controls.Add(this.chkBoardLabels);
             this.grpPlayingSurface.Controls.Add(this.txtScore);
-            this.grpPlayingSurface.Controls.Add(this.btnRefresh);
             this.grpPlayingSurface.Controls.Add(this.btnCreate);
             this.grpPlayingSurface.Location = new System.Drawing.Point(312, 13);
             this.grpPlayingSurface.Name = "grpPlayingSurface";
-            this.grpPlayingSurface.Size = new System.Drawing.Size(337, 273);
+            this.grpPlayingSurface.Size = new System.Drawing.Size(255, 302);
             this.grpPlayingSurface.TabIndex = 9;
             this.grpPlayingSurface.TabStop = false;
             this.grpPlayingSurface.Text = "playing surface";
             // 
-            // btnRefresh
+            // chkBoardLabels
             // 
-            this.btnRefresh.Location = new System.Drawing.Point(193, 16);
-            this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
-            this.btnRefresh.TabIndex = 0;
-            this.btnRefresh.Text = "redraw";
-            this.btnRefresh.UseVisualStyleBackColor = true;
-            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            this.chkBoardLabels.AutoSize = true;
+            this.chkBoardLabels.Location = new System.Drawing.Point(193, 16);
+            this.chkBoardLabels.Name = "chkBoardLabels";
+            this.chkBoardLabels.Size = new System.Drawing.Size(53, 17);
+            this.chkBoardLabels.TabIndex = 13;
+            this.chkBoardLabels.Text = "labels";
+            this.chkBoardLabels.UseVisualStyleBackColor = true;
+            this.chkBoardLabels.CheckedChanged += new System.EventHandler(this.chkBoardLabels_CheckedChanged);
+            // 
+            // tableBoard
+            // 
+            this.tableBoard.ColumnCount = 10;
+            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.Location = new System.Drawing.Point(6, 75);
+            this.tableBoard.Name = "tableBoard";
+            this.tableBoard.RowCount = 10;
+            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.Size = new System.Drawing.Size(204, 208);
+            this.tableBoard.TabIndex = 14;
+            // 
+            // lblPlayingMode
+            // 
+            this.lblPlayingMode.AutoSize = true;
+            this.lblPlayingMode.Location = new System.Drawing.Point(7, 46);
+            this.lblPlayingMode.Name = "lblPlayingMode";
+            this.lblPlayingMode.Size = new System.Drawing.Size(98, 13);
+            this.lblPlayingMode.TabIndex = 15;
+            this.lblPlayingMode.Text = "board is in free play";
+            // 
+            // btnNextMove
+            // 
+            this.btnNextMove.Enabled = false;
+            this.btnNextMove.Location = new System.Drawing.Point(112, 46);
+            this.btnNextMove.Name = "btnNextMove";
+            this.btnNextMove.Size = new System.Drawing.Size(75, 23);
+            this.btnNextMove.TabIndex = 16;
+            this.btnNextMove.Text = "next";
+            this.btnNextMove.UseVisualStyleBackColor = true;
+            this.btnNextMove.Click += new System.EventHandler(this.btnNextMove_Click);
+            // 
+            // txtBestFitness
+            // 
+            this.txtBestFitness.Location = new System.Drawing.Point(255, 276);
+            this.txtBestFitness.Name = "txtBestFitness";
+            this.txtBestFitness.ReadOnly = true;
+            this.txtBestFitness.Size = new System.Drawing.Size(31, 20);
+            this.txtBestFitness.TabIndex = 6;
             // 
             // GameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(661, 298);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(577, 328);
             this.Controls.Add(this.grpPlayingSurface);
             this.Controls.Add(this.grpSimulation);
             this.Name = "GameForm";
@@ -385,13 +472,15 @@
             this.grpSettings.ResumeLayout(false);
             this.grpSettings.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numGenerations)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numCrossMutate)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numMutateRatio)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numCrossRate)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numFilterRate)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numPopSize)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numInitialSize)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numPopSize)).EndInit();
             this.grpPlayingSurface.ResumeLayout(false);
             this.grpPlayingSurface.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -403,21 +492,27 @@
         private System.Windows.Forms.CheckBox chkDelete;
         private System.Windows.Forms.GroupBox grpSettings;
         private System.Windows.Forms.Label lblPopSize;
-        private System.Windows.Forms.NumericUpDown numCrossMutate;
+        private System.Windows.Forms.NumericUpDown numMutateRatio;
         private System.Windows.Forms.NumericUpDown numFilterRate;
         private System.Windows.Forms.NumericUpDown numPopSize;
-        private System.Windows.Forms.Label lblCrossMutate;
+        private System.Windows.Forms.Label lblMutate;
         private System.Windows.Forms.Label lblFilterRate;
         private System.Windows.Forms.NumericUpDown numGenerations;
         private System.Windows.Forms.Label lblGenerations;
         private System.Windows.Forms.ProgressBar progCompleted;
-        private System.Windows.Forms.Button btnScores;
-        private System.Windows.Forms.TableLayoutPanel tableBoard;
         private System.Windows.Forms.Button btnCreate;
         private System.Windows.Forms.TextBox txtScore;
         private System.Windows.Forms.NumericUpDown numInitialSize;
         private System.Windows.Forms.Label lblInitSize;
         private System.Windows.Forms.GroupBox grpPlayingSurface;
-        private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.NumericUpDown numCrossRate;
+        private System.Windows.Forms.Label lblCross;
+        private System.Windows.Forms.TextBox txtBestResult;
+        private System.Windows.Forms.Button btnPlayBest;
+        private System.Windows.Forms.CheckBox chkBoardLabels;
+        private System.Windows.Forms.TableLayoutPanel tableBoard;
+        private System.Windows.Forms.Button btnNextMove;
+        private System.Windows.Forms.Label lblPlayingMode;
+        private System.Windows.Forms.TextBox txtBestFitness;
     }
 }
