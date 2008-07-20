@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Threading;
@@ -10,6 +9,10 @@ namespace BlockGameSolver.Visual
 {
     public partial class GameForm : Form
     {
+        private readonly Color[] colors = new[] {Color.Blue, Color.Red, Color.Green, Color.Orange, Color.Purple};
+        private Genome Best;
+        private BoardMode boardMode = BoardMode.FreePlay;
+        private int currentMove;
         private Population population;
 
         public GameForm()
@@ -19,15 +22,16 @@ namespace BlockGameSolver.Visual
 
         private void btnRun_Click(object sender, EventArgs e)
         {
-            int popSize = (int)numPopSize.Value;
-            int initSize = (int)numInitialSize.Value;
+            int popSize = (int) numPopSize.Value;
+            int initSize = (int) numInitialSize.Value;
 
-            int generations = (int)numGenerations.Value;
-            double filterRate = (double)numFilterRate.Value;
-            double crossMutate = (double)numCrossMutate.Value;
+            int generations = (int) numGenerations.Value;
+            double filterRate = (double) numFilterRate.Value;
+            double mutateRatio = (double) numMutateRatio.Value;
+            double crossRatio = (double) numCrossRate.Value;
 
-
-            PopulationSettings settings = new PopulationSettings(generations, popSize, crossMutate, filterRate, initSize);
+            PopulationSettings settings = new PopulationSettings(generations, popSize, mutateRatio, filterRate, initSize,
+                                                                 crossRatio);
 
             population = new Population(settings);
             population.PopulationFinished += population_PopulationFinished;
@@ -41,7 +45,8 @@ namespace BlockGameSolver.Visual
 
             Board.Instance.LoadOldBoard();
 
-            new Thread(population.BeginGeneticProcess).Start();
+            Thread t = new Thread(population.BeginGeneticProcess) {IsBackground = true};
+            t.Start();
         }
 
         private void population_GenerationCompleted(object sender, GenerationEventArgs e)
@@ -62,7 +67,7 @@ namespace BlockGameSolver.Visual
             }
             else
             {
-                Invoke(new UpdatedProgress(UpdateProgress), generation);
+                Invoke(new Action<int>(UpdateProgress), generation);
             }
         }
 
@@ -72,10 +77,14 @@ namespace BlockGameSolver.Visual
             {
                 btnRun.Enabled = true;
                 btnViewResults.Enabled = true;
+                btnPlayBest.Enabled = true;
+                Best = population.GenomeBest;
+                txtBestResult.Text = Best.ToString();
+                txtBestFitness.Text = Best.Fitness.ToString();
             }
             else
             {
-                Invoke(new EnabledButton(EnableButton));
+                Invoke(new Action(EnableButton));
             }
         }
 
@@ -89,21 +98,26 @@ namespace BlockGameSolver.Visual
             if (population != null && population.PopulationResults != null)
             {
                 population.PopulationResults.Dispose();
-                if (chkDelete.Checked && population.PopulationResults.ResultsFilename != null && File.Exists(population.PopulationResults.ResultsFilename))
+                if (chkDelete.Checked)
                 {
-                    File.Delete(population.PopulationResults.ResultsFilename);
+                    if (population.PopulationResults.ResultsFilename != null &&
+                        File.Exists(population.PopulationResults.ResultsFilename))
+                    {
+                        File.Delete(population.PopulationResults.ResultsFilename);
+                    }
+                    if (population.PopulationResults.ScoreFilename != null &&
+                        File.Exists(population.PopulationResults.ScoreFilename))
+                    {
+                        File.Delete(population.PopulationResults.ScoreFilename);
+                    }
                 }
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnRestart_Click(object sender, EventArgs e)
         {
-            string filename = population.PopulationResults.DumpScoreData();
-            Process.Start("explorer", filename);
-        }
-
-        private void btnCreate_Click(object sender, EventArgs e)
-        {
+            currentMove = 0;
+            boardMode = BoardMode.FreePlay;
             Board.Instance.LoadOldBoard();
             tableBoard.ColumnCount = GameSettings.Columns;
             tableBoard.RowCount = GameSettings.Rows;
@@ -113,8 +127,8 @@ namespace BlockGameSolver.Visual
 
         private void back_MouseClick(object sender, MouseEventArgs e)
         {
-            Panel send = (Panel)sender;
-            Piece piece = (Piece)send.Tag;
+            Panel send = (Panel) sender;
+            Piece piece = (Piece) send.Tag;
 
             Board.Instance.RemoveGroup(piece.Row, piece.Col);
             RedrawBoard();
@@ -125,59 +139,65 @@ namespace BlockGameSolver.Visual
             tableBoard.Visible = false;
             tableBoard.Controls.Clear();
 
-            for (int i = 0; i < GameSettings.Rows; i++)
+            foreach (Piece piece in Board.Instance.Pieces)
             {
-                for (int j = 0; j < GameSettings.Columns; j++)
+                if (piece == null) continue;
+                Panel back = new Panel {Tag = piece, Size = new Size(15, 15)};
+
+                if (chkBoardLabels.Checked)
                 {
-                    Piece piece = Board.Instance[i, j];
-                    Panel back = new Panel();
-                    Panel back2 = new Panel();
-                    back.Tag = piece;
-
-                    back.Size = new Size(15, 15);
-                    back2.Size = new Size(15, 15);
-                    if (piece != null)
-                    {
-                        if (Board.Instance.HasMoves)
-                        {
-                            back.MouseClick += back_MouseClick;
-                        }
-                        back.BackColor = colors[piece.Color - 1];
-                        back2.BackColor = colors[piece.Color - 1];
-
-                    }
-                    else
-                    {
-                        back.BackColor = Color.Transparent;
-                        back2.BackColor = Color.Transparent;
-                    }
-                    tableBoard.Controls.Add(back, j, i);
-
+                    Label lblPieceNum = new Label {Text = piece.ToString(), Enabled = false};
+                    back.Controls.Add(lblPieceNum);
                 }
+                if (Board.Instance.HasMoves && boardMode == BoardMode.FreePlay)
+                {
+                    back.MouseClick += back_MouseClick;
+                }
+                back.BackColor = colors[piece.Color - 1];
+                tableBoard.Controls.Add(back, piece.Col, piece.Row);
             }
+
+
             tableBoard.Visible = true;
             txtScore.Text = Board.Instance.Score.ToString();
-
         }
 
-        private readonly Color[] colors = new[] { Color.Blue, Color.Red, Color.Green, Color.Orange, Color.Purple };
+        private void btnPlayBest_Click(object sender, EventArgs e)
+        {
+            //Move the best result over to the board to see it played.
+            currentMove = 0;
+            boardMode = BoardMode.GuidedPlay;
+            Board.Instance.LoadOldBoard();
+            RedrawBoard();
+            btnNextMove.Enabled = true;
+            lblPlayingMode.Text = string.Format("Board: {0}", boardMode);
+            btnNextMove.Text = string.Format("next: {0}", Best.Moves[currentMove]);
+        }
 
-        #region Nested type: EnabledButton
-
-        private delegate void EnabledButton();
-
-        #endregion
-
-        #region Nested type: UpdatedProgress
-
-        private delegate void UpdatedProgress(int a);
-
-        #endregion
-
-        private void btnRefresh_Click(object sender, EventArgs e)
+        private void chkBoardLabels_CheckedChanged(object sender, EventArgs e)
         {
             RedrawBoard();
         }
+
+        private void btnNextMove_Click(object sender, EventArgs e)
+        {
+            Board.Instance.RemoveGroup(Best.Moves[currentMove++].Value);
+
+            btnNextMove.Text = string.Format("next: {0}", Best.Moves[currentMove]);
+
+            RedrawBoard();
+            if (currentMove == Best.MoveCount)
+            {
+                Board.Instance.RemoveGroup(0);
+                RedrawBoard();
+                btnNextMove.Enabled = false;
+            }
+        }
+    }
+
+    internal enum BoardMode
+    {
+        FreePlay,
+        GuidedPlay
     }
 }
-
