@@ -9,14 +9,20 @@ namespace BlockGameSolver.Core
             Row = row;
         }
 
+        public Piece(int col, int color, int row, bool isBomb)
+        {
+            Col = col;
+            Color = color;
+            Row = row;
+            IsBomb = isBomb;
+        }
+
         public int Col { get; set; }
 
         public int Color { get; set; }
 
         public int Row { get; set; }
-
-        public bool Checked { get; set; }
-        public bool StartedOn { get; set; }
+        public bool IsBomb { get; set; }
 
         public override string ToString()
         {
