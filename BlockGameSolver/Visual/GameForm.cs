@@ -4,12 +4,15 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using BlockGameSolver.Core;
+using BlockGameSolver.Properties;
+using Point=BlockGameSolver.Core.Point;
 
 namespace BlockGameSolver.Visual
 {
     public partial class GameForm : Form
     {
-        private readonly Color[] colors = new[] {Color.Blue, Color.Red, Color.Green, Color.Orange, Color.Purple};
+        private readonly Color[] colors = new[] {Color.Blue, Color.Red, Color.Green, Color.Orange, Color.Purple, Color.Black};
+
         private Genome Best;
         private BoardMode boardMode = BoardMode.FreePlay;
         private int currentMove;
@@ -30,8 +33,7 @@ namespace BlockGameSolver.Visual
             double mutateRatio = (double) numMutateRatio.Value;
             double crossRatio = (double) numCrossRate.Value;
 
-            PopulationSettings settings = new PopulationSettings(generations, popSize, mutateRatio, filterRate, initSize,
-                                                                 crossRatio);
+            PopulationSettings settings = new PopulationSettings(generations, popSize, mutateRatio, filterRate, initSize, crossRatio);
 
             population = new Population(settings);
             population.PopulationFinished += population_PopulationFinished;
@@ -45,7 +47,9 @@ namespace BlockGameSolver.Visual
 
             Board.Instance.LoadOldBoard();
 
-            Thread t = new Thread(population.BeginGeneticProcess) {IsBackground = true};
+            Thread t = new Thread(population.BeginGeneticProcess) {
+                                                                      IsBackground = true
+                                                                  };
             t.Start();
         }
 
@@ -95,7 +99,8 @@ namespace BlockGameSolver.Visual
 
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (population != null && population.PopulationResults != null)
+            if (population != null &&
+                population.PopulationResults != null)
             {
                 population.PopulationResults.Dispose();
                 if (chkDelete.Checked)
@@ -141,22 +146,37 @@ namespace BlockGameSolver.Visual
 
             foreach (Piece piece in Board.Instance.Pieces)
             {
-                if (piece == null) continue;
-                Panel back = new Panel {Tag = piece, Size = new Size(15, 15)};
+                if (piece == null)
+                {
+                    continue;
+                }
+                Panel back = new Panel {
+                                           Tag = piece,
+                                           Size = new Size(15, 15)
+                                       };
+
+                if (piece.IsDouble)
+                {
+                    back.BackgroundImage = Resources.doubleBack;
+                }
 
                 if (chkBoardLabels.Checked)
                 {
-                    Label lblPieceNum = new Label {Text = piece.ToString(), Enabled = false};
+                    Label lblPieceNum = new Label {
+                                                      Text = piece.ToString(),
+                                                      Enabled = false
+                                                  };
                     back.Controls.Add(lblPieceNum);
                 }
-                if (Board.Instance.HasMoves && boardMode == BoardMode.FreePlay)
+                if (Board.Instance.HasMoves &&
+                    boardMode == BoardMode.FreePlay)
                 {
                     back.MouseClick += back_MouseClick;
                 }
+                int tenmo = piece.Color;
                 back.BackColor = colors[piece.Color - 1];
                 tableBoard.Controls.Add(back, piece.Col, piece.Row);
             }
-
 
             tableBoard.Visible = true;
             txtScore.Text = Board.Instance.Score.ToString();
@@ -171,7 +191,7 @@ namespace BlockGameSolver.Visual
             RedrawBoard();
             btnNextMove.Enabled = true;
             lblPlayingMode.Text = string.Format("Board: {0}", boardMode);
-            btnNextMove.Text = string.Format("next: {0}", Best.Moves[currentMove]);
+            UpdateNextButton();
         }
 
         private void chkBoardLabels_CheckedChanged(object sender, EventArgs e)
@@ -182,8 +202,7 @@ namespace BlockGameSolver.Visual
         private void btnNextMove_Click(object sender, EventArgs e)
         {
             Board.Instance.RemoveGroup(Best.Moves[currentMove++].Value);
-
-            btnNextMove.Text = string.Format("next: {0}", Best.Moves[currentMove]);
+            UpdateNextButton();
 
             RedrawBoard();
             if (currentMove == Best.MoveCount)
@@ -192,6 +211,14 @@ namespace BlockGameSolver.Visual
                 RedrawBoard();
                 btnNextMove.Enabled = false;
             }
+        }
+
+        private void UpdateNextButton()
+        {
+            int move = Best.Moves[currentMove]??0;
+            Point location = Board.GetLocationFromNumber(move);
+
+            btnNextMove.Text = string.Format("next: {0}- {1},{2}", move, location.RowInc, location.ColInc);
         }
     }
 
