@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 
 namespace BlockGameSolver.Core
@@ -9,13 +8,14 @@ namespace BlockGameSolver.Core
     public class Board
     {
         private static Board instance;
+        private readonly Piece[,] backupPieces = new Piece[GameSettings.Rows,GameSettings.Columns];
+        private readonly List<Piece> currentGroup = new List<Piece>(GameSettings.PieceCount);
 
-        private readonly Point[] lookDirections = new[] { new Point(0, 1, Direction.Right), new Point(0, -1, Direction.Left), new Point(1, 0, Direction.Bottom), new Point(-1, 0, Direction.Top) };
-        private readonly Piece[,] pieces = new Piece[GameSettings.Rows, GameSettings.Columns];
-        private readonly Piece[,] backupPieces = new Piece[GameSettings.Rows, GameSettings.Columns];
+        private readonly Point[] lookDirections = new[] {new Point(0, 1, Direction.Right), new Point(0, -1, Direction.Left), new Point(1, 0, Direction.Bottom), new Point(-1, 0, Direction.Top)};
+
+        private readonly Piece[,] pieces = new Piece[GameSettings.Rows,GameSettings.Columns];
+
         private bool hasMoves = true;
-
-        private List<Piece> currentGroup = new List<Piece>(GameSettings.PieceCount);
 
         public int Score { get; private set; }
 
@@ -64,6 +64,43 @@ namespace BlockGameSolver.Core
             get { return pieces; }
         }
 
+        public int RemoveGroups(int?[] groups)
+        {
+            int stopPoint = groups.Length;
+            for (int i = 0; i < groups.Length; i++)
+            {
+                if (hasMoves)
+                {
+                    if (groups[i] == null)
+                    {
+                        groups[i] = RandomSource.Instance.Next(0, GameSettings.PieceCount);
+                    }
+
+                    int? removed = RemoveGroup(groups[i].Value/GameSettings.Columns, groups[i].Value%GameSettings.Columns);
+
+                    if (removed == null)
+                    {
+                        groups[i] = null;
+                        stopPoint = i;
+                    }
+                    else
+                    {
+                        groups[i] = removed;
+                    }
+                }
+                else
+                {
+                    groups[i] = null;
+                }
+            }
+            return stopPoint;
+        }
+
+        public static Board CreateRandomBoard()
+        {
+            return CreateRandomBoard(null, null);
+        }
+
         public static Board CreateRandomBoard(int? rowMissing, int? colMissing)
         {
             Board output = new Board();
@@ -80,7 +117,9 @@ namespace BlockGameSolver.Core
                     {
                         continue;
                     }
-                    output[i, j] = new Piece(i, j, rng.Next(1, 6));
+                    bool isDouble = (rng.NextDoublePositive() < 0.05) ? true : false;
+                    bool isBomb = (!isDouble && rng.NextDoublePositive() < 0.05) ? true : false;
+                    output[i, j] = new Piece(i, j, rng.Next(1, 6), isBomb, isDouble);
                 }
             }
             output.SaveBoard();
@@ -101,8 +140,15 @@ namespace BlockGameSolver.Core
             {
                 return 0;
             }
-            currentGroup.Add(pieces[row, col]);
 
+            if (pieces[row, col].IsBomb && row == GameSettings.Rows - 1 && currentGroup.Count == 0)
+            {
+                //Add in the surrounding pieces;
+                IEnumerable<Piece> surrounding = GetSurroundingPieces(row, col);
+                currentGroup.AddRange(surrounding);
+                return GameSettings.GroupSize;
+            }
+            currentGroup.Add(pieces[row, col]);
             for (int i = 0; i < lookDirections.Length; i++)
             {
                 Point nextPoint = lookDirections[i];
@@ -117,8 +163,24 @@ namespace BlockGameSolver.Core
             return count;
         }
 
+        private IEnumerable<Piece> GetSurroundingPieces(int row, int col)
+        {
+            List<Piece> surroundings = new List<Piece>();
+
+            int range = 1;
+
+            foreach (Piece piece in pieces)
+            {
+                if (piece != null && Math.Abs(piece.Row - row) <= 1 && Math.Abs(piece.Col - col) <= 1)
+                {
+                    surroundings.Add(piece);
+                }
+            }
+            return surroundings;
+        }
+
         /// <summary>
-        /// Removes the closest group to the given coordinate.
+        /// Removes the closest group to the given piece number.
         /// </summary>
         /// <param name="number"></param>
         /// <returns>The number of pieces that were removed.</returns>
@@ -143,19 +205,13 @@ namespace BlockGameSolver.Core
                 if (range >= GameSettings.Rows || range >= GameSettings.Columns)
                 {
                     //No more groups to remove.
-                    Score += (int)((1 - (double)PieceCount / (GameSettings.Rows * GameSettings.Columns)) * 100);
+                    Score += (int) ((1 - (double) PieceCount/(GameSettings.Rows*GameSettings.Columns))*100);
                     HasMoves = false;
                     Debug.Assert(Score != 0, "The score is 0 after a removal");
 
                     return null;
                 }
-                //foreach (Piece piece in pieces)
-                //{
-                //    if (piece != null)
-                //    {
-                //        piece.StartedOn = false;
-                //    }
-                //}
+
                 for (int i = -range; i <= range; i++)
                 {
                     if (row + i >= GameSettings.Rows || row + i < 0)
@@ -173,39 +229,23 @@ namespace BlockGameSolver.Core
                         {
                             continue;
                         }
-                        //if (pieces[row + i, col + j].StartedOn)
-                        //{
-                        //    continue;
-                        //}
-                        //foreach (Piece piece in pieces)
-                        //{
-                        //    if (piece != null)
-                        //    {
-                        //        piece.Checked = false;
-                        //    }
-                        //}
+
                         currentGroup.Clear();
                         int count = DetermineGroup(row + i, col + j, Direction.None);
                         if (count >= GameSettings.GroupSize)
                         {
-                            //foreach (Piece piece in pieces)
-                            //{
-                            //    if (piece != null && piece.Checked)
-                            //    {
-                            //        pieces[piece.Row, piece.Col] = null;
-                            //    }
-                            //}
+                            int multiplier = 1;
                             foreach (Piece piece in currentGroup)
                             {
                                 pieces[piece.Row, piece.Col] = null;
+                                multiplier *= (piece.IsDouble) ? 2 : 1;
                             }
                             FillEmptySpaces();
-                            Score += count * count;
+                            Score += count*count*multiplier;
                             Debug.Assert(Score != 0, "The score is 0 after a removal");
 
                             return GetNumberFromLocation(row + i, col + j);
                         }
-                        //pieces[row + i, col + j].StartedOn = true;
                     }
                 }
 
@@ -215,12 +255,12 @@ namespace BlockGameSolver.Core
 
         public static int GetNumberFromLocation(int row, int col)
         {
-            return row * GameSettings.Columns + col;
+            return row*GameSettings.Columns + col;
         }
 
         public static Point GetLocationFromNumber(int number)
         {
-            return new Point(number / GameSettings.Columns, number % GameSettings.Columns);
+            return new Point(number/GameSettings.Columns, number%GameSettings.Columns);
         }
 
         public void FillEmptySpaces()
@@ -252,46 +292,6 @@ namespace BlockGameSolver.Core
                     colGap++;
                 }
             }
-        }
-
-        public int RemoveGroups(int?[] groups)
-        {
-            int stopPoint = groups.Length;
-            for (int i = 0; i < groups.Length; i++)
-            {
-
-                if (hasMoves)
-                {
-                    if (groups[i] == null)
-                    {
-                        groups[i] = RandomSource.Instance.Next(0, GameSettings.PieceCount);
-
-                    }
-
-                    int? removed = RemoveGroup(groups[i].Value / GameSettings.Columns, groups[i].Value % GameSettings.Columns);
-
-                    if (removed == null)
-                    {
-                        groups[i] = null;
-                        stopPoint = i;
-                    }
-                    else
-                    {
-                        groups[i] = removed;
-                    }
-
-                }
-                else
-                {
-                    groups[i] = null;
-                }
-            }
-            return stopPoint;
-        }
-
-        public static Board CreateRandomBoard()
-        {
-            return CreateRandomBoard(null, null);
         }
 
         public void SaveBoard()

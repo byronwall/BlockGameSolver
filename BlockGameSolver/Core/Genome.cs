@@ -94,20 +94,6 @@ namespace BlockGameSolver.Core
 
         public override string ToString()
         {
-            //StringBuilder sb = new StringBuilder();
-
-            //for (int i = 0; i < Moves.Length; i++)
-            //{
-            //    if (Moves[i] == null)
-            //    {
-            //        break;
-            //    }
-
-            //    sb.Append(Moves[i]);
-            //    sb.Append(",");
-            //}
-            //return sb.ToString();
-
             return ID.ToString();
         }
 
@@ -124,7 +110,6 @@ namespace BlockGameSolver.Core
                     if (mutationProb < 0.80)
                     {
                         //New value mutation
-
                         Moves[i] = RandomSource.Instance.Next(0, GameSettings.PieceCount);
                     }
                     else

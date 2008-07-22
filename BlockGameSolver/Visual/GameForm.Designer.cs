@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.grpSimulation = new System.Windows.Forms.GroupBox();
+            this.txtBestFitness = new System.Windows.Forms.TextBox();
             this.btnPlayBest = new System.Windows.Forms.Button();
             this.txtBestResult = new System.Windows.Forms.TextBox();
             this.progCompleted = new System.Windows.Forms.ProgressBar();
@@ -51,11 +52,10 @@
             this.btnCreate = new System.Windows.Forms.Button();
             this.txtScore = new System.Windows.Forms.TextBox();
             this.grpPlayingSurface = new System.Windows.Forms.GroupBox();
-            this.chkBoardLabels = new System.Windows.Forms.CheckBox();
-            this.tableBoard = new System.Windows.Forms.TableLayoutPanel();
-            this.lblPlayingMode = new System.Windows.Forms.Label();
             this.btnNextMove = new System.Windows.Forms.Button();
-            this.txtBestFitness = new System.Windows.Forms.TextBox();
+            this.lblPlayingMode = new System.Windows.Forms.Label();
+            this.tableBoard = new System.Windows.Forms.TableLayoutPanel();
+            this.chkBoardLabels = new System.Windows.Forms.CheckBox();
             this.grpSimulation.SuspendLayout();
             this.grpSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numGenerations)).BeginInit();
@@ -83,6 +83,14 @@
             this.grpSimulation.TabIndex = 5;
             this.grpSimulation.TabStop = false;
             this.grpSimulation.Text = "simulation";
+            // 
+            // txtBestFitness
+            // 
+            this.txtBestFitness.Location = new System.Drawing.Point(255, 276);
+            this.txtBestFitness.Name = "txtBestFitness";
+            this.txtBestFitness.ReadOnly = true;
+            this.txtBestFitness.Size = new System.Drawing.Size(31, 20);
+            this.txtBestFitness.TabIndex = 6;
             // 
             // btnPlayBest
             // 
@@ -388,16 +396,25 @@
             this.grpPlayingSurface.TabStop = false;
             this.grpPlayingSurface.Text = "playing surface";
             // 
-            // chkBoardLabels
+            // btnNextMove
             // 
-            this.chkBoardLabels.AutoSize = true;
-            this.chkBoardLabels.Location = new System.Drawing.Point(193, 16);
-            this.chkBoardLabels.Name = "chkBoardLabels";
-            this.chkBoardLabels.Size = new System.Drawing.Size(53, 17);
-            this.chkBoardLabels.TabIndex = 13;
-            this.chkBoardLabels.Text = "labels";
-            this.chkBoardLabels.UseVisualStyleBackColor = true;
-            this.chkBoardLabels.CheckedChanged += new System.EventHandler(this.chkBoardLabels_CheckedChanged);
+            this.btnNextMove.Enabled = false;
+            this.btnNextMove.Location = new System.Drawing.Point(112, 46);
+            this.btnNextMove.Name = "btnNextMove";
+            this.btnNextMove.Size = new System.Drawing.Size(75, 23);
+            this.btnNextMove.TabIndex = 16;
+            this.btnNextMove.Text = "next";
+            this.btnNextMove.UseVisualStyleBackColor = true;
+            this.btnNextMove.Click += new System.EventHandler(this.btnNextMove_Click);
+            // 
+            // lblPlayingMode
+            // 
+            this.lblPlayingMode.AutoSize = true;
+            this.lblPlayingMode.Location = new System.Drawing.Point(7, 46);
+            this.lblPlayingMode.Name = "lblPlayingMode";
+            this.lblPlayingMode.Size = new System.Drawing.Size(98, 13);
+            this.lblPlayingMode.TabIndex = 15;
+            this.lblPlayingMode.Text = "board is in free play";
             // 
             // tableBoard
             // 
@@ -411,7 +428,7 @@
             this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 24F));
             this.tableBoard.Location = new System.Drawing.Point(6, 75);
             this.tableBoard.Name = "tableBoard";
             this.tableBoard.RowCount = 10;
@@ -428,33 +445,16 @@
             this.tableBoard.Size = new System.Drawing.Size(204, 208);
             this.tableBoard.TabIndex = 14;
             // 
-            // lblPlayingMode
+            // chkBoardLabels
             // 
-            this.lblPlayingMode.AutoSize = true;
-            this.lblPlayingMode.Location = new System.Drawing.Point(7, 46);
-            this.lblPlayingMode.Name = "lblPlayingMode";
-            this.lblPlayingMode.Size = new System.Drawing.Size(98, 13);
-            this.lblPlayingMode.TabIndex = 15;
-            this.lblPlayingMode.Text = "board is in free play";
-            // 
-            // btnNextMove
-            // 
-            this.btnNextMove.Enabled = false;
-            this.btnNextMove.Location = new System.Drawing.Point(112, 46);
-            this.btnNextMove.Name = "btnNextMove";
-            this.btnNextMove.Size = new System.Drawing.Size(75, 23);
-            this.btnNextMove.TabIndex = 16;
-            this.btnNextMove.Text = "next";
-            this.btnNextMove.UseVisualStyleBackColor = true;
-            this.btnNextMove.Click += new System.EventHandler(this.btnNextMove_Click);
-            // 
-            // txtBestFitness
-            // 
-            this.txtBestFitness.Location = new System.Drawing.Point(255, 276);
-            this.txtBestFitness.Name = "txtBestFitness";
-            this.txtBestFitness.ReadOnly = true;
-            this.txtBestFitness.Size = new System.Drawing.Size(31, 20);
-            this.txtBestFitness.TabIndex = 6;
+            this.chkBoardLabels.AutoSize = true;
+            this.chkBoardLabels.Location = new System.Drawing.Point(193, 16);
+            this.chkBoardLabels.Name = "chkBoardLabels";
+            this.chkBoardLabels.Size = new System.Drawing.Size(53, 17);
+            this.chkBoardLabels.TabIndex = 13;
+            this.chkBoardLabels.Text = "labels";
+            this.chkBoardLabels.UseVisualStyleBackColor = true;
+            this.chkBoardLabels.CheckedChanged += new System.EventHandler(this.chkBoardLabels_CheckedChanged);
             // 
             // GameForm
             // 

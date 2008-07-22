@@ -132,7 +132,7 @@ namespace BlockGameSolver.Core
                 else
                 {
                     //This indicates that a direct replication should occur.
-                    Genome directCopy = SelectGenome();
+                    Genome directCopy = Genome.FromGenome(SelectGenome());
                     directCopy.Mutate(settings.MutateRatio);
                     currentPopulation.Add(directCopy);
                 }
