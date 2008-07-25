@@ -1,4 +1,4 @@
-﻿namespace BlockGameSolver.Visual
+﻿namespace BlockGameSolver.Simulation.Visual
 {
     partial class GameForm
     {
@@ -143,137 +143,137 @@
             // numGenerations
             // 
             this.numGenerations.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
+                                                                      5,
+                                                                      0,
+                                                                      0,
+                                                                      0});
             this.numGenerations.Location = new System.Drawing.Point(90, 155);
             this.numGenerations.Maximum = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
+                                                                    500,
+                                                                    0,
+                                                                    0,
+                                                                    0});
             this.numGenerations.Name = "numGenerations";
             this.numGenerations.Size = new System.Drawing.Size(104, 20);
             this.numGenerations.TabIndex = 6;
             this.numGenerations.Value = new decimal(new int[] {
-            15,
-            0,
-            0,
-            0});
+                                                                  15,
+                                                                  0,
+                                                                  0,
+                                                                  0});
             // 
             // numMutateRatio
             // 
             this.numMutateRatio.DecimalPlaces = 3;
             this.numMutateRatio.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            196608});
+                                                                      5,
+                                                                      0,
+                                                                      0,
+                                                                      196608});
             this.numMutateRatio.Location = new System.Drawing.Point(90, 129);
             this.numMutateRatio.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+                                                                    1,
+                                                                    0,
+                                                                    0,
+                                                                    0});
             this.numMutateRatio.Name = "numMutateRatio";
             this.numMutateRatio.Size = new System.Drawing.Size(104, 20);
             this.numMutateRatio.TabIndex = 5;
             this.numMutateRatio.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
+                                                                  1,
+                                                                  0,
+                                                                  0,
+                                                                  131072});
             // 
             // numCrossRate
             // 
             this.numCrossRate.DecimalPlaces = 2;
             this.numCrossRate.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
+                                                                    1,
+                                                                    0,
+                                                                    0,
+                                                                    131072});
             this.numCrossRate.Location = new System.Drawing.Point(90, 101);
             this.numCrossRate.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+                                                                  1,
+                                                                  0,
+                                                                  0,
+                                                                  0});
             this.numCrossRate.Name = "numCrossRate";
             this.numCrossRate.Size = new System.Drawing.Size(104, 20);
             this.numCrossRate.TabIndex = 4;
             this.numCrossRate.Value = new decimal(new int[] {
-            85,
-            0,
-            0,
-            131072});
+                                                                85,
+                                                                0,
+                                                                0,
+                                                                131072});
             // 
             // numFilterRate
             // 
             this.numFilterRate.DecimalPlaces = 2;
             this.numFilterRate.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
+                                                                     1,
+                                                                     0,
+                                                                     0,
+                                                                     131072});
             this.numFilterRate.Location = new System.Drawing.Point(90, 75);
             this.numFilterRate.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+                                                                   1,
+                                                                   0,
+                                                                   0,
+                                                                   0});
             this.numFilterRate.Name = "numFilterRate";
             this.numFilterRate.Size = new System.Drawing.Size(104, 20);
             this.numFilterRate.TabIndex = 3;
             this.numFilterRate.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            131072});
+                                                                 10,
+                                                                 0,
+                                                                 0,
+                                                                 131072});
             // 
             // numInitialSize
             // 
             this.numInitialSize.Increment = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
+                                                                      50,
+                                                                      0,
+                                                                      0,
+                                                                      0});
             this.numInitialSize.Location = new System.Drawing.Point(90, 47);
             this.numInitialSize.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
+                                                                    10000,
+                                                                    0,
+                                                                    0,
+                                                                    0});
             this.numInitialSize.Name = "numInitialSize";
             this.numInitialSize.Size = new System.Drawing.Size(104, 20);
             this.numInitialSize.TabIndex = 2;
             this.numInitialSize.Value = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
+                                                                  50,
+                                                                  0,
+                                                                  0,
+                                                                  0});
             // 
             // numPopSize
             // 
             this.numPopSize.Increment = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
+                                                                  50,
+                                                                  0,
+                                                                  0,
+                                                                  0});
             this.numPopSize.Location = new System.Drawing.Point(90, 21);
             this.numPopSize.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
+                                                                10000,
+                                                                0,
+                                                                0,
+                                                                0});
             this.numPopSize.Name = "numPopSize";
             this.numPopSize.Size = new System.Drawing.Size(104, 20);
             this.numPopSize.TabIndex = 1;
             this.numPopSize.Value = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
+                                                              50,
+                                                              0,
+                                                              0,
+                                                              0});
             // 
             // lblGenerations
             // 

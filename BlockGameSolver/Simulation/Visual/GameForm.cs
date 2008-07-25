@@ -3,11 +3,11 @@ using System.Drawing;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
-using BlockGameSolver.Core;
 using BlockGameSolver.Properties;
-using Point=BlockGameSolver.Core.Point;
+using BlockGameSolver.Simulation.Core;
+using Point=BlockGameSolver.Simulation.Core.Point;
 
-namespace BlockGameSolver.Visual
+namespace BlockGameSolver.Simulation.Visual
 {
     public partial class GameForm : Form
     {
@@ -173,7 +173,6 @@ namespace BlockGameSolver.Visual
                 {
                     back.MouseClick += back_MouseClick;
                 }
-                int tenmo = piece.Color;
                 back.BackColor = colors[piece.Color - 1];
                 tableBoard.Controls.Add(back, piece.Col, piece.Row);
             }

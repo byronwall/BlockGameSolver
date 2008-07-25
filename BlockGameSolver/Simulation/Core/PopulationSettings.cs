@@ -1,4 +1,4 @@
-namespace BlockGameSolver.Core
+namespace BlockGameSolver.Simulation.Core
 {
     public struct PopulationSettings
     {

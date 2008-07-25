@@ -2,8 +2,10 @@
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using BlockGameSolver.ImageAnalyzer.Core;
+using BlockGameSolver.ImageAnalyzer.Visual;
 
-namespace ImageAnalyzer.Visual
+namespace BlockGameSolver.ImageAnalyzer.Visual
 {
     public partial class ImageForm : Form
     {

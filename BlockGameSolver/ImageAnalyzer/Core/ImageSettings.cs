@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Xml.Linq;
+using BlockGameSolver.ImageAnalyzer.Core;
+using BlockGameSolver.ImageAnalyzer.Utility;
 
-namespace ImageAnalyzer
+namespace BlockGameSolver.ImageAnalyzer.Core
 {
     public class ImageSettings
     {

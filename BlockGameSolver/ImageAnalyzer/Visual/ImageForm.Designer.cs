@@ -1,4 +1,4 @@
-﻿namespace ImageAnalyzer.Visual
+﻿namespace BlockGameSolver.ImageAnalyzer.Visual
 {
     partial class ImageForm
     {

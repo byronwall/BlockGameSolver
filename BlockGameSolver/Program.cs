@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
-using BlockGameSolver.Core;
-using BlockGameSolver.Visual;
+using BlockGameSolver.Simulation.Core;
+using BlockGameSolver.Simulation.Visual;
 
 namespace BlockGameSolver
 {

@@ -63,31 +63,65 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Board.cs" />
-    <Compile Include="Core\Direction.cs" />
-    <Compile Include="Core\GameSettings.cs" />
-    <Compile Include="Core\Genome.cs" />
-    <Compile Include="Core\MersenneTwister.cs" />
-    <Compile Include="Core\Point.cs" />
-    <Compile Include="Core\PopulationSettings.cs" />
-    <Compile Include="Core\Piece.cs" />
-    <Compile Include="Core\Population.cs" />
-    <Compile Include="Core\RandomSource.cs" />
-    <Compile Include="Core\Results.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Visual\GameForm.cs">
+    <Compile Include="GamePlayer\Visual\GamePlayerForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Visual\GameForm.Designer.cs">
+    <Compile Include="GamePlayer\Visual\GamePlayerForm.Designer.cs">
+      <DependentUpon>GamePlayerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImageAnalyzer\Core\AnchorPoint.cs" />
+    <Compile Include="ImageAnalyzer\Core\ColorPoint.cs" />
+    <Compile Include="ImageAnalyzer\Core\ImageSettings.cs" />
+    <Compile Include="ImageAnalyzer\Utility\BitmapUtility.cs" />
+    <Compile Include="ImageAnalyzer\Visual\ColorsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImageAnalyzer\Visual\ColorsForm.Designer.cs">
+      <DependentUpon>ColorsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImageAnalyzer\Visual\ImageForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImageAnalyzer\Visual\ImageForm.Designer.cs">
+      <DependentUpon>ImageForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Simulation\Core\Board.cs" />
+    <Compile Include="Simulation\Core\Direction.cs" />
+    <Compile Include="Simulation\Core\GameSettings.cs" />
+    <Compile Include="Simulation\Core\Genome.cs" />
+    <Compile Include="Simulation\Utility\MersenneTwister.cs" />
+    <Compile Include="Simulation\Core\Point.cs" />
+    <Compile Include="Simulation\Core\PopulationSettings.cs" />
+    <Compile Include="Simulation\Core\Piece.cs" />
+    <Compile Include="Simulation\Core\Population.cs" />
+    <Compile Include="Simulation\Core\RandomSource.cs" />
+    <Compile Include="Simulation\Core\Results.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Simulation\Visual\GameForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Simulation\Visual\GameForm.Designer.cs">
       <DependentUpon>GameForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="GamePlayer\Visual\GamePlayerForm.resx">
+      <DependentUpon>GamePlayerForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImageAnalyzer\Visual\ColorsForm.resx">
+      <DependentUpon>ColorsForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImageAnalyzer\Visual\ImageForm.resx">
+      <DependentUpon>ImageForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Visual\GameForm.resx">
+    <EmbeddedResource Include="Simulation\Visual\GameForm.resx">
       <DependentUpon>GameForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -107,7 +141,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\klick-klack-double.png" />
+    <None Include="Simulation\Resources\klick-klack-double.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

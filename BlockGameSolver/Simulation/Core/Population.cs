@@ -2,16 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using BlockGameSolver.Simulation.Utility;
 
-namespace BlockGameSolver.Core
+namespace BlockGameSolver.Simulation.Core
 {
     public class Population
     {
+        private readonly List<Genome> currentPopulation = new List<Genome>();
+        private readonly List<Genome> newPopulation = new List<Genome>();
         private readonly Results populationResults = new Results();
         private readonly Queue<Genome> upcomingMoves = new Queue<Genome>();
-        private List<Genome> currentPopulation = new List<Genome>();
         private int generationNum;
-        private List<Genome> newPopulation = new List<Genome>();
 
         private PopulationSettings settings;
 
@@ -119,9 +120,7 @@ namespace BlockGameSolver.Core
                     newPopulation.Add(frontChild);
                     newPopulation.Add(endChild);
 
-                    PopulationResults.AddMessage(
-                        string.Format("Crossover occurred from genome {0} to {1} at point {2} and got {3} and {4}",
-                                      genome1, genome2, swapPoint, frontChild, endChild));
+                    PopulationResults.AddMessage(string.Format("Crossover occurred from genome {0} to {1} at point {2} and got {3} and {4}", genome1, genome2, swapPoint, frontChild, endChild));
 
                     //Determine if the results should be mutated
 
@@ -142,21 +141,6 @@ namespace BlockGameSolver.Core
             {
                 currentPopulation.Add(genome);
             }
-        }
-
-        private void FilterCurrentGeneration()
-        {
-            PopulationResults.AddMessage("Filtering the current generation.");
-
-            newPopulation.AddRange(currentPopulation.OrderByDescending(c => c.Fitness).Take(settings.FilterSize));
-            // newPopulation = currentPopulation.OrderByDescending(c => c.Fitness).Take(keepers).ToList();
-
-            //foreach (Genome genome in newPopulation)
-            //{
-            //    populationResults.AddMessage(string.Format("Genome with fitness {0} survived.", genome.Fitness));
-            //}
-
-            //   currentPopulation.Clear();
         }
 
         private void ContinueEvaluation()
@@ -181,9 +165,7 @@ namespace BlockGameSolver.Core
                 generationNum = i + 1;
                 ContinueEvaluation();
             }
-            populationResults.AddHeader(string.Format("Best plays had a score of {0}",
-                                                      currentPopulation.OrderByDescending(c => c.Fitness).Take(1).Single
-                                                          ().Fitness));
+            populationResults.AddHeader(string.Format("Best plays had a score of {0}", currentPopulation.OrderByDescending(c => c.Fitness).Take(1).Single().Fitness));
 
             PopulationResults.FinishOutput();
             InvokePopulationFinished(EventArgs.Empty);

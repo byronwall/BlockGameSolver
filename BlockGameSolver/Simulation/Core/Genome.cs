@@ -1,8 +1,7 @@
 using System;
 using System.Diagnostics;
-using System.Text;
 
-namespace BlockGameSolver.Core
+namespace BlockGameSolver.Simulation.Core
 {
     public class Genome
     {
@@ -15,8 +14,7 @@ namespace BlockGameSolver.Core
             ID = ++nextID;
         }
 
-        public Genome(bool isRandom)
-            : this()
+        public Genome(bool isRandom) : this()
         {
             if (isRandom)
             {
@@ -54,7 +52,7 @@ namespace BlockGameSolver.Core
 
                 return swapPoint;
             }
-            else if (crossMethod < 0.8)
+            if (crossMethod < 0.8)
             {
                 //Double point CO
                 int limit = (MoveCount > partner.MoveCount) ? partner.MoveCount : MoveCount;
@@ -76,20 +74,17 @@ namespace BlockGameSolver.Core
 
                 return swapPoint1;
             }
-            else
+            //Random CO
+            for (int i = 0; i < Moves.Length; i++)
             {
-                //Random CO
-                for (int i = 0; i < Moves.Length; i++)
+                if (RandomSource.Instance.NextDoublePositive() < 0.5)
                 {
-                    if (RandomSource.Instance.NextDoublePositive() < 0.5)
-                    {
-                        int? temp = Moves[i];
-                        Moves[i] = partner.Moves[i];
-                        partner.Moves[i] = temp;
-                    }
+                    int? temp = Moves[i];
+                    Moves[i] = partner.Moves[i];
+                    partner.Moves[i] = temp;
                 }
-                return 0;
             }
+            return 0;
         }
 
         public override string ToString()
@@ -121,17 +116,7 @@ namespace BlockGameSolver.Core
                     //Select the mutation type
                     double mutationProb = RandomSource.Instance.NextDoublePositive();
 
-                    if (mutationProb < 0.80)
-                    {
-                        //New value mutation
-
-                        Moves[i] = RandomSource.Instance.Next(0, GameSettings.PieceCount);
-                    }
-                    else
-                    {
-                        //Interal switch mutation
-                        Moves[i] = Moves[RandomSource.Instance.Next(0, Moves.Length)];
-                    }
+                    Moves[i] = mutationProb < 0.80 ? RandomSource.Instance.Next(0, GameSettings.PieceCount) : Moves[RandomSource.Instance.Next(0, Moves.Length)];
 
                     mutations++;
                 }

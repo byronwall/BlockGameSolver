@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
-namespace BlockGameSolver.Core
+namespace BlockGameSolver.Simulation.Core
 {
     public class Results : IDisposable
     {
-        private static readonly object locker = new object();
         private readonly FileStream fs;
 
         private readonly List<List<double>> scoreData = new List<List<double>>();
@@ -47,7 +46,6 @@ namespace BlockGameSolver.Core
         {
             Process.Start(executable, ResultsFilename);
             Process.Start(executable, ScoreFilename);
-
         }
 
         public void AddHeader(string header)

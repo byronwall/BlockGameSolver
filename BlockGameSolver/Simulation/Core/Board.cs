@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using BlockGameSolver.Simulation.Core;
+using BlockGameSolver.Simulation.Utility;
 
-namespace BlockGameSolver.Core
+namespace BlockGameSolver.Simulation.Core
 {
     public class Board
     {
@@ -166,8 +168,6 @@ namespace BlockGameSolver.Core
         private IEnumerable<Piece> GetSurroundingPieces(int row, int col)
         {
             List<Piece> surroundings = new List<Piece>();
-
-            int range = 1;
 
             foreach (Piece piece in pieces)
             {

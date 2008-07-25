@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace ImageAnalyzer
+namespace BlockGameSolver.ImageAnalyzer.Utility
 {
     public static class BitmapUtility
     {

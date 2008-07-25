@@ -1,4 +1,6 @@
-namespace BlockGameSolver.Core
+using BlockGameSolver.Simulation.Utility;
+
+namespace BlockGameSolver.Simulation.Core
 {
     public class RandomSource
     {

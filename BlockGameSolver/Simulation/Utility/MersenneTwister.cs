@@ -75,7 +75,7 @@
 
 using System;
 
-namespace BlockGameSolver.Core
+namespace BlockGameSolver.Simulation.Utility
 {
     /// <summary>
     /// Generates pseudo-random numbers using the Mersenne Twister algorithm.
