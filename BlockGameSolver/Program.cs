@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
+using BlockGameSolver.GamePlayer.Visual;
 using BlockGameSolver.Simulation.Core;
-using BlockGameSolver.Simulation.Visual;
 
 namespace BlockGameSolver
 {
@@ -27,7 +27,7 @@ namespace BlockGameSolver
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new GameForm());
+            Application.Run(new GamePlayerForm());
         }
     }
 }

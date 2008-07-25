@@ -6,6 +6,8 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using BlockGameSolver.ImageAnalyzer.Visual;
+using BlockGameSolver.Simulation.Visual;
 
 namespace BlockGameSolver.GamePlayer.Visual
 {
@@ -14,6 +16,17 @@ namespace BlockGameSolver.GamePlayer.Visual
         public GamePlayerForm()
         {
             InitializeComponent();
+        }
+
+        private void btnShowSim_Click(object sender, EventArgs e)
+        {
+            new GameForm().Show();
+        }
+
+        private void btnShowAnalyzer_Click(object sender, EventArgs e)
+        {
+            new ImageForm().Show();
+
         }
     }
 }

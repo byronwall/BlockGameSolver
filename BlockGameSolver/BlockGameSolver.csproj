@@ -141,7 +141,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Simulation\Resources\klick-klack-double.png" />
+    <None Include="Resources\klick-klack-double.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
