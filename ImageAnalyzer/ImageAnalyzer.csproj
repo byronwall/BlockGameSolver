@@ -48,17 +48,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BitmapUtility.cs" />
-    <Compile Include="ImageForm.cs">
+    <Compile Include="Core\AnchorPoint.cs" />
+    <Compile Include="Utility\BitmapUtility.cs" />
+    <Compile Include="Core\ColorPoint.cs" />
+    <Compile Include="Visual\ColorsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ImageForm.Designer.cs">
+    <Compile Include="Visual\ColorsForm.Designer.cs">
+      <DependentUpon>ColorsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Visual\ImageForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Visual\ImageForm.Designer.cs">
       <DependentUpon>ImageForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImageSettings.cs" />
+    <Compile Include="Core\ImageSettings.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="ImageForm.resx">
+    <EmbeddedResource Include="Visual\ColorsForm.resx">
+      <DependentUpon>ColorsForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Visual\ImageForm.resx">
       <DependentUpon>ImageForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>

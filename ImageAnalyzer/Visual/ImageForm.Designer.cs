@@ -1,4 +1,4 @@
-﻿namespace ImageAnalyzer
+﻿namespace ImageAnalyzer.Visual
 {
     partial class ImageForm
     {
@@ -54,10 +54,28 @@
             this.txtPieceOffsetY = new System.Windows.Forms.TextBox();
             this.txtPieceCornerX = new System.Windows.Forms.TextBox();
             this.txtPieceCornerY = new System.Windows.Forms.TextBox();
+            this.grpPiece = new System.Windows.Forms.GroupBox();
+            this.btnUpdatePiece = new System.Windows.Forms.Button();
+            this.btnShowColors = new System.Windows.Forms.Button();
+            this.txtDoubleOffsetY = new System.Windows.Forms.TextBox();
+            this.txtColorOffsetY = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txtColumns = new System.Windows.Forms.TextBox();
+            this.txtRows = new System.Windows.Forms.TextBox();
+            this.txtDoubleOffsetX = new System.Windows.Forms.TextBox();
+            this.txtColorOffsetX = new System.Windows.Forms.TextBox();
+            this.btnSaveXML = new System.Windows.Forms.Button();
+            this.btnLoadXML = new System.Windows.Forms.Button();
             this.grpAnchor.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imgScreenShot)).BeginInit();
             this.grpPieces.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imgPieceThumb)).BeginInit();
+            this.grpPiece.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtFilename
@@ -313,23 +331,193 @@
             this.txtPieceCornerY.TabIndex = 1;
             this.txtPieceCornerY.Text = "261";
             // 
+            // grpPiece
+            // 
+            this.grpPiece.Controls.Add(this.btnUpdatePiece);
+            this.grpPiece.Controls.Add(this.btnShowColors);
+            this.grpPiece.Controls.Add(this.txtDoubleOffsetY);
+            this.grpPiece.Controls.Add(this.txtColorOffsetY);
+            this.grpPiece.Controls.Add(this.label10);
+            this.grpPiece.Controls.Add(this.label9);
+            this.grpPiece.Controls.Add(this.label8);
+            this.grpPiece.Controls.Add(this.label5);
+            this.grpPiece.Controls.Add(this.label4);
+            this.grpPiece.Controls.Add(this.textBox1);
+            this.grpPiece.Controls.Add(this.txtColumns);
+            this.grpPiece.Controls.Add(this.txtRows);
+            this.grpPiece.Controls.Add(this.txtDoubleOffsetX);
+            this.grpPiece.Controls.Add(this.txtColorOffsetX);
+            this.grpPiece.Location = new System.Drawing.Point(219, 39);
+            this.grpPiece.Name = "grpPiece";
+            this.grpPiece.Size = new System.Drawing.Size(200, 213);
+            this.grpPiece.TabIndex = 4;
+            this.grpPiece.TabStop = false;
+            this.grpPiece.Text = "piece settings";
+            // 
+            // btnUpdatePiece
+            // 
+            this.btnUpdatePiece.Location = new System.Drawing.Point(43, 184);
+            this.btnUpdatePiece.Name = "btnUpdatePiece";
+            this.btnUpdatePiece.Size = new System.Drawing.Size(75, 23);
+            this.btnUpdatePiece.TabIndex = 6;
+            this.btnUpdatePiece.Text = "update";
+            this.btnUpdatePiece.UseVisualStyleBackColor = true;
+            this.btnUpdatePiece.Click += new System.EventHandler(this.btnUpdatePiece_Click);
+            // 
+            // btnShowColors
+            // 
+            this.btnShowColors.Location = new System.Drawing.Point(119, 184);
+            this.btnShowColors.Name = "btnShowColors";
+            this.btnShowColors.Size = new System.Drawing.Size(75, 23);
+            this.btnShowColors.TabIndex = 6;
+            this.btnShowColors.Text = "name colors";
+            this.btnShowColors.UseVisualStyleBackColor = true;
+            this.btnShowColors.Click += new System.EventHandler(this.btnShowColors_Click);
+            // 
+            // txtDoubleOffsetY
+            // 
+            this.txtDoubleOffsetY.Location = new System.Drawing.Point(143, 43);
+            this.txtDoubleOffsetY.Name = "txtDoubleOffsetY";
+            this.txtDoubleOffsetY.Size = new System.Drawing.Size(51, 20);
+            this.txtDoubleOffsetY.TabIndex = 1;
+            this.txtDoubleOffsetY.Text = "10";
+            // 
+            // txtColorOffsetY
+            // 
+            this.txtColorOffsetY.Location = new System.Drawing.Point(143, 17);
+            this.txtColorOffsetY.Name = "txtColorOffsetY";
+            this.txtColorOffsetY.Size = new System.Drawing.Size(51, 20);
+            this.txtColorOffsetY.TabIndex = 1;
+            this.txtColorOffsetY.Text = "3";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(7, 124);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(35, 13);
+            this.label10.TabIndex = 5;
+            this.label10.Text = "colors";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(7, 98);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(46, 13);
+            this.label9.TabIndex = 5;
+            this.label9.Text = "columns";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(7, 72);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(29, 13);
+            this.label8.TabIndex = 5;
+            this.label8.Text = "rows";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(7, 46);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(68, 13);
+            this.label5.TabIndex = 5;
+            this.label5.Text = "double offset";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(7, 20);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(59, 13);
+            this.label4.TabIndex = 5;
+            this.label4.Text = "color offset";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(86, 121);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(51, 20);
+            this.textBox1.TabIndex = 0;
+            this.textBox1.Text = "5";
+            // 
+            // txtColumns
+            // 
+            this.txtColumns.Location = new System.Drawing.Point(86, 95);
+            this.txtColumns.Name = "txtColumns";
+            this.txtColumns.Size = new System.Drawing.Size(51, 20);
+            this.txtColumns.TabIndex = 0;
+            this.txtColumns.Text = "10";
+            // 
+            // txtRows
+            // 
+            this.txtRows.Location = new System.Drawing.Point(86, 69);
+            this.txtRows.Name = "txtRows";
+            this.txtRows.Size = new System.Drawing.Size(51, 20);
+            this.txtRows.TabIndex = 0;
+            this.txtRows.Text = "10";
+            // 
+            // txtDoubleOffsetX
+            // 
+            this.txtDoubleOffsetX.Location = new System.Drawing.Point(86, 43);
+            this.txtDoubleOffsetX.Name = "txtDoubleOffsetX";
+            this.txtDoubleOffsetX.Size = new System.Drawing.Size(51, 20);
+            this.txtDoubleOffsetX.TabIndex = 0;
+            this.txtDoubleOffsetX.Text = "10";
+            // 
+            // txtColorOffsetX
+            // 
+            this.txtColorOffsetX.Location = new System.Drawing.Point(86, 17);
+            this.txtColorOffsetX.Name = "txtColorOffsetX";
+            this.txtColorOffsetX.Size = new System.Drawing.Size(51, 20);
+            this.txtColorOffsetX.TabIndex = 0;
+            this.txtColorOffsetX.Text = "3";
+            // 
+            // btnSaveXML
+            // 
+            this.btnSaveXML.Location = new System.Drawing.Point(338, 285);
+            this.btnSaveXML.Name = "btnSaveXML";
+            this.btnSaveXML.Size = new System.Drawing.Size(75, 23);
+            this.btnSaveXML.TabIndex = 5;
+            this.btnSaveXML.Text = "save XML";
+            this.btnSaveXML.UseVisualStyleBackColor = true;
+            this.btnSaveXML.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // btnLoadXML
+            // 
+            this.btnLoadXML.Location = new System.Drawing.Point(262, 286);
+            this.btnLoadXML.Name = "btnLoadXML";
+            this.btnLoadXML.Size = new System.Drawing.Size(75, 23);
+            this.btnLoadXML.TabIndex = 5;
+            this.btnLoadXML.Text = "load XML";
+            this.btnLoadXML.UseVisualStyleBackColor = true;
+            this.btnLoadXML.Click += new System.EventHandler(this.btnLoadXML_Click);
+            // 
             // ImageForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(431, 382);
+            this.Controls.Add(this.btnLoadXML);
+            this.Controls.Add(this.btnSaveXML);
+            this.Controls.Add(this.grpPiece);
             this.Controls.Add(this.grpPieces);
             this.Controls.Add(this.grpAnchor);
             this.Controls.Add(this.btnLoad);
             this.Controls.Add(this.txtFilename);
             this.Name = "ImageForm";
             this.Text = "image analyzer";
+            this.Load += new System.EventHandler(this.ImageForm_Load);
             this.grpAnchor.ResumeLayout(false);
             this.grpAnchor.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imgScreenShot)).EndInit();
             this.grpPieces.ResumeLayout(false);
             this.grpPieces.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imgPieceThumb)).EndInit();
+            this.grpPiece.ResumeLayout(false);
+            this.grpPiece.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -363,6 +551,22 @@
         private System.Windows.Forms.TextBox txtPieceCornerY;
         private System.Windows.Forms.Button btnShowPiece;
         private System.Windows.Forms.PictureBox imgPieceThumb;
+        private System.Windows.Forms.GroupBox grpPiece;
+        private System.Windows.Forms.TextBox txtDoubleOffsetY;
+        private System.Windows.Forms.TextBox txtColorOffsetY;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox txtDoubleOffsetX;
+        private System.Windows.Forms.TextBox txtColorOffsetX;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox txtColumns;
+        private System.Windows.Forms.TextBox txtRows;
+        private System.Windows.Forms.Button btnShowColors;
+        private System.Windows.Forms.Button btnUpdatePiece;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button btnSaveXML;
+        private System.Windows.Forms.Button btnLoadXML;
     }
 }
-
