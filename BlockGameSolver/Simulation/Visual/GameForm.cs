@@ -124,8 +124,6 @@ namespace BlockGameSolver.Simulation.Visual
             currentMove = 0;
             boardMode = BoardMode.FreePlay;
             Board.Instance.LoadOldBoard();
-            tableBoard.ColumnCount = GameSettings.Columns;
-            tableBoard.RowCount = GameSettings.Rows;
 
             RedrawBoard();
         }

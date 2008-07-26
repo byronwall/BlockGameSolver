@@ -98,6 +98,7 @@
     <Compile Include="Simulation\Core\RandomSource.cs" />
     <Compile Include="Simulation\Core\Results.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Simulation\Visual\BoardSettings.cs" />
     <Compile Include="Simulation\Visual\GameForm.cs">
       <SubType>Form</SubType>
     </Compile>

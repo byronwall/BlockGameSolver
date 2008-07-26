@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using BlockGameSolver.ImageAnalyzer.Core;
+using System.Linq;
 
 namespace BlockGameSolver.ImageAnalyzer.Visual
 {
@@ -26,12 +27,14 @@ namespace BlockGameSolver.ImageAnalyzer.Visual
 
             ColorPoint point = ((ColorPoint)lstColors.SelectedItem);
             point.Name = txtColorName.Text;
+            imageSettings.ColorData[point.ImageColor] = point.Name;
+
             lstColors.SelectedIndex += (lstColors.SelectedIndex < lstColors.Items.Count - 1) ? 1 : 0;
         }
 
         private void LoadColors()
         {
-            lstColors.DataSource = imageSettings.ColorData;
+            lstColors.DataSource = imageSettings.TempColors;
         }
 
         private void lstColors_SelectedIndexChanged(object sender, EventArgs e)

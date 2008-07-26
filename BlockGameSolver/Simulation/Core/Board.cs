@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using BlockGameSolver.Simulation.Core;
+using BlockGameSolver.ImageAnalyzer.Core;
 using BlockGameSolver.Simulation.Utility;
 
 namespace BlockGameSolver.Simulation.Core
@@ -64,6 +64,22 @@ namespace BlockGameSolver.Simulation.Core
         public Piece[,] Pieces
         {
             get { return pieces; }
+        }
+
+        public static Board FromIBoardSource(IBoardSource source)
+        {
+            Board board = new Board();
+            foreach (Piece piece in source.GetPiecesForBoard())
+            {
+                board[piece.Row, piece.Col] = piece;
+            }
+            board.SaveBoard();
+            return board;
+        }
+
+        public static void SetInstance(Board board)
+        {
+            instance = board;
         }
 
         public int RemoveGroups(int?[] groups)

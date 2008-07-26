@@ -3,7 +3,6 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using BlockGameSolver.ImageAnalyzer.Core;
-using BlockGameSolver.ImageAnalyzer.Visual;
 
 namespace BlockGameSolver.ImageAnalyzer.Visual
 {
@@ -90,7 +89,10 @@ namespace BlockGameSolver.ImageAnalyzer.Visual
 
         private void UpdatePieceInfo()
         {
-            imageSettings.PieceCorner = new Point(Convert.ToInt32(txtPieceCornerX.Text), Convert.ToInt32(txtPieceCornerY.Text));
+            int x = Convert.ToInt32(txtPieceCornerX.Text) - imageSettings.AnchorCorner.X;
+            int y = Convert.ToInt32(txtPieceCornerY.Text) - imageSettings.AnchorCorner.Y;
+
+            imageSettings.PieceOffset = new Point(x, y);
             imageSettings.PieceHeight = Convert.ToInt32(txtPieceHeight.Text);
             imageSettings.PieceWidth = Convert.ToInt32(txtPieceWidth.Text);
 
