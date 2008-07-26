@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using BlockGameSolver.ImageAnalyzer.Core;
 using BlockGameSolver.Simulation.Core;
 using BlockGameSolver.Simulation.Utility;
 
@@ -9,6 +10,16 @@ namespace BlockGameSolver.Simulation.Core
 {
     public class Board
     {
+        public static Board FromIBoardSource(IBoardSource source)
+        {
+            Board board = new Board();
+            foreach (Piece piece in source.GetPiecesForBoard())
+            {
+                board[piece.Row, piece.Col] = piece;
+            }
+            return board;
+        }
+
         private static Board instance;
         private readonly Piece[,] backupPieces = new Piece[GameSettings.Rows,GameSettings.Columns];
         private readonly List<Piece> currentGroup = new List<Piece>(GameSettings.PieceCount);
