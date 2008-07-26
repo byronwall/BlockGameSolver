@@ -1,3 +1,5 @@
+using System.Drawing;
+
 namespace BlockGameSolver.ImageAnalyzer.Core
 {
     public struct AnchorPoint
@@ -12,5 +14,6 @@ namespace BlockGameSolver.ImageAnalyzer.Core
         public int XOffset { get; set; }
         public int YOffset { get; set; }
         public int Color { get; set; }
+
     }
 }

@@ -69,6 +69,7 @@
     <Compile Include="GamePlayer\Visual\GamePlayerForm.Designer.cs">
       <DependentUpon>GamePlayerForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ImageAnalyzer\Core\Analyzer.cs" />
     <Compile Include="ImageAnalyzer\Core\AnchorPoint.cs" />
     <Compile Include="ImageAnalyzer\Core\ColorPoint.cs" />
     <Compile Include="ImageAnalyzer\Core\ImageSettings.cs" />

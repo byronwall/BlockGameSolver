@@ -13,14 +13,14 @@ namespace BlockGameSolver.ImageAnalyzer.Core
         private readonly List<ColorPoint> colorData = new List<ColorPoint>();
 
         public Bitmap FullImage { get; set; }
-        public int ThumbnailHeight { get; set; }
-        public Point ThumbnailCorner { get; set; }
-        public int ThumbnailWidth { get; set; }
+        public int AnchorHeight { get; set; }
+        public Point AnchorCorner { get; set; }
+        public int AnchorWidth { get; set; }
         public Point ColorOffset { get; set; }
 
-        public Bitmap ThumbnailImage
+        public Bitmap AnchorImage
         {
-            get { return BitmapUtility.CropBitmap(FullImage, ThumbnailCorner.X, ThumbnailCorner.Y, ThumbnailWidth, ThumbnailHeight); }
+            get { return BitmapUtility.CropBitmap(FullImage, AnchorCorner.X, AnchorCorner.Y, AnchorWidth, AnchorHeight); }
         }
 
         public int PieceWidth { get; set; }
@@ -40,9 +40,9 @@ namespace BlockGameSolver.ImageAnalyzer.Core
 
         private Point PieceOffset
         {
-            get { return new Point(PieceCorner.X - ThumbnailCorner.X, PieceCorner.Y - ThumbnailCorner.Y); }
+            get { return new Point(PieceCorner.X - AnchorCorner.X, PieceCorner.Y - AnchorCorner.Y); }
 
-            set { PieceCorner = new Point(ThumbnailCorner.X + value.X, ThumbnailCorner.Y + value.Y); }
+            set { PieceCorner = new Point(AnchorCorner.X + value.X, AnchorCorner.Y + value.Y); }
         }
 
         public Point DoubleOffset { get; set; }
@@ -72,11 +72,11 @@ namespace BlockGameSolver.ImageAnalyzer.Core
         private IEnumerable<AnchorPoint> GetAnchorData()
         {
             anchorData.Clear();
-            for (int i = 0; i < ThumbnailWidth; i++)
+            for (int i = 0; i < AnchorWidth; i++)
             {
-                for (int j = 0; j < ThumbnailHeight; j++)
+                for (int j = 0; j < AnchorHeight; j++)
                 {
-                    anchorData.Add(new AnchorPoint(i, j, FullImage.GetPixel(i + ThumbnailCorner.X, j + ThumbnailCorner.Y).ToArgb()));
+                    anchorData.Add(new AnchorPoint(i, j, FullImage.GetPixel(i + AnchorCorner.X, j + AnchorCorner.Y).ToArgb()));
                 }
             }
             return anchorData;

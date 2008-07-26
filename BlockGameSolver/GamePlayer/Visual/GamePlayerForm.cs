@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
+using BlockGameSolver.ImageAnalyzer.Utility;
 using BlockGameSolver.ImageAnalyzer.Visual;
 using BlockGameSolver.Simulation.Visual;
 
@@ -27,6 +24,16 @@ namespace BlockGameSolver.GamePlayer.Visual
         {
             new ImageForm().Show();
 
+        }
+        /// <summary>
+        /// This is the method that is called when the user wishes to play a board on the screen.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnPlayBoard_Click(object sender, EventArgs e)
+        {
+            Bitmap screenshot = BitmapUtility.BitmapFromScreenshot(this);
+            screenshot.Save("screenshot.jpg", ImageFormat.Png);
         }
     }
 }

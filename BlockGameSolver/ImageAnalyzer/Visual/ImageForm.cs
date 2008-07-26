@@ -81,11 +81,11 @@ namespace BlockGameSolver.ImageAnalyzer.Visual
             int height = Convert.ToInt32(txtHeight.Text);
             int width = Convert.ToInt32(txtWidth.Text);
 
-            imageSettings.ThumbnailHeight = height;
-            imageSettings.ThumbnailWidth = width;
-            imageSettings.ThumbnailCorner = corner;
+            imageSettings.AnchorHeight = height;
+            imageSettings.AnchorWidth = width;
+            imageSettings.AnchorCorner = corner;
 
-            imgScreenShot.Image = imageSettings.ThumbnailImage;
+            imgScreenShot.Image = imageSettings.AnchorImage;
         }
 
         private void UpdatePieceInfo()
