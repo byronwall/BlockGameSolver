@@ -15,6 +15,12 @@ namespace BlockGameSolver.ImageAnalyzer.Core
             IsBomb = false;
         }
 
+        public ColorPoint(int imageColor, string name)
+        {
+            ImageColor = imageColor;
+            Name = name;
+        }
+
         public int ImageColor { get; private set; }
         public int BoardColor { get; private set; }
         public bool IsBomb { get; private set; }

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Xml.Linq;
-using BlockGameSolver.ImageAnalyzer.Core;
 using BlockGameSolver.ImageAnalyzer.Utility;
 
 namespace BlockGameSolver.ImageAnalyzer.Core
@@ -10,7 +9,8 @@ namespace BlockGameSolver.ImageAnalyzer.Core
     public class ImageSettings
     {
         private readonly List<AnchorPoint> anchorData = new List<AnchorPoint>();
-        private readonly List<ColorPoint> colorData = new List<ColorPoint>();
+        private readonly Dictionary<int, string> colorData = new Dictionary<int, string>();
+        private List<ColorPoint> tempColors = new List<ColorPoint>();
 
         public Bitmap FullImage { get; set; }
         public int AnchorHeight { get; set; }
@@ -48,7 +48,7 @@ namespace BlockGameSolver.ImageAnalyzer.Core
         public Point DoubleOffset { get; set; }
         public int BombColor { get; set; }
 
-        public List<ColorPoint> ColorData
+        public Dictionary<int, string> ColorData
         {
             get { return colorData; }
         }
@@ -58,13 +58,18 @@ namespace BlockGameSolver.ImageAnalyzer.Core
             get { return anchorData; }
         }
 
+        public List<ColorPoint> TempColors
+        {
+            get { return tempColors; }
+        }
+
         public IEnumerable<Point> GetPieceLocations()
         {
             for (int i = 0; i < Rows; i++)
             {
                 for (int j = 0; j < Cols; j++)
                 {
-                    yield return new Point(PieceCorner.X + PieceWidth * j, PieceCorner.Y + PieceHeight * i);
+                    yield return new Point(PieceCorner.X + PieceWidth*j, PieceCorner.Y + PieceHeight*i);
                 }
             }
         }
@@ -82,25 +87,24 @@ namespace BlockGameSolver.ImageAnalyzer.Core
             return anchorData;
         }
 
-        public List<ColorPoint> AddColorsUnique()
+        public void AddColorsUnique()
         {
-            IEnumerable<int> colorPoints = ColorData.Select(c => c.ImageColor);
-
+            //IEnumerable<int> colorPoints = ColorData.Select(c => c.ImageColor);
             foreach (Point point in GetPieceLocations())
             {
                 int color = FullImage.GetPixel(point.X + ColorOffset.X, point.Y + ColorOffset.Y).ToArgb();
-                if (!colorPoints.Contains(color))
+                if (!colorData.ContainsKey(color) && !tempColors.Any(c => c.ImageColor == color))
                 {
-                    ColorData.Add(new ColorPoint(color) { Source = "Color" });
+
+                    TempColors.Add(new ColorPoint(color) {Source = "Color"});
                 }
                 int doubleColor = FullImage.GetPixel(point.X + DoubleOffset.X, point.Y + DoubleOffset.Y).ToArgb();
-                if (!colorPoints.Contains(doubleColor))
+                if (!colorData.ContainsKey(doubleColor) && !tempColors.Any(c => c.ImageColor == doubleColor))
                 {
-                    ColorData.Add(new ColorPoint(doubleColor) { Source = "Double" });
+
+                    TempColors.Add(new ColorPoint(doubleColor) {Source = "Double"});
                 }
             }
-
-            return ColorData;
         }
 
         public void SaveDataToXML()
@@ -123,7 +127,7 @@ namespace BlockGameSolver.ImageAnalyzer.Core
 
             colorSettings.Add(new XElement("colorOffset", new XAttribute("xOffset", ColorOffset.X), new XAttribute("yOffset", ColorOffset.Y)));
             colorSettings.Add(new XElement("doubleOffset", new XAttribute("xOffset", DoubleOffset.X), new XAttribute("yOffset", DoubleOffset.Y)));
-            colorSettings.Add(new XElement("data", from colorPoint in AddColorsUnique() where colorPoint.Name != null select new XElement("colorPoint", new XAttribute("imageColor", colorPoint.ImageColor), new XAttribute("boardColor", colorPoint.BoardColor), new XAttribute("isBomb", colorPoint.IsBomb), new XAttribute("name", colorPoint.Name))));
+            colorSettings.Add(new XElement("data", from colorPoint in ColorData select new XElement("colorPoint", new XAttribute("name", colorPoint.Value), new XAttribute("imageColor", colorPoint.Key))));
 
             root.Add(colorSettings);
 
@@ -134,28 +138,31 @@ namespace BlockGameSolver.ImageAnalyzer.Core
         {
             ImageSettings imageSettings = new ImageSettings();
 
-            IEnumerable<AnchorPoint> anchorSettings = from points in document.Descendants("anchorSettings").Elements("point") select new AnchorPoint((int)points.Attribute("xOffset"), (int)points.Attribute("yOffset"), (int)points.Attribute("color"));
+            IEnumerable<AnchorPoint> anchorSettings = from points in document.Descendants("anchorSettings").Elements("point") select new AnchorPoint((int) points.Attribute("xOffset"), (int) points.Attribute("yOffset"), (int) points.Attribute("color"));
 
             imageSettings.anchorData.AddRange(anchorSettings);
 
             XElement pieceSettings = document.Descendants("pieceSettings").Single();
             XElement initialOffset = pieceSettings.Element("initialOffset");
 
-            imageSettings.PieceOffset = new Point((int)initialOffset.Attribute("xOffset"), (int)initialOffset.Attribute("yOffset"));
+            imageSettings.PieceOffset = new Point((int) initialOffset.Attribute("xOffset"), (int) initialOffset.Attribute("yOffset"));
 
-            imageSettings.PieceHeight = (int)pieceSettings.Element("size").Attribute("height");
-            imageSettings.PieceWidth = (int)pieceSettings.Element("size").Attribute("width");
+            imageSettings.PieceHeight = (int) pieceSettings.Element("size").Attribute("height");
+            imageSettings.PieceWidth = (int) pieceSettings.Element("size").Attribute("width");
 
             XElement colorSettings = document.Descendants("colorSettings").Single();
             XElement colorOffset = colorSettings.Element("colorOffset");
             XElement doubleOffset = colorSettings.Element("doubleOffset");
 
-            imageSettings.ColorOffset = new Point((int)colorOffset.Attribute("xOffset"), (int)colorOffset.Attribute("yOffset"));
-            imageSettings.DoubleOffset = new Point((int)doubleOffset.Attribute("xOffset"), (int)doubleOffset.Attribute("yOffset"));
+            imageSettings.ColorOffset = new Point((int) colorOffset.Attribute("xOffset"), (int) colorOffset.Attribute("yOffset"));
+            imageSettings.DoubleOffset = new Point((int) doubleOffset.Attribute("xOffset"), (int) doubleOffset.Attribute("yOffset"));
 
-            IEnumerable<ColorPoint> color = from point in colorSettings.Element("data").Elements("colorPoint") select new ColorPoint((int)point.Attribute("imageColor"));
+            IEnumerable<ColorPoint> color = from point in colorSettings.Element("data").Elements("colorPoint") select new ColorPoint((int) point.Attribute("imageColor"), (string) point.Attribute("name"));
 
-            imageSettings.ColorData.AddRange(color);
+            foreach (ColorPoint colorPoint in color)
+            {
+                imageSettings.colorData.Add(colorPoint.ImageColor, colorPoint.Name);
+            }
 
             return imageSettings;
         }
