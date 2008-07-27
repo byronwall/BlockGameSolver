@@ -49,6 +49,7 @@
             // 
             // btnPlayBoard
             // 
+            this.btnPlayBoard.AllowDrop = true;
             this.btnPlayBoard.Location = new System.Drawing.Point(6, 19);
             this.btnPlayBoard.Name = "btnPlayBoard";
             this.btnPlayBoard.Size = new System.Drawing.Size(75, 23);
@@ -56,6 +57,8 @@
             this.btnPlayBoard.Text = "play board";
             this.btnPlayBoard.UseVisualStyleBackColor = true;
             this.btnPlayBoard.Click += new System.EventHandler(this.btnPlayBoard_Click);
+            this.btnPlayBoard.DragDrop += new System.Windows.Forms.DragEventHandler(this.btnPlayBoard_DragDrop);
+            this.btnPlayBoard.DragEnter += new System.Windows.Forms.DragEventHandler(this.btnPlayBoard_DragEnter);
             // 
             // btnShowSim
             // 

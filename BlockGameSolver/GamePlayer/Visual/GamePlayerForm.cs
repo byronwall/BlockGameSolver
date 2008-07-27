@@ -7,6 +7,7 @@ using BlockGameSolver.ImageAnalyzer.Utility;
 using BlockGameSolver.ImageAnalyzer.Visual;
 using BlockGameSolver.Simulation.Core;
 using BlockGameSolver.Simulation.Visual;
+using DataFormats=System.Windows.DataFormats;
 
 namespace BlockGameSolver.GamePlayer.Visual
 {
@@ -50,6 +51,27 @@ namespace BlockGameSolver.GamePlayer.Visual
             {
                 ImageSettings settings = ImageSettings.LoadDataFromXML(boardDataPath);
                 analyzer = new Analyzer(settings);
+            }
+        }
+
+        private void btnPlayBoard_DragDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] strings = (string[]) e.Data.GetData(DataFormats.FileDrop);
+                string path = strings[0];
+
+                analyzer.SetScreenshot(path);
+                Board.SetInstance(Board.FromIBoardSource(analyzer));
+
+            }
+        }
+
+        private void btnPlayBoard_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.Copy;
             }
         }
     }

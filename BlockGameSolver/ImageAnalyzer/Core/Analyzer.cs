@@ -128,7 +128,7 @@ namespace BlockGameSolver.ImageAnalyzer.Core
                 for (int j = piece.Y; j < screenshot.Height; j += settings.PieceHeight)
                 {
                     int color = screenshot.GetPixel(i + settings.ColorOffset.X, j + settings.ColorOffset.Y).ToArgb();
-                    if (!settings.ColorData.Any(c => c.Key == color))
+                    if (!settings.ColorData.Any(c => c.Key == color && c.Value!="double"))
                     {
                         if (curRows == 0) break;
                         if (curRows < rows)
