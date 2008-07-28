@@ -21,6 +21,11 @@ namespace BlockGameSolver.Simulation.Core
             this.settings = settings;
         }
 
+        public Population()
+        {
+            this.settings = new PopulationSettings(15, 50, 0.01, 0.01, 50, 0.95);
+        }
+
         public Results PopulationResults
         {
             get { return populationResults; }
@@ -73,7 +78,7 @@ namespace BlockGameSolver.Simulation.Core
                 for (int i = 0; i < settings.MoveCache; i++)
                 {
                     double runningTotal = 0;
-                    double stopPoint = RandomSource.Instance.Next(0, (int) totalFitness);
+                    double stopPoint = RandomSource.Instance.Next(0, (int)totalFitness);
 
                     foreach (Genome genome in currentPopulation)
                     {
@@ -191,6 +196,12 @@ namespace BlockGameSolver.Simulation.Core
             {
                 generationCompletedHandler(this, e);
             }
+        }
+
+        public Genome DetermineBestGenome()
+        {
+            BeginGeneticProcess();
+            return GenomeBest;
         }
     }
 

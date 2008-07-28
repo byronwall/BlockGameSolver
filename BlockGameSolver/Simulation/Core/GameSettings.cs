@@ -2,9 +2,9 @@ namespace BlockGameSolver.Simulation.Core
 {
     public static class GameSettings
     {
-        public static readonly int Columns = 10;
-        public static readonly int GroupSize = 2;
-        public static readonly int Rows = 10;
+        public static  int Columns = 10;
+        public static  int GroupSize = 2;
+        public static  int Rows = 10;
 
         public static int PieceCount
         {

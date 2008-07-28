@@ -104,7 +104,7 @@ namespace BlockGameSolver.ImageAnalyzer.Visual
             imageSettings.ColorOffset = new Point(Convert.ToInt32(txtColorOffsetX.Text), Convert.ToInt32(txtColorOffsetY.Text));
             imageSettings.DoubleOffset = new Point(Convert.ToInt32(txtDoubleOffsetX.Text), Convert.ToInt32(txtDoubleOffsetY.Text));
             imageSettings.Rows = Convert.ToInt32(txtRows.Text);
-            imageSettings.Cols = Convert.ToInt32(txtColumns.Text);
+            imageSettings.Columns = Convert.ToInt32(txtColumns.Text);
             imageSettings.Colors = Convert.ToInt32(textBox1.Text);
         }
 

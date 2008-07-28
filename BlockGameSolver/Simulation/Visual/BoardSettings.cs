@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace BlockGameSolver.Simulation.Visual
 {
@@ -19,5 +20,12 @@ namespace BlockGameSolver.Simulation.Visual
         {
             get { return boardColors; }
         }
+
+        public static Color[] Colors
+        {
+            get { return colors; }
+        }
+
+        private static readonly Color[] colors = new[] { Color.Blue, Color.Red, Color.Green, Color.Orange, Color.Purple, Color.Black };
     }
 }

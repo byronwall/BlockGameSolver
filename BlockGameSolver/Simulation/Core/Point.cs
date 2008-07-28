@@ -1,6 +1,6 @@
 namespace BlockGameSolver.Simulation.Core
 {
-    public struct Point
+    public class Point
     {
         private static readonly Direction[] opposite = new Direction[4];
 

@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Linq;
 using BlockGameSolver.Simulation.Core;
 using BlockGameSolver.Simulation.Visual;
-using Point = System.Drawing.Point;
+using Point=System.Drawing.Point;
 
 namespace BlockGameSolver.ImageAnalyzer.Core
 {
@@ -30,14 +30,14 @@ namespace BlockGameSolver.ImageAnalyzer.Core
         {
             List<Piece> pieces = new List<Piece>();
 
-            for (int i = 0; i < settings.Rows; i++)
+            for (int i = 0; i < Settings.Rows; i++)
             {
-                for (int j = 0; j < settings.Cols; j++)
+                for (int j = 0; j < Settings.Columns; j++)
                 {
-                    string colorName = GetColorNameFromImage(i, j, settings.ColorOffset);
+                    string colorName = GetColorNameFromImage(i, j, Settings.ColorOffset);
 
-                    bool isBomb = GetColorNameFromImage(i, j, settings.ColorOffset) == "bomb";
-                    bool isDouble = GetColorNameFromImage(i, j, settings.DoubleOffset) == "double";
+                    bool isBomb = GetColorNameFromImage(i, j, Settings.ColorOffset) == "bomb";
+                    bool isDouble = GetColorNameFromImage(i, j, Settings.DoubleOffset) == "double";
 
                     int color = (isBomb) ? -1 : BoardSettings.BoardColors[colorName];
                     Piece current = new Piece(i, j, color, isBomb, isDouble);
@@ -49,31 +49,53 @@ namespace BlockGameSolver.ImageAnalyzer.Core
             return pieces;
         }
 
+        public int Rows
+        {
+            get { return Settings.Rows; }
+        }
+
+        public int Columns
+        {
+            get { return Settings.Columns; }
+        }
+
+        public ImageSettings Settings
+        {
+            get { return settings; }
+        }
+
         #endregion
 
         public void SetScreenshot(string path)
         {
-            SetScreenshot((Bitmap)Image.FromFile(path));
+            SetScreenshot((Bitmap) Image.FromFile(path));
         }
 
         public void SetScreenshot(Bitmap bitmap)
         {
             screenshot = bitmap;
 
-            settings.AnchorCorner = DetermineAnchorPoint();
+            Settings.AnchorCorner = DetermineAnchorPoint();
             Size boardSize = DetermineBoardSize();
-            settings.Cols = boardSize.Width;
-            settings.Rows = boardSize.Height;
+            Settings.Columns = boardSize.Width;
+            Settings.Rows = boardSize.Height;
+        }
+
+        public Point GetPointFromLocation(int row, int col, Point offset)
+        {
+            int x = Settings.PieceCorner.X + offset.X + Settings.PieceWidth * col;
+            int y = Settings.PieceCorner.Y + offset.Y + Settings.PieceHeight * row;
+            return new Point(x, y);
         }
 
         private string GetColorNameFromImage(int row, int col, Point offset)
         {
-            int x = settings.PieceCorner.X + offset.X + settings.PieceWidth * col;
-            int y = settings.PieceCorner.Y + offset.Y + settings.PieceHeight * row;
+            int x = Settings.PieceCorner.X + offset.X + Settings.PieceWidth*col;
+            int y = Settings.PieceCorner.Y + offset.Y + Settings.PieceHeight*row;
 
             int key = screenshot.GetPixel(x, y).ToArgb();
             string value;
-            if( settings.ColorData.TryGetValue(key, out value))
+            if (Settings.ColorData.TryGetValue(key, out value))
             {
                 return value;
             }
@@ -82,7 +104,7 @@ namespace BlockGameSolver.ImageAnalyzer.Core
 
         private Point DetermineAnchorPoint()
         {
-            if (settings == null)
+            if (Settings == null)
             {
                 throw new ArgumentException("The settings for the analyzer have not been established");
             }
@@ -91,13 +113,13 @@ namespace BlockGameSolver.ImageAnalyzer.Core
             {
                 for (int j = 0; j < screenshot.Height; j++)
                 {
-                    if (screenshot.GetPixel(i, j).ToArgb() != settings.AnchorData[0].Color)
+                    if (screenshot.GetPixel(i, j).ToArgb() != Settings.AnchorData[0].Color)
                     {
                         continue;
                     }
-                    Point anchor = new Point(i - settings.AnchorData[0].XOffset, j - settings.AnchorData[0].YOffset);
+                    Point anchor = new Point(i - Settings.AnchorData[0].XOffset, j - Settings.AnchorData[0].YOffset);
                     bool pointFound = true;
-                    foreach (AnchorPoint anchorPoint in settings.AnchorData)
+                    foreach (AnchorPoint anchorPoint in Settings.AnchorData)
                     {
                         if (screenshot.GetPixel(anchorPoint.XOffset + anchor.X, anchorPoint.YOffset + anchor.Y).ToArgb() != anchorPoint.Color)
                         {
@@ -107,7 +129,7 @@ namespace BlockGameSolver.ImageAnalyzer.Core
                     }
                     if (pointFound)
                     {
-                        settings.AnchorCorner = anchor;
+                        Settings.AnchorCorner = anchor;
                         return anchor;
                     }
                 }
@@ -117,20 +139,23 @@ namespace BlockGameSolver.ImageAnalyzer.Core
 
         private Size DetermineBoardSize()
         {
-            Point piece = settings.PieceCorner;
+            Point piece = Settings.PieceCorner;
             int rows = Int32.MaxValue,
                 cols = Int32.MaxValue,
                 curCols = 0;
 
-            for (int i = piece.X; i < screenshot.Width; i += settings.PieceWidth)
+            for (int i = piece.X; i < screenshot.Width; i += Settings.PieceWidth)
             {
                 int curRows = 0;
-                for (int j = piece.Y; j < screenshot.Height; j += settings.PieceHeight)
+                for (int j = piece.Y; j < screenshot.Height; j += Settings.PieceHeight)
                 {
-                    int color = screenshot.GetPixel(i + settings.ColorOffset.X, j + settings.ColorOffset.Y).ToArgb();
-                    if (!settings.ColorData.Any(c => c.Key == color && c.Value!="double"))
+                    int color = screenshot.GetPixel(i + Settings.ColorOffset.X, j + Settings.ColorOffset.Y).ToArgb();
+                    if (!Settings.ColorData.Any(c => c.Key == color && c.Value != "double"))
                     {
-                        if (curRows == 0) break;
+                        if (curRows == 0)
+                        {
+                            break;
+                        }
                         if (curRows < rows)
                         {
                             rows = curRows;
@@ -158,5 +183,8 @@ namespace BlockGameSolver.ImageAnalyzer.Core
     public interface IBoardSource
     {
         List<Piece> GetPiecesForBoard();
+
+        int Rows { get; }
+        int Columns { get; }
     }
 }

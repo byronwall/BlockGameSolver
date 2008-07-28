@@ -69,6 +69,13 @@
     <Compile Include="GamePlayer\Visual\GamePlayerForm.Designer.cs">
       <DependentUpon>GamePlayerForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="GamePlayer\Visual\GamePlayerNextPieceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GamePlayer\Visual\GamePlayerNextPieceForm.Designer.cs">
+      <DependentUpon>GamePlayerNextPieceForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GamePlayer\Visual\MouseClick.cs" />
     <Compile Include="ImageAnalyzer\Core\Analyzer.cs" />
     <Compile Include="ImageAnalyzer\Core\AnchorPoint.cs" />
     <Compile Include="ImageAnalyzer\Core\ColorPoint.cs" />
@@ -108,6 +115,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="GamePlayer\Visual\GamePlayerForm.resx">
       <DependentUpon>GamePlayerForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GamePlayer\Visual\GamePlayerNextPieceForm.resx">
+      <DependentUpon>GamePlayerNextPieceForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ImageAnalyzer\Visual\ColorsForm.resx">

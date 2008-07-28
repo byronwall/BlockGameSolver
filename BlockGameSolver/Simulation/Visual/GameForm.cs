@@ -5,13 +5,13 @@ using System.Threading;
 using System.Windows.Forms;
 using BlockGameSolver.Properties;
 using BlockGameSolver.Simulation.Core;
-using Point=BlockGameSolver.Simulation.Core.Point;
+using Point = BlockGameSolver.Simulation.Core.Point;
 
 namespace BlockGameSolver.Simulation.Visual
 {
     public partial class GameForm : Form
     {
-        private readonly Color[] colors = new[] {Color.Blue, Color.Red, Color.Green, Color.Orange, Color.Purple, Color.Black};
+
 
         private Genome Best;
         private BoardMode boardMode = BoardMode.FreePlay;
@@ -25,13 +25,13 @@ namespace BlockGameSolver.Simulation.Visual
 
         private void btnRun_Click(object sender, EventArgs e)
         {
-            int popSize = (int) numPopSize.Value;
-            int initSize = (int) numInitialSize.Value;
+            int popSize = (int)numPopSize.Value;
+            int initSize = (int)numInitialSize.Value;
 
-            int generations = (int) numGenerations.Value;
-            double filterRate = (double) numFilterRate.Value;
-            double mutateRatio = (double) numMutateRatio.Value;
-            double crossRatio = (double) numCrossRate.Value;
+            int generations = (int)numGenerations.Value;
+            double filterRate = (double)numFilterRate.Value;
+            double mutateRatio = (double)numMutateRatio.Value;
+            double crossRatio = (double)numCrossRate.Value;
 
             PopulationSettings settings = new PopulationSettings(generations, popSize, mutateRatio, filterRate, initSize, crossRatio);
 
@@ -47,9 +47,10 @@ namespace BlockGameSolver.Simulation.Visual
 
             Board.Instance.LoadOldBoard();
 
-            Thread t = new Thread(population.BeginGeneticProcess) {
-                                                                      IsBackground = true
-                                                                  };
+            Thread t = new Thread(population.BeginGeneticProcess)
+            {
+                IsBackground = true
+            };
             t.Start();
         }
 
@@ -130,10 +131,10 @@ namespace BlockGameSolver.Simulation.Visual
 
         private void back_MouseClick(object sender, MouseEventArgs e)
         {
-            Panel send = (Panel) sender;
-            Piece piece = (Piece) send.Tag;
+            Panel send = (Panel)sender;
+            Piece piece = (Piece)send.Tag;
 
-            Board.Instance.RemoveGroup(piece.Row, piece.Col);
+            Board.Instance.RemoveGroup(piece.Row, piece.Column);
             RedrawBoard();
         }
 
@@ -148,10 +149,11 @@ namespace BlockGameSolver.Simulation.Visual
                 {
                     continue;
                 }
-                Panel back = new Panel {
-                                           Tag = piece,
-                                           Size = new Size(15, 15)
-                                       };
+                Panel back = new Panel
+                {
+                    Tag = piece,
+                    Size = new Size(15, 15)
+                };
 
                 if (piece.IsDouble)
                 {
@@ -160,10 +162,11 @@ namespace BlockGameSolver.Simulation.Visual
 
                 if (chkBoardLabels.Checked)
                 {
-                    Label lblPieceNum = new Label {
-                                                      Text = piece.ToString(),
-                                                      Enabled = false
-                                                  };
+                    Label lblPieceNum = new Label
+                    {
+                        Text = piece.ToString(),
+                        Enabled = false
+                    };
                     back.Controls.Add(lblPieceNum);
                 }
                 if (Board.Instance.HasMoves &&
@@ -171,8 +174,8 @@ namespace BlockGameSolver.Simulation.Visual
                 {
                     back.MouseClick += back_MouseClick;
                 }
-                back.BackColor = colors[piece.Color - 1];
-                tableBoard.Controls.Add(back, piece.Col, piece.Row);
+                back.BackColor = BoardSettings.Colors[piece.Color - 1];
+                tableBoard.Controls.Add(back, piece.Column, piece.Row);
             }
 
             tableBoard.Visible = true;
@@ -212,7 +215,7 @@ namespace BlockGameSolver.Simulation.Visual
 
         private void UpdateNextButton()
         {
-            int move = Best.Moves[currentMove]??0;
+            int move = Best.Moves[currentMove] ?? 0;
             Point location = Board.GetLocationFromNumber(move);
 
             btnNextMove.Text = string.Format("next: {0}- {1},{2}", move, location.RowInc, location.ColInc);

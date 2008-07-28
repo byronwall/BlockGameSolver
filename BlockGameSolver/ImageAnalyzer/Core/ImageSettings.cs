@@ -10,7 +10,7 @@ namespace BlockGameSolver.ImageAnalyzer.Core
     {
         private readonly List<AnchorPoint> anchorData = new List<AnchorPoint>();
         private readonly Dictionary<int, string> colorData = new Dictionary<int, string>();
-        private List<ColorPoint> tempColors = new List<ColorPoint>();
+        private readonly List<ColorPoint> tempColors = new List<ColorPoint>();
 
         public Bitmap FullImage { get; set; }
         public int AnchorHeight { get; set; }
@@ -38,7 +38,7 @@ namespace BlockGameSolver.ImageAnalyzer.Core
                 return new Point(AnchorCorner.X + PieceOffset.X, AnchorCorner.Y + PieceOffset.Y);
             }
         }
-        public int Cols { get; set; }
+        public int Columns { get; set; }
 
         public int Rows { get; set; }
 
@@ -72,7 +72,7 @@ namespace BlockGameSolver.ImageAnalyzer.Core
         {
             for (int i = 0; i < Rows; i++)
             {
-                for (int j = 0; j < Cols; j++)
+                for (int j = 0; j < Columns; j++)
                 {
                     yield return new Point(PieceCorner.X + PieceWidth * j, PieceCorner.Y + PieceHeight * i);
                 }
@@ -94,7 +94,6 @@ namespace BlockGameSolver.ImageAnalyzer.Core
 
         public void AddColorsUnique()
         {
-            //IEnumerable<int> colorPoints = ColorData.Select(c => c.ImageColor);
             foreach (Point point in GetPieceLocations())
             {
                 int color = FullImage.GetPixel(point.X + ColorOffset.X, point.Y + ColorOffset.Y).ToArgb();

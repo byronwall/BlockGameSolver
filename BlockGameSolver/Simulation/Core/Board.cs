@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 using BlockGameSolver.ImageAnalyzer.Core;
 using BlockGameSolver.Simulation.Utility;
@@ -10,12 +9,12 @@ namespace BlockGameSolver.Simulation.Core
     public class Board
     {
         private static Board instance;
-        private readonly Piece[,] backupPieces = new Piece[GameSettings.Rows,GameSettings.Columns];
+        private readonly Piece[,] backupPieces = new Piece[GameSettings.Rows, GameSettings.Columns];
         private readonly List<Piece> currentGroup = new List<Piece>(GameSettings.PieceCount);
 
-        private readonly Point[] lookDirections = new[] {new Point(0, 1, Direction.Right), new Point(0, -1, Direction.Left), new Point(1, 0, Direction.Bottom), new Point(-1, 0, Direction.Top)};
+        private readonly Point[] lookDirections = new[] { new Point(0, 1, Direction.Right), new Point(0, -1, Direction.Left), new Point(1, 0, Direction.Bottom), new Point(-1, 0, Direction.Top) };
 
-        private readonly Piece[,] pieces = new Piece[GameSettings.Rows,GameSettings.Columns];
+        private readonly Piece[,] pieces = new Piece[GameSettings.Rows, GameSettings.Columns];
 
         private bool hasMoves = true;
 
@@ -68,12 +67,16 @@ namespace BlockGameSolver.Simulation.Core
 
         public static Board FromIBoardSource(IBoardSource source)
         {
+            //update game settings
+            GameSettings.Rows = source.Rows;
+            GameSettings.Columns = source.Columns;
             Board board = new Board();
             foreach (Piece piece in source.GetPiecesForBoard())
             {
-                board[piece.Row, piece.Col] = piece;
+                board[piece.Row, piece.Column] = piece;
             }
             board.SaveBoard();
+
             return board;
         }
 
@@ -82,6 +85,11 @@ namespace BlockGameSolver.Simulation.Core
             instance = board;
         }
 
+        /// <summary>
+        /// Removes a given set of pieces and their corresponding groups from the board.
+        /// </summary>
+        /// <param name="groups">Array containing the piece numbers to be removed.</param>
+        /// <returns>The number of groups actually used to complete the board.</returns>
         public int RemoveGroups(int?[] groups)
         {
             int stopPoint = groups.Length;
@@ -94,7 +102,7 @@ namespace BlockGameSolver.Simulation.Core
                         groups[i] = RandomSource.Instance.Next(0, GameSettings.PieceCount);
                     }
 
-                    int? removed = RemoveGroup(groups[i].Value/GameSettings.Columns, groups[i].Value%GameSettings.Columns);
+                    int? removed = RemoveGroup(groups[i].Value / GameSettings.Columns, groups[i].Value % GameSettings.Columns);
 
                     if (removed == null)
                     {
@@ -187,7 +195,7 @@ namespace BlockGameSolver.Simulation.Core
 
             foreach (Piece piece in pieces)
             {
-                if (piece != null && Math.Abs(piece.Row - row) <= 1 && Math.Abs(piece.Col - col) <= 1)
+                if (piece != null && Math.Abs(piece.Row - row) <= 1 && Math.Abs(piece.Column - col) <= 1)
                 {
                     surroundings.Add(piece);
                 }
@@ -212,7 +220,35 @@ namespace BlockGameSolver.Simulation.Core
         /// </summary>
         /// <param name="row"></param>
         /// <param name="col"></param>
-        /// <returns>The number of pieces that were removed.</returns>
+        /// <returns>The number of the piece that was actually removed.</returns>
+        //public int? RemoveGroup(int row, int col)
+        //{
+        //    List<Piece> list = RemoveGroupPreview(row, col);
+        //    if (list == null)
+        //    {
+        //        return null;
+        //    }
+
+        //    int multiplier = 1;
+        //    foreach (Piece piece in list)
+        //    {
+        //        pieces[piece.Row, piece.Column] = null;
+        //        multiplier *= (piece.IsDouble) ? 2 : 1;
+        //    }
+        //    FillEmptySpaces();
+
+        //    int count = list.Count;
+        //    Score += count * count * multiplier;
+
+        //    return GetNumberFromLocation(list[0].Row, list[0].Column);
+        //}
+
+        /// <summary>
+        /// Gets a list of pieces that would be removed if the current move went through.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="col"></param>
+        /// <returns>The list of pieces that would be removed.</returns>
         public int? RemoveGroup(int row, int col)
         {
             int range = 0;
@@ -221,10 +257,8 @@ namespace BlockGameSolver.Simulation.Core
                 if (range >= GameSettings.Rows || range >= GameSettings.Columns)
                 {
                     //No more groups to remove.
-                    Score += (int) ((1 - (double) PieceCount/(GameSettings.Rows*GameSettings.Columns))*100);
+                    Score += (int)((1 - (double)PieceCount / (GameSettings.Rows * GameSettings.Columns)) * 100);
                     HasMoves = false;
-                    Debug.Assert(Score != 0, "The score is 0 after a removal");
-
                     return null;
                 }
 
@@ -250,15 +284,16 @@ namespace BlockGameSolver.Simulation.Core
                         int count = DetermineGroup(row + i, col + j, Direction.None);
                         if (count >= GameSettings.GroupSize)
                         {
+                            //return currentGroup;
+
                             int multiplier = 1;
                             foreach (Piece piece in currentGroup)
                             {
-                                pieces[piece.Row, piece.Col] = null;
+                                pieces[piece.Row, piece.Column] = null;
                                 multiplier *= (piece.IsDouble) ? 2 : 1;
                             }
                             FillEmptySpaces();
-                            Score += count*count*multiplier;
-                            Debug.Assert(Score != 0, "The score is 0 after a removal");
+                            Score += count * count * multiplier;
 
                             return GetNumberFromLocation(row + i, col + j);
                         }
@@ -271,18 +306,18 @@ namespace BlockGameSolver.Simulation.Core
 
         public static int GetNumberFromLocation(int row, int col)
         {
-            return row*GameSettings.Columns + col;
+            return row * GameSettings.Columns + col;
         }
 
         public static Point GetLocationFromNumber(int number)
         {
-            return new Point(number/GameSettings.Columns, number%GameSettings.Columns);
+            return new Point(number / GameSettings.Columns, number % GameSettings.Columns);
         }
 
         public void FillEmptySpaces()
         {
             int colGap = 0;
-            for (int i = GameSettings.Columns - 1; i >= 0; i--)
+            for (int i = 0; i < GameSettings.Columns; i++)
             {
                 int rowGap = 0;
                 bool colEmpty = true;
@@ -297,9 +332,9 @@ namespace BlockGameSolver.Simulation.Core
 
                     if (rowGap > 0 || colGap > 0)
                     {
-                        pieces[j + rowGap, i + colGap] = Pieces[j, i];
-                        pieces[j + rowGap, i + colGap].Row = j + rowGap;
-                        pieces[j + rowGap, i + colGap].Col = i + colGap;
+                        pieces[j + rowGap, i - colGap] = Pieces[j, i];
+                        pieces[j + rowGap, i - colGap].Row = j + rowGap;
+                        pieces[j + rowGap, i - colGap].Column = i - colGap;
                         pieces[j, i] = null;
                     }
                 }
@@ -363,7 +398,7 @@ namespace BlockGameSolver.Simulation.Core
                 for (int j = 0; j < GameSettings.Columns; j++)
                 {
                     pieces[i, j].Row = i;
-                    pieces[i, j].Col = j;
+                    pieces[i, j].Column = j;
                 }
             }
         }

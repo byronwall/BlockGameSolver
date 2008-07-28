@@ -4,21 +4,21 @@ namespace BlockGameSolver.Simulation.Core
     {
         public Piece(int row, int col, int color)
         {
-            Col = col;
+            Column = col;
             Color = color;
             Row = row;
         }
 
         public Piece(int row, int col, int color, bool isBomb, bool isDouble)
         {
-            Col = col;
+            Column = col;
             Color = (isBomb) ? 6 : color;
             Row = row;
             IsBomb = isBomb;
             IsDouble = isDouble;
         }
         public int Row { get; set; }
-        public int Col { get; set; }
+        public int Column { get; set; }
 
         public int Color { get; set; }
 
@@ -28,7 +28,7 @@ namespace BlockGameSolver.Simulation.Core
 
         public override string ToString()
         {
-            return (Row * GameSettings.Columns + Col).ToString();
+            return (Row * GameSettings.Columns + Column).ToString();
         }
     }
 }
