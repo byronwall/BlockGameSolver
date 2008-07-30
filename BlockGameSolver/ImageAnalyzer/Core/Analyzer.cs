@@ -179,12 +179,4 @@ namespace BlockGameSolver.ImageAnalyzer.Core
             return new Size(cols, rows);
         }
     }
-
-    public interface IBoardSource
-    {
-        List<Piece> GetPiecesForBoard();
-
-        int Rows { get; }
-        int Columns { get; }
-    }
 }

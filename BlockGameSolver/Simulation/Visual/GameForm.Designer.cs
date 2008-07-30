@@ -56,6 +56,11 @@
             this.lblPlayingMode = new System.Windows.Forms.Label();
             this.tableBoard = new System.Windows.Forms.TableLayoutPanel();
             this.chkBoardLabels = new System.Windows.Forms.CheckBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.txtBoardSeed = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.btnCreateNewBoard = new System.Windows.Forms.Button();
             this.grpSimulation.SuspendLayout();
             this.grpSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numGenerations)).BeginInit();
@@ -65,6 +70,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numInitialSize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numPopSize)).BeginInit();
             this.grpPlayingSurface.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // grpSimulation
@@ -76,6 +82,7 @@
             this.grpSimulation.Controls.Add(this.grpSettings);
             this.grpSimulation.Controls.Add(this.chkDelete);
             this.grpSimulation.Controls.Add(this.btnViewResults);
+            this.grpSimulation.Controls.Add(this.button1);
             this.grpSimulation.Controls.Add(this.btnRun);
             this.grpSimulation.Location = new System.Drawing.Point(12, 12);
             this.grpSimulation.Name = "grpSimulation";
@@ -344,7 +351,7 @@
             // btnViewResults
             // 
             this.btnViewResults.Enabled = false;
-            this.btnViewResults.Location = new System.Drawing.Point(6, 49);
+            this.btnViewResults.Location = new System.Drawing.Point(7, 76);
             this.btnViewResults.Name = "btnViewResults";
             this.btnViewResults.Size = new System.Drawing.Size(75, 23);
             this.btnViewResults.TabIndex = 0;
@@ -354,7 +361,7 @@
             // 
             // btnRun
             // 
-            this.btnRun.Location = new System.Drawing.Point(7, 20);
+            this.btnRun.Location = new System.Drawing.Point(8, 47);
             this.btnRun.Name = "btnRun";
             this.btnRun.Size = new System.Drawing.Size(75, 23);
             this.btnRun.TabIndex = 0;
@@ -433,7 +440,7 @@
             this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableBoard.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 24F));
             this.tableBoard.Location = new System.Drawing.Point(6, 75);
             this.tableBoard.Name = "tableBoard";
             this.tableBoard.RowCount = 10;
@@ -461,12 +468,61 @@
             this.chkBoardLabels.UseVisualStyleBackColor = true;
             this.chkBoardLabels.CheckedChanged += new System.EventHandler(this.chkBoardLabels_CheckedChanged);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(8, 20);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "new board";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.btnRun_Click);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.btnCreateNewBoard);
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.txtBoardSeed);
+            this.groupBox1.Location = new System.Drawing.Point(12, 321);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(200, 73);
+            this.groupBox1.TabIndex = 10;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "new board";
+            // 
+            // txtBoardSeed
+            // 
+            this.txtBoardSeed.Location = new System.Drawing.Point(73, 17);
+            this.txtBoardSeed.Name = "txtBoardSeed";
+            this.txtBoardSeed.Size = new System.Drawing.Size(100, 20);
+            this.txtBoardSeed.TabIndex = 0;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(7, 20);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(60, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "board seed";
+            // 
+            // btnCreateNewBoard
+            // 
+            this.btnCreateNewBoard.Location = new System.Drawing.Point(10, 43);
+            this.btnCreateNewBoard.Name = "btnCreateNewBoard";
+            this.btnCreateNewBoard.Size = new System.Drawing.Size(75, 23);
+            this.btnCreateNewBoard.TabIndex = 2;
+            this.btnCreateNewBoard.Text = "create";
+            this.btnCreateNewBoard.UseVisualStyleBackColor = true;
+            this.btnCreateNewBoard.Click += new System.EventHandler(this.btnCreateNewBoard_Click);
+            // 
             // GameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(646, 328);
+            this.ClientSize = new System.Drawing.Size(646, 400);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.grpPlayingSurface);
             this.Controls.Add(this.grpSimulation);
             this.Name = "GameForm";
@@ -484,6 +540,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numPopSize)).EndInit();
             this.grpPlayingSurface.ResumeLayout(false);
             this.grpPlayingSurface.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -519,5 +577,10 @@
         private System.Windows.Forms.Button btnNextMove;
         private System.Windows.Forms.Label lblPlayingMode;
         private System.Windows.Forms.TextBox txtBestFitness;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button btnCreateNewBoard;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox txtBoardSeed;
     }
 }

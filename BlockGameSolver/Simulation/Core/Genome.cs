@@ -1,22 +1,31 @@
 using System;
 using System.Diagnostics;
+using System.Text;
 
 namespace BlockGameSolver.Simulation.Core
 {
     public class Genome
     {
         private static int nextID;
+        private Board board;
 
-        public Genome()
+        [Obsolete]
+        public Genome() : this(Board.Instance)
         {
+        }
+
+        public Genome(Board board) : this(board, true)
+        {
+        }
+
+        public Genome(Board board, bool random)
+        {
+            this.board = board;
             Moves = new int?[GameSettings.MaxMoves];
             Fitness = 0d;
             ID = ++nextID;
-        }
 
-        public Genome(bool isRandom) : this()
-        {
-            if (isRandom)
+            if (random)
             {
                 Random rng = RandomSource.Instance;
                 for (int i = 0; i < GameSettings.MaxMoves; i++)
@@ -89,21 +98,25 @@ namespace BlockGameSolver.Simulation.Core
 
         public override string ToString()
         {
-            //StringBuilder sb = new StringBuilder();
-
-            //for (int i = 0; i < Moves.Length; i++)
-            //{
-            //    if (Moves[i] == null)
-            //    {
-            //        break;
-            //    }
-
-            //    sb.Append(Moves[i]);
-            //    sb.Append(",");
-            //}
-            //return sb.ToString();
+            
 
             return ID.ToString();
+        }
+        public string GetMoveList()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < Moves.Length; i++)
+            {
+                if (Moves[i] == null)
+                {
+                    break;
+                }
+
+                sb.Append(Moves[i]);
+                sb.Append(",");
+            }
+            return sb.ToString();
         }
 
         public int Mutate(double mutateRate)
@@ -126,11 +139,10 @@ namespace BlockGameSolver.Simulation.Core
 
         public void Evaluate()
         {
-            Board.Instance.SaveBoard();
-            MoveCount = Board.Instance.RemoveGroups(Moves);
-            Debug.Assert(MoveCount > 0, "Move count should not be 0.");
-            Fitness = Board.Instance.Score;
-            Board.Instance.LoadOldBoard();
+            board.SaveBoard();
+            MoveCount = board.RemoveGroups(Moves);
+            Fitness = board.Score;
+            board.LoadOldBoard();
         }
 
         public static Genome FromGenome(Genome source)

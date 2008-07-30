@@ -7,7 +7,8 @@ namespace BlockGameSolver.Simulation.Core
 {
     public class Results : IDisposable
     {
-        private readonly FileStream fs;
+        private FileStream fs;
+        private readonly MemoryStream ms;
 
         private readonly List<List<double>> scoreData = new List<List<double>>();
         private readonly StreamWriter sw;
@@ -16,8 +17,8 @@ namespace BlockGameSolver.Simulation.Core
         {
             ResultsFilename = string.Format("{0} - Results.log", DateTime.Now.Ticks);
 
-            fs = new FileStream(ResultsFilename, FileMode.Create);
-            sw = new StreamWriter(fs);
+            ms = new MemoryStream();
+            sw = new StreamWriter(ms);
         }
 
         public string ResultsFilename { get; private set; }
@@ -32,10 +33,22 @@ namespace BlockGameSolver.Simulation.Core
 
         public void Dispose()
         {
-            fs.Dispose();
+            if (fs != null)
+            {
+                fs.Dispose();
+            }
         }
 
         #endregion
+
+        public void WriteDataToDisk()
+        {
+            using (fs = new FileStream(ResultsFilename, FileMode.Create))
+            {
+                ms.WriteTo(fs);
+            }
+            DumpScoreData();
+        }
 
         public void OpenWithExecutable()
         {

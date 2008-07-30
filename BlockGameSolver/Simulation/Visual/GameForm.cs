@@ -5,6 +5,7 @@ using System.Threading;
 using System.Windows.Forms;
 using BlockGameSolver.Properties;
 using BlockGameSolver.Simulation.Core;
+using BlockGameSolver.StatisticalAnalysis.Core;
 using Point = BlockGameSolver.Simulation.Core.Point;
 
 namespace BlockGameSolver.Simulation.Visual
@@ -219,6 +220,21 @@ namespace BlockGameSolver.Simulation.Visual
             Point location = Board.GetLocationFromNumber(move);
 
             btnNextMove.Text = string.Format("next: {0}- {1},{2}", move, location.RowInc, location.ColInc);
+        }
+
+        private void btnCreateNewBoard_Click(object sender, EventArgs e)
+        {
+            int seed;
+            bool goodSeed = int.TryParse(txtBoardSeed.Text, out seed);
+            if (goodSeed)
+            {
+                Board.SetInstance(new BoardSourceStatistical(GameSettings.Rows, GameSettings.Columns, seed));
+            }
+            else
+            {
+                Board.SetInstance(new BoardSourceStatistical(GameSettings.Rows, GameSettings.Columns));
+
+            }
         }
     }
 

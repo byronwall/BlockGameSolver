@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using BlockGameSolver.ImageAnalyzer.Core;
 using BlockGameSolver.Simulation.Utility;
 
 namespace BlockGameSolver.Simulation.Core
@@ -9,12 +8,12 @@ namespace BlockGameSolver.Simulation.Core
     public class Board
     {
         private static Board instance;
-        private readonly Piece[,] backupPieces = new Piece[GameSettings.Rows, GameSettings.Columns];
+        private readonly Piece[,] backupPieces = new Piece[GameSettings.Rows,GameSettings.Columns];
         private readonly List<Piece> currentGroup = new List<Piece>(GameSettings.PieceCount);
 
-        private readonly Point[] lookDirections = new[] { new Point(0, 1, Direction.Right), new Point(0, -1, Direction.Left), new Point(1, 0, Direction.Bottom), new Point(-1, 0, Direction.Top) };
+        private readonly Point[] lookDirections = new[] {new Point(0, 1, Direction.Right), new Point(0, -1, Direction.Left), new Point(1, 0, Direction.Bottom), new Point(-1, 0, Direction.Top)};
 
-        private readonly Piece[,] pieces = new Piece[GameSettings.Rows, GameSettings.Columns];
+        private readonly Piece[,] pieces = new Piece[GameSettings.Rows,GameSettings.Columns];
 
         private bool hasMoves = true;
 
@@ -80,6 +79,12 @@ namespace BlockGameSolver.Simulation.Core
             return board;
         }
 
+        public static void SetInstance(IBoardSource source)
+        {
+            Board board = FromIBoardSource(source);
+            SetInstance(board);
+        }
+
         public static void SetInstance(Board board)
         {
             instance = board;
@@ -102,7 +107,7 @@ namespace BlockGameSolver.Simulation.Core
                         groups[i] = RandomSource.Instance.Next(0, GameSettings.PieceCount);
                     }
 
-                    int? removed = RemoveGroup(groups[i].Value / GameSettings.Columns, groups[i].Value % GameSettings.Columns);
+                    int? removed = RemoveGroup(groups[i].Value/GameSettings.Columns, groups[i].Value%GameSettings.Columns);
 
                     if (removed == null)
                     {
@@ -181,7 +186,7 @@ namespace BlockGameSolver.Simulation.Core
 
                 //This code checks that the path is not backtracked, the rows and columns are within bounds, the new piece exists, the new piece has not been checked, and that the colors match.
 
-                if (dirFrom != Point.GetOppositeDirection(nextPoint.Dir) && (0 <= row + nextPoint.RowInc && row + nextPoint.RowInc < GameSettings.Rows) && 0 <= col + nextPoint.ColInc && col + nextPoint.ColInc < GameSettings.Columns && pieces[row + nextPoint.RowInc, col + nextPoint.ColInc] != null && !currentGroup.Contains(Pieces[row + nextPoint.RowInc, col + nextPoint.ColInc]) && Pieces[row + nextPoint.RowInc, col + nextPoint.ColInc].Color == Pieces[row, col].Color)
+                if (dirFrom != Point.GetOppositeDirection(nextPoint.Dir) && (0 <= row + nextPoint.RowInc && row + nextPoint.RowInc < GameSettings.Rows) && 0 <= col + nextPoint.ColInc && col + nextPoint.ColInc < GameSettings.Columns && pieces[row + nextPoint.RowInc, col + nextPoint.ColInc] != null && !currentGroup.Contains(Pieces[row + nextPoint.RowInc, col + nextPoint.ColInc]) && !Pieces[row, col].IsBomb && Pieces[row + nextPoint.RowInc, col + nextPoint.ColInc].Color == Pieces[row, col].Color)
                 {
                     count += DetermineGroup(row + nextPoint.RowInc, col + nextPoint.ColInc, nextPoint.Dir);
                 }
@@ -228,7 +233,6 @@ namespace BlockGameSolver.Simulation.Core
         //    {
         //        return null;
         //    }
-
         //    int multiplier = 1;
         //    foreach (Piece piece in list)
         //    {
@@ -236,13 +240,10 @@ namespace BlockGameSolver.Simulation.Core
         //        multiplier *= (piece.IsDouble) ? 2 : 1;
         //    }
         //    FillEmptySpaces();
-
         //    int count = list.Count;
         //    Score += count * count * multiplier;
-
         //    return GetNumberFromLocation(list[0].Row, list[0].Column);
         //}
-
         /// <summary>
         /// Gets a list of pieces that would be removed if the current move went through.
         /// </summary>
@@ -257,7 +258,7 @@ namespace BlockGameSolver.Simulation.Core
                 if (range >= GameSettings.Rows || range >= GameSettings.Columns)
                 {
                     //No more groups to remove.
-                    Score += (int)((1 - (double)PieceCount / (GameSettings.Rows * GameSettings.Columns)) * 100);
+                    Score += (int) ((1 - (double) PieceCount/(GameSettings.Rows*GameSettings.Columns))*100);
                     HasMoves = false;
                     return null;
                 }
@@ -293,7 +294,7 @@ namespace BlockGameSolver.Simulation.Core
                                 multiplier *= (piece.IsDouble) ? 2 : 1;
                             }
                             FillEmptySpaces();
-                            Score += count * count * multiplier;
+                            Score += count*count*multiplier;
 
                             return GetNumberFromLocation(row + i, col + j);
                         }
@@ -306,12 +307,12 @@ namespace BlockGameSolver.Simulation.Core
 
         public static int GetNumberFromLocation(int row, int col)
         {
-            return row * GameSettings.Columns + col;
+            return row*GameSettings.Columns + col;
         }
 
         public static Point GetLocationFromNumber(int number)
         {
-            return new Point(number / GameSettings.Columns, number % GameSettings.Columns);
+            return new Point(number/GameSettings.Columns, number%GameSettings.Columns);
         }
 
         public void FillEmptySpaces()
@@ -359,7 +360,7 @@ namespace BlockGameSolver.Simulation.Core
             for (int i = 0; i < GameSettings.Columns; i++)
             {
                 sb.Append(i);
-                sb.Append(" ");
+                sb.Append("\t");
             }
 
             sb.Append("\r\n\r\n");
@@ -371,15 +372,20 @@ namespace BlockGameSolver.Simulation.Core
 
                 for (int j = 0; j < GameSettings.Columns; j++)
                 {
-                    if (pieces[i, j] != null)
+                    Piece piece = pieces[i, j];
+                    if (piece != null)
                     {
-                        sb.Append(pieces[i, j].Color);
+                        sb.Append(piece.Color);
+                        if (piece.IsDouble)
+                        {
+                            sb.Append("d");
+                        }
                     }
                     else
                     {
                         sb.Append("*");
                     }
-                    sb.Append(" ");
+                    sb.Append("\t");
                 }
                 sb.Append("\r\n");
             }

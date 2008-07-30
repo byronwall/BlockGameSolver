@@ -33,8 +33,11 @@
             this.btnShowSim = new System.Windows.Forms.Button();
             this.btnShowAnalyzer = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.btnShowStats = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -91,11 +94,32 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "testing";
             // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.btnShowStats);
+            this.groupBox3.Location = new System.Drawing.Point(13, 179);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(90, 100);
+            this.groupBox3.TabIndex = 4;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "stats";
+            // 
+            // btnShowStats
+            // 
+            this.btnShowStats.Location = new System.Drawing.Point(5, 19);
+            this.btnShowStats.Name = "btnShowStats";
+            this.btnShowStats.Size = new System.Drawing.Size(75, 45);
+            this.btnShowStats.TabIndex = 2;
+            this.btnShowStats.Text = "stats";
+            this.btnShowStats.UseVisualStyleBackColor = true;
+            this.btnShowStats.Click += new System.EventHandler(this.btnShowStats_Click);
+            // 
             // GamePlayerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(119, 183);
+            this.ClientSize = new System.Drawing.Size(119, 306);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Name = "GamePlayerForm";
@@ -103,6 +127,7 @@
             this.Load += new System.EventHandler(this.GamePlayerForm_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -114,5 +139,7 @@
         private System.Windows.Forms.Button btnShowSim;
         private System.Windows.Forms.Button btnShowAnalyzer;
         private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Button btnShowStats;
     }
 }

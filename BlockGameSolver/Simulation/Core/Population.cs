@@ -15,10 +15,25 @@ namespace BlockGameSolver.Simulation.Core
         private int generationNum;
 
         private PopulationSettings settings;
+        private readonly Board board;
+        private bool isWritingToDisk;
 
-        public Population(PopulationSettings settings)
+        public Population(PopulationSettings settings, Board board)
         {
             this.settings = settings;
+            this.board = board;
+        }
+
+        public Population(PopulationSettings settings)
+            : this(settings, Board.Instance)
+        {
+        }
+
+        public Population(Board board)
+            : this()
+        {
+            this.board = board;
+
         }
 
         public Population()
@@ -36,12 +51,23 @@ namespace BlockGameSolver.Simulation.Core
             get { return currentPopulation.OrderByDescending(c => c.Fitness).Take(1).Single(); }
         }
 
+        public bool IsWritingToDisk
+        {
+            get { return isWritingToDisk; }
+            set { isWritingToDisk = value; }
+        }
+
+        public Board PopulationBoard
+        {
+            get { return board; }
+        }
+
         private void GenerateInitialPopulation()
         {
             currentPopulation.Clear();
             for (int i = 0; i < settings.InitialPopulationSize; i++)
             {
-                currentPopulation.Add(new Genome(true));
+                currentPopulation.Add(new Genome(PopulationBoard));
             }
         }
 
@@ -162,6 +188,8 @@ namespace BlockGameSolver.Simulation.Core
 
         public void BeginGeneticProcess()
         {
+            RandomSource.Reseed((int) DateTime.Now.Ticks);
+
             PopulationResults.AddHeader("Beginning the process");
 
             GenerateInitialPopulation();
@@ -172,7 +200,12 @@ namespace BlockGameSolver.Simulation.Core
             }
             populationResults.AddHeader(string.Format("Best plays had a score of {0}", currentPopulation.OrderByDescending(c => c.Fitness).Take(1).Single().Fitness));
 
-            PopulationResults.FinishOutput();
+
+            if (isWritingToDisk)
+            {
+                populationResults.WriteDataToDisk();
+            }
+
             InvokePopulationFinished(EventArgs.Empty);
         }
 
@@ -203,15 +236,5 @@ namespace BlockGameSolver.Simulation.Core
             BeginGeneticProcess();
             return GenomeBest;
         }
-    }
-
-    public class GenerationEventArgs : EventArgs
-    {
-        public GenerationEventArgs(int generationNumber)
-        {
-            GenerationNumber = generationNumber;
-        }
-
-        public int GenerationNumber { get; private set; }
     }
 }

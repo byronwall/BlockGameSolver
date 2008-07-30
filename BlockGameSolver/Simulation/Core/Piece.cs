@@ -17,6 +17,7 @@ namespace BlockGameSolver.Simulation.Core
             IsBomb = isBomb;
             IsDouble = isDouble;
         }
+
         public int Row { get; set; }
         public int Column { get; set; }
 

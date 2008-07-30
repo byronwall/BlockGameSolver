@@ -8,7 +8,7 @@ using BlockGameSolver.ImageAnalyzer.Visual;
 using BlockGameSolver.Simulation.Core;
 using BlockGameSolver.Simulation.Visual;
 using DataFormats = System.Windows.DataFormats;
-using Point = System.Drawing.Point;
+using Point = BlockGameSolver.Simulation.Core.Point;
 
 namespace BlockGameSolver.GamePlayer.Visual
 {
@@ -17,8 +17,7 @@ namespace BlockGameSolver.GamePlayer.Visual
         private Analyzer analyzer;
         private Genome bestGenome;
         private string boardDataPath = "boardData.xml";
-        private int currentIndex = 0;
-        private GamePlayerNextPieceForm nextPieceForm;
+        private int currentIndex;
         private Timer timer;
 
         public GamePlayerForm()
@@ -43,30 +42,45 @@ namespace BlockGameSolver.GamePlayer.Visual
         /// <param name="e"></param>
         private void btnPlayBoard_Click(object sender, EventArgs e)
         {
-            Bitmap screenshot = BitmapUtility.BitmapFromScreenshot(this);
-            analyzer.SetScreenshot(screenshot);
+            try
+            {
+                Bitmap screenshot = BitmapUtility.BitmapFromScreenshot(this);
+                analyzer.SetScreenshot(screenshot);
 
-            Board board = Board.FromIBoardSource(analyzer);
-            Board.SetInstance(board);
+                Board board = Board.FromIBoardSource(analyzer);
+                Board.SetInstance(board);
 
-            Population population = new Population();
-            bestGenome = population.DetermineBestGenome();
-            timer = new Timer {Interval = 2000};
-            timer.Tick += timer_Tick;
-            timer.Start();
+                Population population = new Population();
+                bestGenome = population.DetermineBestGenome();
+                timer = new Timer { Interval = 2000 };
+                timer.Tick += timer_Tick;
+                timer.Start();
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Board was not found on the screen.  No harm.  Try again.");
+            }
         }
 
+        private GamePlayerNextPieceForm nextPieceForm = new GamePlayerNextPieceForm();
         private void timer_Tick(object sender, EventArgs e)
         {
             if (bestGenome.Moves[currentIndex] == null)
             {
                 timer.Stop();
+                nextPieceForm.Hide();
                 return;
             }
-            Simulation.Core.Point locationFromNumber = Board.GetLocationFromNumber(bestGenome.Moves[currentIndex++].Value);
-            Point location = analyzer.GetPointFromLocation(locationFromNumber.RowInc, locationFromNumber.ColInc, analyzer.Settings.DoubleOffset);
-            Visual.MouseClick.SendClick(location);
+            Point locationFromNumber = Board.GetLocationFromNumber(bestGenome.Moves[currentIndex++].Value);
+            System.Drawing.Point location = analyzer.GetPointFromLocation(locationFromNumber.RowInc, locationFromNumber.ColInc, new System.Drawing.Point(0, 0));
 
+            nextPieceForm.Hide();
+            nextPieceForm.Location = location;
+            nextPieceForm.UpdateMoveNum(currentIndex);
+
+            nextPieceForm.Show();
+
+            //Visual.MouseClick.SendClick(location);
         }
 
         private void GamePlayerForm_Load(object sender, EventArgs e)
@@ -97,5 +111,17 @@ namespace BlockGameSolver.GamePlayer.Visual
                 e.Effect = DragDropEffects.Copy;
             }
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            new GamePlayerNextPieceForm().Show();
+        }
+
+        private void btnShowStats_Click(object sender, EventArgs e)
+        {
+            new StatisticalAnalysis.Visual.StatBootstrapForm().Show();
+
+        }
+
     }
 }
