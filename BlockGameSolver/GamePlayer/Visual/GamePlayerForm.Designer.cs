@@ -99,7 +99,7 @@
             this.groupBox3.Controls.Add(this.btnShowStats);
             this.groupBox3.Location = new System.Drawing.Point(13, 179);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(90, 100);
+            this.groupBox3.Size = new System.Drawing.Size(90, 78);
             this.groupBox3.TabIndex = 4;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "stats";
@@ -118,13 +118,14 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(119, 306);
+            this.ClientSize = new System.Drawing.Size(119, 266);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Name = "GamePlayerForm";
             this.Text = "GamePlayerForm";
             this.Load += new System.EventHandler(this.GamePlayerForm_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GamePlayerForm_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);

@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Text;
 
 namespace BlockGameSolver.Simulation.Core
@@ -7,12 +6,7 @@ namespace BlockGameSolver.Simulation.Core
     public class Genome
     {
         private static int nextID;
-        private Board board;
-
-        [Obsolete]
-        public Genome() : this(Board.Instance)
-        {
-        }
+        private readonly Board board;
 
         public Genome(Board board) : this(board, true)
         {
@@ -147,7 +141,7 @@ namespace BlockGameSolver.Simulation.Core
 
         public static Genome FromGenome(Genome source)
         {
-            Genome output = new Genome();
+            Genome output = new Genome(source.board);
             source.Moves.CopyTo(output.Moves, 0);
             output.MoveCount = source.MoveCount;
 

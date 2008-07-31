@@ -2,11 +2,13 @@
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using BlockGameSolver.GamePlayer.Core;
 using BlockGameSolver.ImageAnalyzer.Core;
 using BlockGameSolver.ImageAnalyzer.Utility;
 using BlockGameSolver.ImageAnalyzer.Visual;
 using BlockGameSolver.Simulation.Core;
 using BlockGameSolver.Simulation.Visual;
+using BlockGameSolver.StatisticalAnalysis.Visual;
 using DataFormats = System.Windows.DataFormats;
 using Point = BlockGameSolver.Simulation.Core.Point;
 
@@ -14,10 +16,12 @@ namespace BlockGameSolver.GamePlayer.Visual
 {
     public partial class GamePlayerForm : Form
     {
+        private readonly GamePlayerNextPieceForm nextPieceForm = new GamePlayerNextPieceForm();
         private Analyzer analyzer;
         private Genome bestGenome;
         private string boardDataPath = "boardData.xml";
         private int currentIndex;
+        private Population population;
         private Timer timer;
 
         public GamePlayerForm()
@@ -27,7 +31,7 @@ namespace BlockGameSolver.GamePlayer.Visual
 
         private void btnShowSim_Click(object sender, EventArgs e)
         {
-            new GameForm().Show();
+            new GameForm(population).Show();
         }
 
         private void btnShowAnalyzer_Click(object sender, EventArgs e)
@@ -48,11 +52,10 @@ namespace BlockGameSolver.GamePlayer.Visual
                 analyzer.SetScreenshot(screenshot);
 
                 Board board = Board.FromIBoardSource(analyzer);
-                Board.SetInstance(board);
 
-                Population population = new Population();
+                population = new Population(board);
                 bestGenome = population.DetermineBestGenome();
-                timer = new Timer { Interval = 2000 };
+                timer = new Timer { Interval = 1500 };
                 timer.Tick += timer_Tick;
                 timer.Start();
             }
@@ -62,8 +65,21 @@ namespace BlockGameSolver.GamePlayer.Visual
             }
         }
 
-        private GamePlayerNextPieceForm nextPieceForm = new GamePlayerNextPieceForm();
+        void hook_KeyPressed(object sender, KeyPressedEventArgs e)
+        {
+            if (timer != null && timer.Enabled)
+            {
+                timer.Start();
+                ShowNextMove();
+            }
+        }
+
         private void timer_Tick(object sender, EventArgs e)
+        {
+            ShowNextMove();
+        }
+
+        private void ShowNextMove()
         {
             if (bestGenome.Moves[currentIndex] == null)
             {
@@ -71,7 +87,7 @@ namespace BlockGameSolver.GamePlayer.Visual
                 nextPieceForm.Hide();
                 return;
             }
-            Point locationFromNumber = Board.GetLocationFromNumber(bestGenome.Moves[currentIndex++].Value);
+            Point locationFromNumber = GameSettings.GetLocationFromNumber(bestGenome.Moves[currentIndex].Value);
             System.Drawing.Point location = analyzer.GetPointFromLocation(locationFromNumber.RowInc, locationFromNumber.ColInc, new System.Drawing.Point(0, 0));
 
             nextPieceForm.Hide();
@@ -79,18 +95,21 @@ namespace BlockGameSolver.GamePlayer.Visual
             nextPieceForm.UpdateMoveNum(currentIndex);
 
             nextPieceForm.Show();
-
-            //Visual.MouseClick.SendClick(location);
+            currentIndex++;
         }
 
         private void GamePlayerForm_Load(object sender, EventArgs e)
         {
             if (File.Exists(boardDataPath))
             {
-                ImageSettings settings = ImageSettings.LoadDataFromXML(boardDataPath);
-                analyzer = new Analyzer(settings);
+                analyzer = new Analyzer(ImageSettings.LoadDataFromXML(boardDataPath));
             }
+            hook = new KeyboardHook();
+            hook.KeyPressed += hook_KeyPressed;
+            hook.RegisterHotKey(Core.ModifierKeys.Control|Core.ModifierKeys.Alt, Keys.F3);
+
         }
+        KeyboardHook hook;
 
         private void btnPlayBoard_DragDrop(object sender, DragEventArgs e)
         {
@@ -100,7 +119,7 @@ namespace BlockGameSolver.GamePlayer.Visual
                 string path = strings[0];
 
                 analyzer.SetScreenshot(path);
-                Board.SetInstance(Board.FromIBoardSource(analyzer));
+                population = new Population(Board.FromIBoardSource(analyzer));
             }
         }
 
@@ -112,16 +131,14 @@ namespace BlockGameSolver.GamePlayer.Visual
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            new GamePlayerNextPieceForm().Show();
-        }
-
         private void btnShowStats_Click(object sender, EventArgs e)
         {
-            new StatisticalAnalysis.Visual.StatBootstrapForm().Show();
-
+            new StatBootstrapForm().Show();
         }
 
+        private void GamePlayerForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            hook.Dispose();
+        }
     }
 }

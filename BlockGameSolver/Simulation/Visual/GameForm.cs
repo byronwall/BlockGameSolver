@@ -5,7 +5,6 @@ using System.Threading;
 using System.Windows.Forms;
 using BlockGameSolver.Properties;
 using BlockGameSolver.Simulation.Core;
-using BlockGameSolver.StatisticalAnalysis.Core;
 using Point = BlockGameSolver.Simulation.Core.Point;
 
 namespace BlockGameSolver.Simulation.Visual
@@ -24,6 +23,11 @@ namespace BlockGameSolver.Simulation.Visual
             InitializeComponent();
         }
 
+        public GameForm(Population population):this()
+        {
+            this.population = population;
+        }
+
         private void btnRun_Click(object sender, EventArgs e)
         {
             int popSize = (int)numPopSize.Value;
@@ -36,7 +40,11 @@ namespace BlockGameSolver.Simulation.Visual
 
             PopulationSettings settings = new PopulationSettings(generations, popSize, mutateRatio, filterRate, initSize, crossRatio);
 
-            population = new Population(settings);
+            if (population == null)
+            {
+
+                population = new Population(settings, Board.CreateRandomBoard());
+            }
             population.PopulationFinished += population_PopulationFinished;
             population.GenerationCompleted += population_GenerationCompleted;
 
@@ -46,7 +54,7 @@ namespace BlockGameSolver.Simulation.Visual
             progCompleted.Minimum = 0;
             progCompleted.Maximum = generations;
 
-            Board.Instance.LoadOldBoard();
+            population.PopulationBoard.LoadOldBoard();
 
             Thread t = new Thread(population.BeginGeneticProcess)
             {
@@ -125,7 +133,7 @@ namespace BlockGameSolver.Simulation.Visual
         {
             currentMove = 0;
             boardMode = BoardMode.FreePlay;
-            Board.Instance.LoadOldBoard();
+            population.PopulationBoard.LoadOldBoard();
 
             RedrawBoard();
         }
@@ -135,7 +143,7 @@ namespace BlockGameSolver.Simulation.Visual
             Panel send = (Panel)sender;
             Piece piece = (Piece)send.Tag;
 
-            Board.Instance.RemoveGroup(piece.Row, piece.Column);
+            population.PopulationBoard.RemoveGroup(piece.Row, piece.Column);
             RedrawBoard();
         }
 
@@ -144,7 +152,7 @@ namespace BlockGameSolver.Simulation.Visual
             tableBoard.Visible = false;
             tableBoard.Controls.Clear();
 
-            foreach (Piece piece in Board.Instance.Pieces)
+            foreach (Piece piece in population.PopulationBoard.Pieces)
             {
                 if (piece == null)
                 {
@@ -170,7 +178,7 @@ namespace BlockGameSolver.Simulation.Visual
                     };
                     back.Controls.Add(lblPieceNum);
                 }
-                if (Board.Instance.HasMoves &&
+                if (population.PopulationBoard.HasMoves &&
                     boardMode == BoardMode.FreePlay)
                 {
                     back.MouseClick += back_MouseClick;
@@ -180,7 +188,7 @@ namespace BlockGameSolver.Simulation.Visual
             }
 
             tableBoard.Visible = true;
-            txtScore.Text = Board.Instance.Score.ToString();
+            txtScore.Text = population.PopulationBoard.Score.ToString();
         }
 
         private void btnPlayBest_Click(object sender, EventArgs e)
@@ -188,7 +196,7 @@ namespace BlockGameSolver.Simulation.Visual
             //Move the best result over to the board to see it played.
             currentMove = 0;
             boardMode = BoardMode.GuidedPlay;
-            Board.Instance.LoadOldBoard();
+            population.PopulationBoard.LoadOldBoard();
             RedrawBoard();
             btnNextMove.Enabled = true;
             lblPlayingMode.Text = string.Format("Board: {0}", boardMode);
@@ -202,13 +210,13 @@ namespace BlockGameSolver.Simulation.Visual
 
         private void btnNextMove_Click(object sender, EventArgs e)
         {
-            Board.Instance.RemoveGroup(Best.Moves[currentMove++].Value);
+            population.PopulationBoard.RemoveGroup(Best.Moves[currentMove++].Value);
             UpdateNextButton();
 
             RedrawBoard();
             if (currentMove == Best.MoveCount)
             {
-                Board.Instance.RemoveGroup(0);
+                population.PopulationBoard.RemoveGroup(0);
                 RedrawBoard();
                 btnNextMove.Enabled = false;
             }
@@ -217,24 +225,9 @@ namespace BlockGameSolver.Simulation.Visual
         private void UpdateNextButton()
         {
             int move = Best.Moves[currentMove] ?? 0;
-            Point location = Board.GetLocationFromNumber(move);
+            Point location = GameSettings.GetLocationFromNumber(move);
 
             btnNextMove.Text = string.Format("next: {0}- {1},{2}", move, location.RowInc, location.ColInc);
-        }
-
-        private void btnCreateNewBoard_Click(object sender, EventArgs e)
-        {
-            int seed;
-            bool goodSeed = int.TryParse(txtBoardSeed.Text, out seed);
-            if (goodSeed)
-            {
-                Board.SetInstance(new BoardSourceStatistical(GameSettings.Rows, GameSettings.Columns, seed));
-            }
-            else
-            {
-                Board.SetInstance(new BoardSourceStatistical(GameSettings.Rows, GameSettings.Columns));
-
-            }
         }
     }
 

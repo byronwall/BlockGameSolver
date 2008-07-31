@@ -63,6 +63,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GamePlayer\Core\ModifierKeys.cs" />
+    <Compile Include="GamePlayer\Core\KeyboardHook.cs" />
+    <Compile Include="GamePlayer\Core\KeyPressedEventArgs.cs" />
     <Compile Include="GamePlayer\Visual\GamePlayerForm.cs">
       <SubType>Form</SubType>
     </Compile>

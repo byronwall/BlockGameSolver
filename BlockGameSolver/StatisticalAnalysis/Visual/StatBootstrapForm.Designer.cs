@@ -38,6 +38,7 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.chkGeneticSettings = new System.Windows.Forms.CheckBox();
             this.txtGeneticSettings = new System.Windows.Forms.TextBox();
+            this.lstPopulationSettings = new System.Windows.Forms.ListBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -98,13 +99,14 @@
             this.panel1.Controls.Add(this.progComplete);
             this.panel1.Controls.Add(this.btnRun);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 143);
+            this.panel1.Location = new System.Drawing.Point(0, 270);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(292, 55);
             this.panel1.TabIndex = 4;
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.lstPopulationSettings);
             this.panel2.Controls.Add(this.chkGeneticSettings);
             this.panel2.Controls.Add(this.txtBoardNum);
             this.panel2.Controls.Add(this.label1);
@@ -114,7 +116,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(292, 143);
+            this.panel2.Size = new System.Drawing.Size(292, 270);
             this.panel2.TabIndex = 5;
             // 
             // chkGeneticSettings
@@ -139,11 +141,22 @@
             this.txtGeneticSettings.TabIndex = 1;
             this.txtGeneticSettings.Text = "populationSettings.xml";
             // 
+            // lstPopulationSettings
+            // 
+            this.lstPopulationSettings.AllowDrop = true;
+            this.lstPopulationSettings.FormattingEnabled = true;
+            this.lstPopulationSettings.Location = new System.Drawing.Point(76, 85);
+            this.lstPopulationSettings.Name = "lstPopulationSettings";
+            this.lstPopulationSettings.Size = new System.Drawing.Size(204, 95);
+            this.lstPopulationSettings.TabIndex = 3;
+            this.lstPopulationSettings.DragDrop += new System.Windows.Forms.DragEventHandler(this.lstPopulationSettings_DragDrop);
+            this.lstPopulationSettings.DragEnter += new System.Windows.Forms.DragEventHandler(this.lstPopulationSettings_DragEnter);
+            // 
             // StatBootstrapForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(292, 198);
+            this.ClientSize = new System.Drawing.Size(292, 325);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "StatBootstrapForm";
@@ -167,5 +180,6 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.CheckBox chkGeneticSettings;
         private System.Windows.Forms.TextBox txtGeneticSettings;
+        private System.Windows.Forms.ListBox lstPopulationSettings;
     }
 }

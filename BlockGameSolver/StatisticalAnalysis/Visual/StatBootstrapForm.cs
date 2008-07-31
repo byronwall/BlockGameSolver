@@ -63,5 +63,15 @@ namespace BlockGameSolver.StatisticalAnalysis.Visual
         {
             txtGeneticSettings.Enabled = !chkGeneticSettings.Checked;
         }
+
+        private void lstPopulationSettings_DragEnter(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void lstPopulationSettings_DragDrop(object sender, DragEventArgs e)
+        {
+
+        }
     }
 }

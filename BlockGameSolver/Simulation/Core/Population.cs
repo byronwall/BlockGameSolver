@@ -24,21 +24,10 @@ namespace BlockGameSolver.Simulation.Core
             this.board = board;
         }
 
-        public Population(PopulationSettings settings)
-            : this(settings, Board.Instance)
-        {
-        }
-
         public Population(Board board)
-            : this()
+            : this(PopulationSettings.Default, board)
         {
-            this.board = board;
 
-        }
-
-        public Population()
-        {
-            this.settings = new PopulationSettings(15, 50, 0.01, 0.01, 50, 0.95);
         }
 
         public Results PopulationResults
@@ -188,7 +177,7 @@ namespace BlockGameSolver.Simulation.Core
 
         public void BeginGeneticProcess()
         {
-            RandomSource.Reseed((int) DateTime.Now.Ticks);
+            RandomSource.Reseed((int)DateTime.Now.Ticks);
 
             PopulationResults.AddHeader("Beginning the process");
 

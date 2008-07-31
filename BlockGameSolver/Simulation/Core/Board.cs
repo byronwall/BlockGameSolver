@@ -7,7 +7,6 @@ namespace BlockGameSolver.Simulation.Core
 {
     public class Board
     {
-        private static Board instance;
         private readonly Piece[,] backupPieces = new Piece[GameSettings.Rows,GameSettings.Columns];
         private readonly List<Piece> currentGroup = new List<Piece>(GameSettings.PieceCount);
 
@@ -47,18 +46,6 @@ namespace BlockGameSolver.Simulation.Core
             }
         }
 
-        public static Board Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = CreateRandomBoard();
-                }
-                return instance;
-            }
-        }
-
         public Piece[,] Pieces
         {
             get { return pieces; }
@@ -77,17 +64,6 @@ namespace BlockGameSolver.Simulation.Core
             board.SaveBoard();
 
             return board;
-        }
-
-        public static void SetInstance(IBoardSource source)
-        {
-            Board board = FromIBoardSource(source);
-            SetInstance(board);
-        }
-
-        public static void SetInstance(Board board)
-        {
-            instance = board;
         }
 
         /// <summary>
@@ -215,7 +191,7 @@ namespace BlockGameSolver.Simulation.Core
         /// <returns>The number of pieces that were removed.</returns>
         public int? RemoveGroup(int number)
         {
-            Point location = GetLocationFromNumber(number);
+            Point location = GameSettings.GetLocationFromNumber(number);
 
             return RemoveGroup(location.RowInc, location.ColInc);
         }
@@ -296,23 +272,13 @@ namespace BlockGameSolver.Simulation.Core
                             FillEmptySpaces();
                             Score += count*count*multiplier;
 
-                            return GetNumberFromLocation(row + i, col + j);
+                            return GameSettings.GetNumberFromLocation(row + i, col + j);
                         }
                     }
                 }
 
                 range++;
             }
-        }
-
-        public static int GetNumberFromLocation(int row, int col)
-        {
-            return row*GameSettings.Columns + col;
-        }
-
-        public static Point GetLocationFromNumber(int number)
-        {
-            return new Point(number/GameSettings.Columns, number%GameSettings.Columns);
         }
 
         public void FillEmptySpaces()
