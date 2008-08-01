@@ -51,6 +51,8 @@ namespace BlockGameSolver.Simulation.Core
             get { return board; }
         }
 
+        public bool IsReseedRequired { get; set; }
+
         private void GenerateInitialPopulation()
         {
             currentPopulation.Clear();
@@ -177,7 +179,10 @@ namespace BlockGameSolver.Simulation.Core
 
         public void BeginGeneticProcess()
         {
-            RandomSource.Reseed((int)DateTime.Now.Ticks);
+            if (IsReseedRequired)
+            {
+                RandomSource.Reseed((int)DateTime.Now.Ticks);
+            }
 
             PopulationResults.AddHeader("Beginning the process");
 

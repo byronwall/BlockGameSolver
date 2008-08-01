@@ -170,6 +170,7 @@
     <Compile Include="StatisticalAnalysis\Visual\StatBootstrapForm.Designer.cs">
       <DependentUpon>StatBootstrapForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Utility\CommandLine\CommandLineParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\klick-klack-double.png" />

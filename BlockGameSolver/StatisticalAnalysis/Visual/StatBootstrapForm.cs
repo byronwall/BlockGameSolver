@@ -28,7 +28,7 @@ namespace BlockGameSolver.StatisticalAnalysis.Visual
                 stats = !chkGeneticSettings.Checked ? new SimulationStats(runCount, seed, txtGeneticSettings.Text) : new SimulationStats(runCount, seed);
 
                 stats.RunFinished += stats_RunFinished;
-                stats.AnalysisFinished += new EventHandler(stats_AnalysisFinished);
+                stats.AnalysisFinished += stats_AnalysisFinished;
 
                 new Thread(stats.RunAnalysis).Start();
             }

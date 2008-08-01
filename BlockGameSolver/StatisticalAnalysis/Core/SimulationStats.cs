@@ -9,14 +9,14 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
 {
     internal class SimulationStats
     {
-        private int boardSeed;
-        private IBoardSource boardSource;
+        private readonly int boardSeed;
+        private readonly IBoardSource boardSource;
+        private readonly PopulationSettings populationSettings;
+
+        private readonly List<Genome> results = new List<Genome>();
+        private readonly int runCount;
         private string pathToResults;
         private Population population;
-        private PopulationSettings populationSettings;
-
-        private List<Genome> results = new List<Genome>();
-        private int runCount;
 
         public SimulationStats(int runCount, int boardSeed) : this(runCount, boardSeed, PopulationSettings.Default)
         {
@@ -45,7 +45,7 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
         {
             for (int i = 0; i < runCount; i++)
             {
-                population = new Population(populationSettings, Board.FromIBoardSource(boardSource));
+                population = new Population(populationSettings, Board.FromIBoardSource(boardSource)) {IsReseedRequired = true};
                 Genome genome = population.DetermineBestGenome();
 
                 results.Add(genome);
