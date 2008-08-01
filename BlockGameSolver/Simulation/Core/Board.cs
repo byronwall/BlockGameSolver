@@ -162,9 +162,11 @@ namespace BlockGameSolver.Simulation.Core
 
                 //This code checks that the path is not backtracked, the rows and columns are within bounds, the new piece exists, the new piece has not been checked, and that the colors match.
 
-                if (dirFrom != Point.GetOppositeDirection(nextPoint.Dir) && (0 <= row + nextPoint.RowInc && row + nextPoint.RowInc < GameSettings.Rows) && 0 <= col + nextPoint.ColInc && col + nextPoint.ColInc < GameSettings.Columns && pieces[row + nextPoint.RowInc, col + nextPoint.ColInc] != null && !currentGroup.Contains(Pieces[row + nextPoint.RowInc, col + nextPoint.ColInc]) && !Pieces[row, col].IsBomb && Pieces[row + nextPoint.RowInc, col + nextPoint.ColInc].Color == Pieces[row, col].Color)
+                int nextColumn = col + nextPoint.ColInc;
+                int nextRow = row + nextPoint.RowInc;
+                if (dirFrom != Point.GetOppositeDirection(nextPoint.Dir) && (0 <= nextRow && nextRow < GameSettings.Rows) && 0 <= nextColumn && nextColumn < GameSettings.Columns && Pieces[nextRow, nextColumn] != null && !Pieces[row, col].IsBomb && Pieces[nextRow, nextColumn].Color == Pieces[row, col].Color && !currentGroup.Contains(Pieces[nextRow, nextColumn]))
                 {
-                    count += DetermineGroup(row + nextPoint.RowInc, col + nextPoint.ColInc, nextPoint.Dir);
+                    count += DetermineGroup(nextRow, nextColumn, nextPoint.Dir);
                 }
             }
             return count;
@@ -258,18 +260,29 @@ namespace BlockGameSolver.Simulation.Core
                         }
 
                         currentGroup.Clear();
+
                         int count = DetermineGroup(row + i, col + j, Direction.None);
                         if (count >= GameSettings.GroupSize)
                         {
                             //return currentGroup;
 
                             int multiplier = 1;
+                            int maxRow = 0,
+                                minCol = GameSettings.Columns - 1;
                             foreach (Piece piece in currentGroup)
                             {
                                 pieces[piece.Row, piece.Column] = null;
                                 multiplier *= (piece.IsDouble) ? 2 : 1;
+                                if (piece.Row > maxRow)
+                                {
+                                    maxRow = piece.Row;
+                                }
+                                if (piece.Column < minCol)
+                                {
+                                    minCol = piece.Column;
+                                }
                             }
-                            FillEmptySpaces();
+                            FillEmptySpaces(maxRow, minCol);
                             Score += count*count*multiplier;
 
                             return GameSettings.GetNumberFromLocation(row + i, col + j);
@@ -281,14 +294,14 @@ namespace BlockGameSolver.Simulation.Core
             }
         }
 
-        public void FillEmptySpaces()
+        public void FillEmptySpaces(int maxRow, int minCol)
         {
             int colGap = 0;
-            for (int i = 0; i < GameSettings.Columns; i++)
+            for (int i = minCol; i < GameSettings.Columns; i++)
             {
                 int rowGap = 0;
                 bool colEmpty = true;
-                for (int j = GameSettings.Rows - 1; j >= 0; j--)
+                for (int j = maxRow; j >= 0; j--)
                 {
                     if (pieces[j, i] == null)
                     {
