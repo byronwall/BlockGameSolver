@@ -6,15 +6,11 @@ namespace BlockGameSolver.Utility.CommandLine
 {
     public class CommandLineParser
     {
-        private string[] arguments;
-        private Dictionary<string, string> switchValue = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> switchValue = new Dictionary<string, string>();
 
-
-        public CommandLineParser(string[] arguments)
+        public CommandLineParser(IEnumerable<string> arguments)
         {
-            this.arguments = arguments;
-
-            Regex splitter = new Regex(@"^-{1,2}|^/|=|:", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            Regex splitter = new Regex(@"^-{1,2}|^/|=|:", RegexOptions.IgnoreCase);
 
             string[] parts;
 
@@ -24,7 +20,7 @@ namespace BlockGameSolver.Utility.CommandLine
 
                 if (parts.Length == 3)
                 {
-//We have a match
+                    //We have a match
                     string param = parts[1];
                     string value = parts[2];
                     if (!switchValue.ContainsKey(param))
@@ -34,7 +30,6 @@ namespace BlockGameSolver.Utility.CommandLine
                     else
                     {
                         throw new ArgumentException("Threre was a repeat in command line parameters.");
-
                     }
                 }
                 else
@@ -43,6 +38,7 @@ namespace BlockGameSolver.Utility.CommandLine
                 }
             }
         }
+
         public string this[string index]
         {
             get
@@ -50,7 +46,6 @@ namespace BlockGameSolver.Utility.CommandLine
                 if (switchValue.ContainsKey(index))
                 {
                     return switchValue[index];
-
                 }
                 return null;
             }

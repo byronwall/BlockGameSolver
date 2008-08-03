@@ -36,9 +36,11 @@
             this.progComplete = new System.Windows.Forms.ProgressBar();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.lstPopulationSettings = new System.Windows.Forms.ListBox();
             this.chkGeneticSettings = new System.Windows.Forms.CheckBox();
             this.txtGeneticSettings = new System.Windows.Forms.TextBox();
-            this.lstPopulationSettings = new System.Windows.Forms.ListBox();
+            this.radioSingleRun = new System.Windows.Forms.RadioButton();
+            this.radioMultiRun = new System.Windows.Forms.RadioButton();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -106,6 +108,8 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.radioMultiRun);
+            this.panel2.Controls.Add(this.radioSingleRun);
             this.panel2.Controls.Add(this.lstPopulationSettings);
             this.panel2.Controls.Add(this.chkGeneticSettings);
             this.panel2.Controls.Add(this.txtBoardNum);
@@ -119,6 +123,17 @@
             this.panel2.Size = new System.Drawing.Size(292, 270);
             this.panel2.TabIndex = 5;
             // 
+            // lstPopulationSettings
+            // 
+            this.lstPopulationSettings.AllowDrop = true;
+            this.lstPopulationSettings.FormattingEnabled = true;
+            this.lstPopulationSettings.Location = new System.Drawing.Point(76, 85);
+            this.lstPopulationSettings.Name = "lstPopulationSettings";
+            this.lstPopulationSettings.Size = new System.Drawing.Size(204, 95);
+            this.lstPopulationSettings.TabIndex = 3;
+            this.lstPopulationSettings.DragDrop += new System.Windows.Forms.DragEventHandler(this.lstPopulationSettings_DragDrop);
+            this.lstPopulationSettings.DragEnter += new System.Windows.Forms.DragEventHandler(this.lstPopulationSettings_DragEnter);
+            // 
             // chkGeneticSettings
             // 
             this.chkGeneticSettings.AutoSize = true;
@@ -130,27 +145,36 @@
             this.chkGeneticSettings.TabIndex = 2;
             this.chkGeneticSettings.Text = "default";
             this.chkGeneticSettings.UseVisualStyleBackColor = true;
-            this.chkGeneticSettings.CheckedChanged += new System.EventHandler(this.chkGeneticSettings_CheckedChanged);
             // 
             // txtGeneticSettings
             // 
-            this.txtGeneticSettings.Enabled = false;
             this.txtGeneticSettings.Location = new System.Drawing.Point(76, 58);
             this.txtGeneticSettings.Name = "txtGeneticSettings";
             this.txtGeneticSettings.Size = new System.Drawing.Size(204, 20);
             this.txtGeneticSettings.TabIndex = 1;
             this.txtGeneticSettings.Text = "populationSettings.xml";
             // 
-            // lstPopulationSettings
+            // radioSingleRun
             // 
-            this.lstPopulationSettings.AllowDrop = true;
-            this.lstPopulationSettings.FormattingEnabled = true;
-            this.lstPopulationSettings.Location = new System.Drawing.Point(76, 85);
-            this.lstPopulationSettings.Name = "lstPopulationSettings";
-            this.lstPopulationSettings.Size = new System.Drawing.Size(204, 95);
-            this.lstPopulationSettings.TabIndex = 3;
-            this.lstPopulationSettings.DragDrop += new System.Windows.Forms.DragEventHandler(this.lstPopulationSettings_DragDrop);
-            this.lstPopulationSettings.DragEnter += new System.Windows.Forms.DragEventHandler(this.lstPopulationSettings_DragEnter);
+            this.radioSingleRun.AutoSize = true;
+            this.radioSingleRun.Location = new System.Drawing.Point(12, 214);
+            this.radioSingleRun.Name = "radioSingleRun";
+            this.radioSingleRun.Size = new System.Drawing.Size(70, 17);
+            this.radioSingleRun.TabIndex = 4;
+            this.radioSingleRun.Text = "single run";
+            this.radioSingleRun.UseVisualStyleBackColor = true;
+            // 
+            // radioMultiRun
+            // 
+            this.radioMultiRun.AutoSize = true;
+            this.radioMultiRun.Checked = true;
+            this.radioMultiRun.Location = new System.Drawing.Point(12, 238);
+            this.radioMultiRun.Name = "radioMultiRun";
+            this.radioMultiRun.Size = new System.Drawing.Size(64, 17);
+            this.radioMultiRun.TabIndex = 5;
+            this.radioMultiRun.TabStop = true;
+            this.radioMultiRun.Text = "multi run";
+            this.radioMultiRun.UseVisualStyleBackColor = true;
             // 
             // StatBootstrapForm
             // 
@@ -181,5 +205,7 @@
         private System.Windows.Forms.CheckBox chkGeneticSettings;
         private System.Windows.Forms.TextBox txtGeneticSettings;
         private System.Windows.Forms.ListBox lstPopulationSettings;
+        private System.Windows.Forms.RadioButton radioMultiRun;
+        private System.Windows.Forms.RadioButton radioSingleRun;
     }
 }

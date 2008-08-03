@@ -2,6 +2,7 @@ using System;
 using System.Windows.Forms;
 using BlockGameSolver.GamePlayer.Visual;
 using BlockGameSolver.Simulation.Core;
+using BlockGameSolver.StatisticalAnalysis.Visual;
 using BlockGameSolver.Utility.CommandLine;
 
 namespace BlockGameSolver
@@ -16,6 +17,9 @@ namespace BlockGameSolver
         {
             CommandLineParser parser = new CommandLineParser(args);
 
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
             int seed = (int) DateTime.Now.Ticks;
             
             if (parser["seed"]!=null)
@@ -23,16 +27,25 @@ namespace BlockGameSolver
                 seed = Convert.ToInt32(parser["seed"]);
             }
 
-            if (parser["mode"]=="profile")
+            switch (parser["mode"])
             {
-                Population population = new Population(Board.FromIBoardSource(new StatisticalAnalysis.Core.BoardSourceStatistical(10, 10, seed)));
-                population.DetermineBestGenome();
+                case "profile":
+                {
+                    Population population = new Population(Board.FromIBoardSource(new StatisticalAnalysis.Core.BoardSourceStatistical(10, 10, seed)));
+                    population.DetermineBestGenome();
                 
-                return;
+                    return;
+                }
+                case "stats":
+                {
+                    Application.Run(new StatBootstrapForm());
+
+
+                    return;
+                }
             }
             
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            
             Application.Run(new GamePlayerForm());
         }
     }

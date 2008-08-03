@@ -29,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore">
@@ -162,7 +163,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="StatisticalAnalysis\Core\BoardSourceStatistical.cs" />
-    <Compile Include="StatisticalAnalysis\Core\SimulationStats.cs" />
+    <Compile Include="StatisticalAnalysis\Core\StatisticsHelper.cs" />
+    <Compile Include="StatisticalAnalysis\Core\StatSimulation.cs" />
+    <Compile Include="StatisticalAnalysis\Core\StatSimulationMultiRun.cs" />
+    <Compile Include="StatisticalAnalysis\Core\StatSimulationMultiRunResult.cs" />
+    <Compile Include="StatisticalAnalysis\Visual\FormExtensions.cs" />
     <Compile Include="StatisticalAnalysis\Visual\RunEventArgs.cs" />
     <Compile Include="StatisticalAnalysis\Visual\StatBootstrapForm.cs">
       <SubType>Form</SubType>

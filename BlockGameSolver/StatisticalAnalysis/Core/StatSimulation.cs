@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using BlockGameSolver.Simulation.Core;
@@ -7,27 +8,34 @@ using BlockGameSolver.StatisticalAnalysis.Visual;
 
 namespace BlockGameSolver.StatisticalAnalysis.Core
 {
-    internal class SimulationStats
+    internal class StatSimulation
     {
         private readonly int boardSeed;
         private readonly IBoardSource boardSource;
         private readonly PopulationSettings populationSettings;
 
         private readonly List<Genome> results = new List<Genome>();
+
+        public List<Genome> Results
+        {
+            get { return results; }
+        }
+
         private readonly int runCount;
         private string pathToResults;
         private Population population;
 
-        public SimulationStats(int runCount, int boardSeed) : this(runCount, boardSeed, PopulationSettings.Default)
+        public StatSimulation(int runCount, int boardSeed)
+            : this(runCount, boardSeed, PopulationSettings.Default)
         {
         }
 
-        public SimulationStats(int runCount, int boardSeed, string populationSettingsPath) : this(runCount, boardSeed, PopulationSettings.LoadFromXML(populationSettingsPath))
-
+        public StatSimulation(int runCount, int boardSeed, string populationSettingsPath)
+            : this(runCount, boardSeed, PopulationSettings.LoadFromXML(populationSettingsPath))
         {
         }
 
-        public SimulationStats(int runCount, int boardSeed, PopulationSettings populationSettings)
+        public StatSimulation(int runCount, int boardSeed, PopulationSettings populationSettings)
         {
             this.runCount = runCount;
             this.boardSeed = boardSeed;
@@ -41,16 +49,21 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
             get { return pathToResults; }
         }
 
+        private long RunTimeElapsed { get; set; }
+
         public void RunAnalysis()
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
             for (int i = 0; i < runCount; i++)
             {
-                population = new Population(populationSettings, Board.FromIBoardSource(boardSource)) {IsReseedRequired = true};
+                population = new Population(populationSettings, Board.FromIBoardSource(boardSource)) { IsReseedRequired = true };
                 Genome genome = population.DetermineBestGenome();
 
                 results.Add(genome);
                 InvokeRunFinished(new RunEventArgs(i + 1));
             }
+            stopwatch.Stop();
+            RunTimeElapsed = stopwatch.ElapsedMilliseconds;
             InvokeAnalysisFinished(EventArgs.Empty);
         }
 
@@ -97,9 +110,11 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
                 using (StreamWriter sw = new StreamWriter(fs))
                 {
                     sw.WriteLine("***ANALYSIS INFORMATION***");
+                    sw.WriteLine(pathToResults);
                     sw.WriteLine(population.PopulationBoard);
                     sw.WriteLine(this);
                     sw.WriteLine(populationSettings);
+                    sw.WriteLine(string.Format("{0}\t{1}\r\n", "run time:", RunTimeElapsed));
                 }
             }
         }
@@ -119,8 +134,6 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
             {
                 using (StreamWriter sw = new StreamWriter(fs))
                 {
-                    //Write the output
-                    //3.Write out the results
                     sw.WriteLine("score\tid");
 
                     foreach (Genome result in results)

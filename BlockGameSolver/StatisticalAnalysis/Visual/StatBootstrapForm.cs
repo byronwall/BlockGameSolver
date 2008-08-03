@@ -11,11 +11,13 @@ namespace BlockGameSolver.StatisticalAnalysis.Visual
         private bool isRunning;
 
         private int runCount;
-        private SimulationStats stats;
+        private StatSimulation stats;
 
         public StatBootstrapForm()
         {
             InitializeComponent();
+
+            txtGeneticSettings.EnableDragDropFilename();
         }
 
         private void btnRun_Click(object sender, EventArgs e)
@@ -25,13 +27,41 @@ namespace BlockGameSolver.StatisticalAnalysis.Visual
                 isRunning = true;
                 runCount = Convert.ToInt32(txtRuns.Text);
                 int seed = Convert.ToInt32(txtBoardNum.Text);
-                stats = !chkGeneticSettings.Checked ? new SimulationStats(runCount, seed, txtGeneticSettings.Text) : new SimulationStats(runCount, seed);
 
-                stats.RunFinished += stats_RunFinished;
-                stats.AnalysisFinished += stats_AnalysisFinished;
+                Thread runner = null;
 
-                new Thread(stats.RunAnalysis).Start();
+                if (radioSingleRun.Checked)
+                {
+                    stats = !chkGeneticSettings.Checked ? new StatSimulation(runCount, seed, txtGeneticSettings.Text) : new StatSimulation(runCount, seed);
+
+                    stats.RunFinished += stats_RunFinished;
+                    stats.AnalysisFinished += stats_AnalysisFinished;
+
+                    runner = new Thread(stats.RunAnalysis);
+                }
+                else if (radioMultiRun.Checked)
+                {
+                    StatSimulationMultiRun multiRun = new StatSimulationMultiRun(runCount, seed, txtGeneticSettings.Text);
+                    multiRun.PercentCompleteChanged += simulationMultiRun_PercentCompleteChanged;
+                    multiRun.MultiRunAnalysisComplete += simulationMultiRun_MultiRunAnalysisComplete;
+                    runner = new Thread(multiRun.DoMultiRun);
+                }
+                if (runner != null)
+                {
+                    runner.Start();
+                }
             }
+        }
+
+        private void simulationMultiRun_MultiRunAnalysisComplete(object sender, EventArgs e)
+        {
+            MessageBox.Show("Analysis complete.");
+            isRunning = false;
+        }
+
+        private void simulationMultiRun_PercentCompleteChanged(object sender, PercentCompleteEventArgs e)
+        {
+            UpdateProgress((int) (e.PercentComplete*100));
         }
 
         private void stats_AnalysisFinished(object sender, EventArgs e)
@@ -59,19 +89,12 @@ namespace BlockGameSolver.StatisticalAnalysis.Visual
             }
         }
 
-        private void chkGeneticSettings_CheckedChanged(object sender, EventArgs e)
-        {
-            txtGeneticSettings.Enabled = !chkGeneticSettings.Checked;
-        }
-
         private void lstPopulationSettings_DragEnter(object sender, DragEventArgs e)
         {
-
         }
 
         private void lstPopulationSettings_DragDrop(object sender, DragEventArgs e)
         {
-
         }
     }
 }
