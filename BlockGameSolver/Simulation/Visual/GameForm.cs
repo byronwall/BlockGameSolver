@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Drawing;
-using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using BlockGameSolver.Properties;
 using BlockGameSolver.Simulation.Core;
-using Point = BlockGameSolver.Simulation.Core.Point;
+using Point=BlockGameSolver.Simulation.Core.Point;
 
 namespace BlockGameSolver.Simulation.Visual
 {
     public partial class GameForm : Form
     {
-
-
         private Genome Best;
         private BoardMode boardMode = BoardMode.FreePlay;
         private int currentMove;
@@ -23,43 +20,38 @@ namespace BlockGameSolver.Simulation.Visual
             InitializeComponent();
         }
 
-        public GameForm(Population population):this()
+        public GameForm(Population population) : this()
         {
             this.population = population;
         }
 
         private void btnRun_Click(object sender, EventArgs e)
         {
-            int popSize = (int)numPopSize.Value;
-            int initSize = (int)numInitialSize.Value;
+            int popSize = (int) numPopSize.Value;
+            int initSize = (int) numInitialSize.Value;
 
-            int generations = (int)numGenerations.Value;
-            double filterRate = (double)numFilterRate.Value;
-            double mutateRatio = (double)numMutateRatio.Value;
-            double crossRatio = (double)numCrossRate.Value;
+            int generations = (int) numGenerations.Value;
+            double filterRate = (double) numFilterRate.Value;
+            double mutateRatio = (double) numMutateRatio.Value;
+            double crossRatio = (double) numCrossRate.Value;
 
             PopulationSettings settings = new PopulationSettings(generations, popSize, mutateRatio, filterRate, initSize, crossRatio);
 
             if (population == null)
             {
-
                 population = new Population(settings, Board.CreateRandomBoard());
             }
             population.PopulationFinished += population_PopulationFinished;
             population.GenerationCompleted += population_GenerationCompleted;
 
             btnRun.Enabled = false;
-            btnViewResults.Enabled = false;
 
             progCompleted.Minimum = 0;
             progCompleted.Maximum = generations;
 
             population.PopulationBoard.LoadOldBoard();
 
-            Thread t = new Thread(population.BeginGeneticProcess)
-            {
-                IsBackground = true
-            };
+            Thread t = new Thread(population.BeginGeneticProcess) {IsBackground = true};
             t.Start();
         }
 
@@ -90,7 +82,6 @@ namespace BlockGameSolver.Simulation.Visual
             if (!InvokeRequired)
             {
                 btnRun.Enabled = true;
-                btnViewResults.Enabled = true;
                 btnPlayBest.Enabled = true;
                 Best = population.GenomeBest;
                 txtBestResult.Text = Best.ToString();
@@ -99,33 +90,6 @@ namespace BlockGameSolver.Simulation.Visual
             else
             {
                 Invoke(new Action(EnableButton));
-            }
-        }
-
-        private void btnOpen_Click(object sender, EventArgs e)
-        {
-            population.PopulationResults.OpenWithExecutable();
-        }
-
-        private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (population != null &&
-                population.PopulationResults != null)
-            {
-                population.PopulationResults.Dispose();
-                if (chkDelete.Checked)
-                {
-                    if (population.PopulationResults.ResultsFilename != null &&
-                        File.Exists(population.PopulationResults.ResultsFilename))
-                    {
-                        File.Delete(population.PopulationResults.ResultsFilename);
-                    }
-                    if (population.PopulationResults.ScoreFilename != null &&
-                        File.Exists(population.PopulationResults.ScoreFilename))
-                    {
-                        File.Delete(population.PopulationResults.ScoreFilename);
-                    }
-                }
             }
         }
 
@@ -140,8 +104,8 @@ namespace BlockGameSolver.Simulation.Visual
 
         private void back_MouseClick(object sender, MouseEventArgs e)
         {
-            Panel send = (Panel)sender;
-            Piece piece = (Piece)send.Tag;
+            Panel send = (Panel) sender;
+            Piece piece = (Piece) send.Tag;
 
             population.PopulationBoard.RemoveGroup(piece.Row, piece.Column);
             RedrawBoard();
@@ -158,11 +122,7 @@ namespace BlockGameSolver.Simulation.Visual
                 {
                     continue;
                 }
-                Panel back = new Panel
-                {
-                    Tag = piece,
-                    Size = new Size(15, 15)
-                };
+                Panel back = new Panel {Tag = piece, Size = new Size(15, 15)};
 
                 if (piece.IsDouble)
                 {
@@ -171,15 +131,10 @@ namespace BlockGameSolver.Simulation.Visual
 
                 if (chkBoardLabels.Checked)
                 {
-                    Label lblPieceNum = new Label
-                    {
-                        Text = piece.ToString(),
-                        Enabled = false
-                    };
+                    Label lblPieceNum = new Label {Text = piece.ToString(), Enabled = false};
                     back.Controls.Add(lblPieceNum);
                 }
-                if (population.PopulationBoard.HasMoves &&
-                    boardMode == BoardMode.FreePlay)
+                if (population.PopulationBoard.HasMoves && boardMode == BoardMode.FreePlay)
                 {
                     back.MouseClick += back_MouseClick;
                 }

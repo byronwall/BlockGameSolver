@@ -72,7 +72,6 @@
    email: m-mat @ math.sci.hiroshima-u.ac.jp (remove space)
 */
 
-
 using System;
 
 namespace BlockGameSolver.Simulation.Utility
@@ -87,13 +86,29 @@ namespace BlockGameSolver.Simulation.Utility
     /// </remarks>
     public class MersenneTwister : Random
     {
+        private const Double FiftyThreeBitsOf1s = 9007199254740991.0;
+        // Multiply by inverse to (vainly?) try to avoid a division.
+        private const Double Inverse53BitsOf1s = 1.0/FiftyThreeBitsOf1s;
+        private const Double InverseOnePlus53BitsOf1s = 1.0/OnePlus53BitsOf1s;
+        private const UInt32 LowerMask = 0x7fffffff; /* least significant r bits */
+        private const Int32 M = 397;
+        private const UInt32 MatrixA = 0x9908b0df; /* constant vector a */
+        private const Int32 N = 624;
+        private const Double OnePlus53BitsOf1s = FiftyThreeBitsOf1s + 1;
+        private const UInt32 TemperingMaskB = 0x9d2c5680;
+        private const UInt32 TemperingMaskC = 0xefc60000;
+        private const UInt32 UpperMask = 0x80000000; /* most significant w-r bits */
+        private static readonly UInt32[] _mag01 = {0x0, MatrixA};
+        private readonly UInt32[] _mt = new UInt32[N]; /* the array for the state vector  */
+        private Int16 _mti;
+
         /// <summary>
         /// Creates a new pseudo-random number generator with a given seed.
         /// </summary>
         /// <param name="seed">A value to use as a seed.</param>
         public MersenneTwister(Int32 seed)
         {
-            init((UInt32)seed);
+            init((UInt32) seed);
         }
 
         /// <summary>
@@ -103,9 +118,9 @@ namespace BlockGameSolver.Simulation.Utility
         /// <c>new <see cref="System.Random"/>().<see cref="Random.Next()"/></c> 
         /// is used for the seed.
         /// </remarks>
-        public MersenneTwister()
-            : this(new Random().Next()) /* a default initial seed is used   */
-        { }
+        public MersenneTwister() : this(new Random().Next()) /* a default initial seed is used   */
+        {
+        }
 
         /// <summary>
         /// Creates a pseudo-random number generator initialized with the given array.
@@ -122,57 +137,10 @@ namespace BlockGameSolver.Simulation.Utility
 
             for (int i = 0; i < initKey.Length; ++i)
             {
-                initArray[i] = (UInt32)initKey[i];
+                initArray[i] = (UInt32) initKey[i];
             }
 
             init(initArray);
-        }
-
-        /// <summary>
-        /// Returns the next pseudo-random <see cref="UInt32"/>.
-        /// </summary>
-        /// <returns>A pseudo-random <see cref="UInt32"/> value.</returns>
-        public virtual UInt32 NextUInt32()
-        {
-            return GenerateUInt32();
-        }
-
-        /// <summary>
-        /// Returns the next pseudo-random <see cref="UInt32"/> 
-        /// up to <paramref name="maxValue"/>.
-        /// </summary>
-        /// <param name="maxValue">
-        /// The maximum value of the pseudo-random number to create.
-        /// </param>
-        /// <returns>
-        /// A pseudo-random <see cref="UInt32"/> value which is at most <paramref name="maxValue"/>.
-        /// </returns>
-        public virtual UInt32 NextUInt32(UInt32 maxValue)
-        {
-            return (UInt32)(GenerateUInt32() / ((Double)UInt32.MaxValue / maxValue));
-        }
-
-        /// <summary>
-        /// Returns the next pseudo-random <see cref="UInt32"/> at least 
-        /// <paramref name="minValue"/> and up to <paramref name="maxValue"/>.
-        /// </summary>
-        /// <param name="minValue">The minimum value of the pseudo-random number to create.</param>
-        /// <param name="maxValue">The maximum value of the pseudo-random number to create.</param>
-        /// <returns>
-        /// A pseudo-random <see cref="UInt32"/> value which is at least 
-        /// <paramref name="minValue"/> and at most <paramref name="maxValue"/>.
-        /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// If <c><paramref name="minValue"/> &gt;= <paramref name="maxValue"/></c>.
-        /// </exception>
-        public virtual UInt32 NextUInt32(UInt32 minValue, UInt32 maxValue) /* throws ArgumentOutOfRangeException */
-        {
-            if (minValue >= maxValue)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-
-            return (UInt32)(GenerateUInt32() / ((Double)UInt32.MaxValue / (maxValue - minValue)) + minValue);
         }
 
         /// <summary>
@@ -206,7 +174,7 @@ namespace BlockGameSolver.Simulation.Utility
                 return 0;
             }
 
-            return (Int32)(NextDouble() * maxValue);
+            return (Int32) (NextDouble()*maxValue);
         }
 
         /// <summary>
@@ -234,29 +202,6 @@ namespace BlockGameSolver.Simulation.Utility
             }
 
             return Next(maxValue - minValue) + minValue;
-        }
-
-        /// <summary>
-        /// Fills a buffer with pseudo-random bytes.
-        /// </summary>
-        /// <param name="buffer">The buffer to fill.</param>
-        /// <exception cref="ArgumentNullException">
-        /// If <c><paramref name="buffer"/> == <see langword="null"/></c>.
-        /// </exception>
-        public override void NextBytes(Byte[] buffer)
-        {
-            // [codekaizen: corrected this to check null before checking length.]
-            if (buffer == null)
-            {
-                throw new ArgumentNullException();
-            }
-
-            Int32 bufLen = buffer.Length;
-
-            for (Int32 idx = 0; idx < bufLen; ++idx)
-            {
-                buffer[idx] = (Byte)Next(256);
-            }
         }
 
         /// <summary>
@@ -325,49 +270,6 @@ namespace BlockGameSolver.Simulation.Utility
         }
 
         /// <summary>
-        /// Returns a pseudo-random number between 0.0 and 1.0.
-        /// </summary>
-        /// <returns>
-        /// A single-precision floating point number greater than or equal to 0.0, 
-        /// and less than 1.0.
-        /// </returns>
-        public Single NextSingle()
-        {
-            return (Single)NextDouble();
-        }
-
-        /// <summary>
-        /// Returns a pseudo-random number greater than or equal to zero, and either strictly
-        /// less than one, or less than or equal to one, depending on the value of the
-        /// given boolean parameter.
-        /// </summary>
-        /// <param name="includeOne">
-        /// If <see langword="true"/>, the pseudo-random number returned will be 
-        /// less than or equal to one; otherwise, the pseudo-random number returned will
-        /// be strictly less than one.
-        /// </param>
-        /// <returns>
-        /// If <paramref name="includeOne"/> is <see langword="true"/>, this method returns a
-        /// single-precision pseudo-random number greater than or equal to zero, and less
-        /// than or equal to one. If <paramref name="includeOne"/> is <see langword="false"/>, 
-        /// this method returns a single-precision pseudo-random number greater than or equal to zero and
-        /// strictly less than one.
-        /// </returns>
-        public Single NextSingle(Boolean includeOne)
-        {
-            return (Single)NextDouble(includeOne);
-        }
-
-        /// <summary>
-        /// Returns a pseudo-random number greater than 0.0 and less than 1.0.
-        /// </summary>
-        /// <returns>A pseudo-random number greater than 0.0 and less than 1.0.</returns>
-        public Single NextSinglePositive()
-        {
-            return (Single)NextDoublePositive();
-        }
-
-        /// <summary>
         /// Generates a new pseudo-random <see cref="UInt32"/>.
         /// </summary>
         /// <returns>A pseudo-random <see cref="UInt32"/>.</returns>
@@ -406,17 +308,8 @@ namespace BlockGameSolver.Simulation.Utility
 
             return y;
         }
-        
-        /* Period parameters */
-        private const Int32 N = 624;
-        private const Int32 M = 397;
-        private const UInt32 MatrixA = 0x9908b0df; /* constant vector a */
-        private const UInt32 UpperMask = 0x80000000; /* most significant w-r bits */
-        private const UInt32 LowerMask = 0x7fffffff; /* least significant r bits */
 
-        /* Tempering parameters */
-        private const UInt32 TemperingMaskB = 0x9d2c5680;
-        private const UInt32 TemperingMaskC = 0xefc60000;
+        /* Period parameters */
 
         private static UInt32 temperingShiftU(UInt32 y)
         {
@@ -438,18 +331,13 @@ namespace BlockGameSolver.Simulation.Utility
             return (y >> 18);
         }
 
-        private readonly UInt32[] _mt = new UInt32[N]; /* the array for the state vector  */
-        private Int16 _mti;
-
-        private static readonly UInt32[] _mag01 = { 0x0, MatrixA };
-
         private void init(UInt32 seed)
         {
             _mt[0] = seed & 0xffffffffU;
 
             for (_mti = 1; _mti < N; _mti++)
             {
-                _mt[_mti] = (uint)(1812433253U * (_mt[_mti - 1] ^ (_mt[_mti - 1] >> 30)) + _mti);
+                _mt[_mti] = (uint) (1812433253U*(_mt[_mti - 1] ^ (_mt[_mti - 1] >> 30)) + _mti);
                 // See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier. 
                 // In the previous versions, MSBs of the seed affect   
                 // only MSBs of the array _mt[].                        
@@ -461,25 +349,33 @@ namespace BlockGameSolver.Simulation.Utility
 
         private void init(UInt32[] key)
         {
-            Int32 i, j, k;
             init(19650218U);
 
             Int32 keyLength = key.Length;
-            i = 1; j = 0;
-            k = (N > keyLength ? N : keyLength);
+            int i = 1;
+            int j = 0;
+            int k = (N > keyLength ? N : keyLength);
 
             for (; k > 0; k--)
             {
-                _mt[i] = (uint)((_mt[i] ^ ((_mt[i - 1] ^ (_mt[i - 1] >> 30)) * 1664525U)) + key[j] + j); /* non linear */
+                _mt[i] = (uint) ((_mt[i] ^ ((_mt[i - 1] ^ (_mt[i - 1] >> 30))*1664525U)) + key[j] + j); /* non linear */
                 _mt[i] &= 0xffffffffU; // for WORDSIZE > 32 machines
-                i++; j++;
-                if (i >= N) { _mt[0] = _mt[N - 1]; i = 1; }
-                if (j >= keyLength) j = 0;
+                i++;
+                j++;
+                if (i >= N)
+                {
+                    _mt[0] = _mt[N - 1];
+                    i = 1;
+                }
+                if (j >= keyLength)
+                {
+                    j = 0;
+                }
             }
 
             for (k = N - 1; k > 0; k--)
             {
-                _mt[i] = (uint)((_mt[i] ^ ((_mt[i - 1] ^ (_mt[i - 1] >> 30)) * 1566083941U)) - i); /* non linear */
+                _mt[i] = (uint) ((_mt[i] ^ ((_mt[i - 1] ^ (_mt[i - 1] >> 30))*1566083941U)) - i); /* non linear */
                 _mt[i] &= 0xffffffffU; // for WORDSIZE > 32 machines
                 i++;
 
@@ -488,31 +384,26 @@ namespace BlockGameSolver.Simulation.Utility
                     continue;
                 }
 
-                _mt[0] = _mt[N - 1]; i = 1;
+                _mt[0] = _mt[N - 1];
+                i = 1;
             }
 
             _mt[0] = 0x80000000U; // MSB is 1; assuring non-zero initial array
         }
 
-
         // 9007199254740991.0 is the maximum double value which the 53 significand
         // can hold when the exponent is 0.
-        private const Double FiftyThreeBitsOf1s = 9007199254740991.0;
-        // Multiply by inverse to (vainly?) try to avoid a division.
-        private const Double Inverse53BitsOf1s = 1.0 / FiftyThreeBitsOf1s;
-        private const Double OnePlus53BitsOf1s = FiftyThreeBitsOf1s + 1;
-        private const Double InverseOnePlus53BitsOf1s = 1.0 / OnePlus53BitsOf1s;
 
         private Double compute53BitRandom(Double translate, Double scale)
         {
             // get 27 pseudo-random bits
-            UInt64 a = (UInt64)GenerateUInt32() >> 5;
+            UInt64 a = (UInt64) GenerateUInt32() >> 5;
             // get 26 pseudo-random bits
-            UInt64 b = (UInt64)GenerateUInt32() >> 6;
+            UInt64 b = (UInt64) GenerateUInt32() >> 6;
 
             // shift the 27 pseudo-random bits (a) over by 26 bits (* 67108864.0) and
             // add another pseudo-random 26 bits (+ b).
-            return ((a * 67108864.0 + b) + translate) * scale;
+            return ((a*67108864.0 + b) + translate)*scale;
 
             // What about the following instead of the above? Is the multiply better? 
             // Why? (Is it the FMUL instruction? Does this count in .Net? Will the JITter notice?)

@@ -8,15 +8,15 @@ namespace BlockGameSolver.Simulation.Core
 {
     public class Population
     {
+        private readonly Board board;
         private readonly List<Genome> currentPopulation = new List<Genome>();
         private readonly List<Genome> newPopulation = new List<Genome>();
-        private readonly Results populationResults = new Results();
+        private readonly MersenneTwister rng = new MersenneTwister();
         private readonly Queue<Genome> upcomingMoves = new Queue<Genome>();
         private int generationNum;
 
-        private PopulationSettings settings;
-        private readonly Board board;
         private bool isWritingToDisk;
+        private PopulationSettings settings;
 
         public Population(PopulationSettings settings, Board board)
         {
@@ -24,15 +24,8 @@ namespace BlockGameSolver.Simulation.Core
             this.board = board;
         }
 
-        public Population(Board board)
-            : this(PopulationSettings.Default, board)
+        public Population(Board board) : this(PopulationSettings.Default, board)
         {
-
-        }
-
-        public Results PopulationResults
-        {
-            get { return populationResults; }
         }
 
         public Genome GenomeBest
@@ -66,17 +59,11 @@ namespace BlockGameSolver.Simulation.Core
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            PopulationResults.AddMessage("Running the current generation.");
-            List<double> round = new List<double>(settings.PopulationSize);
-            populationResults.ScoreData.Add(round);
             foreach (Genome genome in currentPopulation)
             {
                 genome.Evaluate();
-                round.Add(genome.Fitness);
-                PopulationResults.AddEvaluationResult(generationNum, genome, genome.Fitness);
             }
             stopwatch.Stop();
-            populationResults.AddMessage(string.Format("The run took {0} milliseconds.", stopwatch.ElapsedMilliseconds));
         }
 
         /// <summary>
@@ -85,44 +72,39 @@ namespace BlockGameSolver.Simulation.Core
         /// <returns></returns>
         private Genome SelectGenome()
         {
-            if (upcomingMoves.Count == 0)
+            if (upcomingMoves.Count == 0) CreateUpcomingMoveQueue();
+            return upcomingMoves.Dequeue();
+        }
+
+        private void CreateUpcomingMoveQueue()
+        {
+            double totalFitness = 0;
+            foreach (Genome genome in currentPopulation)
             {
-                double totalFitness = 0;
+                totalFitness += genome.Fitness;
+            }
+            for (int i = 0; i < settings.MoveCache; i++)
+            {
+                double runningTotal = 0;
+                double stopPoint = rng.Next(0, (int) totalFitness);
+
                 foreach (Genome genome in currentPopulation)
                 {
-                    totalFitness += genome.Fitness;
-                }
-                for (int i = 0; i < settings.MoveCache; i++)
-                {
-                    double runningTotal = 0;
-                    double stopPoint = RandomSource.Instance.Next(0, (int)totalFitness);
-
-                    foreach (Genome genome in currentPopulation)
+                    runningTotal += genome.Fitness;
+                    if (runningTotal > stopPoint)
                     {
-                        runningTotal += genome.Fitness;
-                        if (runningTotal > stopPoint)
-                        {
-                            upcomingMoves.Enqueue(genome);
-                            break;
-                        }
+                        upcomingMoves.Enqueue(genome);
+                        break;
                     }
                 }
             }
-            return upcomingMoves.Dequeue();
         }
 
         private void CreateNextGeneration()
         {
-            PopulationResults.AddMessage("Creating the next generation.");
-            MersenneTwister rng = RandomSource.Instance;
             newPopulation.Clear();
             //Elite selection
             newPopulation.AddRange(currentPopulation.OrderByDescending(c => c.Fitness).Take(settings.FilterSize));
-            ////Add in the ones that were kept.
-            //foreach (Genome genome in newPopulation)
-            //{
-            //    currentPopulation.Add(genome);
-            //}
 
             for (int i = 0; i < settings.PopulationSize - settings.FilterSize; i++)
             {
@@ -136,15 +118,12 @@ namespace BlockGameSolver.Simulation.Core
 
                     Genome frontChild = Genome.FromGenome(genome1);
                     Genome endChild = Genome.FromGenome(genome2);
-
-                    int swapPoint = frontChild.Crossover(endChild);
+                    
+                    frontChild.Crossover(endChild);
 
                     newPopulation.Add(frontChild);
                     newPopulation.Add(endChild);
 
-                    PopulationResults.AddMessage(string.Format("Crossover occurred from genome {0} to {1} at point {2} and got {3} and {4}", genome1, genome2, swapPoint, frontChild, endChild));
-
-                    //Determine if the results should be mutated
 
                     //Mutate the last crossover result
                     frontChild.Mutate(settings.MutateRatio);
@@ -179,12 +158,8 @@ namespace BlockGameSolver.Simulation.Core
 
         public void BeginGeneticProcess()
         {
-            if (IsReseedRequired)
-            {
-                RandomSource.Reseed((int)DateTime.Now.Ticks);
-            }
+            if (IsReseedRequired) RandomSource.Reseed((int) DateTime.Now.Ticks);
 
-            PopulationResults.AddHeader("Beginning the process");
 
             GenerateInitialPopulation();
             for (int i = 0; i < settings.MaxGenerations; i++)
@@ -192,14 +167,6 @@ namespace BlockGameSolver.Simulation.Core
                 generationNum = i + 1;
                 ContinueEvaluation();
             }
-            populationResults.AddHeader(string.Format("Best plays had a score of {0}", currentPopulation.OrderByDescending(c => c.Fitness).Take(1).Single().Fitness));
-
-
-            if (isWritingToDisk)
-            {
-                populationResults.WriteDataToDisk();
-            }
-
             InvokePopulationFinished(EventArgs.Empty);
         }
 
@@ -208,10 +175,7 @@ namespace BlockGameSolver.Simulation.Core
         private void InvokePopulationFinished(EventArgs e)
         {
             EventHandler populationFinishedHandler = PopulationFinished;
-            if (populationFinishedHandler != null)
-            {
-                populationFinishedHandler(this, e);
-            }
+            if (populationFinishedHandler != null) populationFinishedHandler(this, e);
         }
 
         public event EventHandler<GenerationEventArgs> GenerationCompleted;
@@ -219,10 +183,7 @@ namespace BlockGameSolver.Simulation.Core
         private void InvokeGenerationCompleted(GenerationEventArgs e)
         {
             EventHandler<GenerationEventArgs> generationCompletedHandler = GenerationCompleted;
-            if (generationCompletedHandler != null)
-            {
-                generationCompletedHandler(this, e);
-            }
+            if (generationCompletedHandler != null) generationCompletedHandler(this, e);
         }
 
         public Genome DetermineBestGenome()

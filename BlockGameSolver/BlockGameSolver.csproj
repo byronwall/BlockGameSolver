@@ -42,6 +42,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Threading, Version=1.0.3058.34407, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -163,6 +164,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="StatisticalAnalysis\Core\BoardSourceStatistical.cs" />
+    <Compile Include="StatisticalAnalysis\Core\PercentCompleteEventArgs.cs" />
     <Compile Include="StatisticalAnalysis\Core\StatisticsHelper.cs" />
     <Compile Include="StatisticalAnalysis\Core\StatSimulation.cs" />
     <Compile Include="StatisticalAnalysis\Core\StatSimulationMultiRun.cs" />
@@ -175,6 +177,7 @@
     <Compile Include="StatisticalAnalysis\Visual\StatBootstrapForm.Designer.cs">
       <DependentUpon>StatBootstrapForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="StatisticalAnalysis\Visual\StringExtensions.cs" />
     <Compile Include="Utility\CommandLine\CommandLineParser.cs" />
   </ItemGroup>
   <ItemGroup>

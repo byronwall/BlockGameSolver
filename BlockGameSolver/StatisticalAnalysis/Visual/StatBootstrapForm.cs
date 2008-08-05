@@ -13,6 +13,8 @@ namespace BlockGameSolver.StatisticalAnalysis.Visual
         private int runCount;
         private StatSimulation stats;
 
+        private Stopwatch stopwatch;
+
         public StatBootstrapForm()
         {
             InitializeComponent();
@@ -41,13 +43,25 @@ namespace BlockGameSolver.StatisticalAnalysis.Visual
                 }
                 else if (radioMultiRun.Checked)
                 {
-                    StatSimulationMultiRun multiRun = new StatSimulationMultiRun(runCount, seed, txtGeneticSettings.Text);
+                    StatSimulationMultiRun multiRun;
+
+                    if (!txtGeneticSettings.Text.IsNullOrEmpty())
+                    {
+                        multiRun = new StatSimulationMultiRun(runCount, seed, txtGeneticSettings.Text);
+                    }
+                    else
+                    {
+                        multiRun = new StatSimulationMultiRun(runCount, seed);
+                        multiRun.CreateRandomPopulation(5);
+                    }
+                    multiRun.ParallelExecution = radioParallel.Checked;
                     multiRun.PercentCompleteChanged += simulationMultiRun_PercentCompleteChanged;
                     multiRun.MultiRunAnalysisComplete += simulationMultiRun_MultiRunAnalysisComplete;
                     runner = new Thread(multiRun.DoMultiRun);
                 }
                 if (runner != null)
                 {
+                    stopwatch = Stopwatch.StartNew();
                     runner.Start();
                 }
             }
@@ -55,7 +69,8 @@ namespace BlockGameSolver.StatisticalAnalysis.Visual
 
         private void simulationMultiRun_MultiRunAnalysisComplete(object sender, EventArgs e)
         {
-            MessageBox.Show("Analysis complete.");
+            stopwatch.Stop();
+            MessageBox.Show(string.Format("Analysis complete in {0} ms.", stopwatch.ElapsedMilliseconds));
             isRunning = false;
         }
 
@@ -87,14 +102,6 @@ namespace BlockGameSolver.StatisticalAnalysis.Visual
             {
                 Invoke(new Action<int>(UpdateProgress), runNum);
             }
-        }
-
-        private void lstPopulationSettings_DragEnter(object sender, DragEventArgs e)
-        {
-        }
-
-        private void lstPopulationSettings_DragDrop(object sender, DragEventArgs e)
-        {
         }
     }
 }

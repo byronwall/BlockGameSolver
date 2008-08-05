@@ -4,24 +4,30 @@ namespace BlockGameSolver.Simulation.Core
 {
     public class RandomSource
     {
+        private static readonly object locker = new object();
         private static MersenneTwister instance;
 
         public static MersenneTwister Instance
         {
             get
             {
-                if (instance == null)
+                lock (locker)
                 {
-                    instance = new MersenneTwister();
-
+                    if (instance == null)
+                    {
+                        instance = new MersenneTwister();
+                    }
+                    return instance;
                 }
-                return instance;
             }
         }
 
         public static void Reseed(int seed)
         {
-            instance = new MersenneTwister(seed);
+            lock (locker)
+            {
+                instance = new MersenneTwister(seed);
+            }
         }
     }
 }

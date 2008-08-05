@@ -23,7 +23,7 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
                 double deviation = Math.Pow(mean - d, 2);
                 deviations.Add(deviation);
             }
-            mean = deviations.Average();
+            mean = deviations.Sum()/(deviations.Count - 1);
             return Math.Sqrt(mean);
         }
     }

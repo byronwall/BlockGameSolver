@@ -36,13 +36,16 @@
             this.progComplete = new System.Windows.Forms.ProgressBar();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.lstPopulationSettings = new System.Windows.Forms.ListBox();
+            this.radioMultiRun = new System.Windows.Forms.RadioButton();
+            this.radioSingleRun = new System.Windows.Forms.RadioButton();
             this.chkGeneticSettings = new System.Windows.Forms.CheckBox();
             this.txtGeneticSettings = new System.Windows.Forms.TextBox();
-            this.radioSingleRun = new System.Windows.Forms.RadioButton();
-            this.radioMultiRun = new System.Windows.Forms.RadioButton();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.radioParallel = new System.Windows.Forms.RadioButton();
+            this.radioSerialExecution = new System.Windows.Forms.RadioButton();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnRun
@@ -87,7 +90,7 @@
             this.txtRuns.Name = "txtRuns";
             this.txtRuns.Size = new System.Drawing.Size(100, 20);
             this.txtRuns.TabIndex = 1;
-            this.txtRuns.Text = "10";
+            this.txtRuns.Text = "50";
             // 
             // progComplete
             // 
@@ -101,16 +104,16 @@
             this.panel1.Controls.Add(this.progComplete);
             this.panel1.Controls.Add(this.btnRun);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 270);
+            this.panel1.Location = new System.Drawing.Point(0, 166);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(292, 55);
             this.panel1.TabIndex = 4;
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.panel3);
             this.panel2.Controls.Add(this.radioMultiRun);
             this.panel2.Controls.Add(this.radioSingleRun);
-            this.panel2.Controls.Add(this.lstPopulationSettings);
             this.panel2.Controls.Add(this.chkGeneticSettings);
             this.panel2.Controls.Add(this.txtBoardNum);
             this.panel2.Controls.Add(this.label1);
@@ -120,19 +123,30 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(292, 270);
+            this.panel2.Size = new System.Drawing.Size(292, 166);
             this.panel2.TabIndex = 5;
             // 
-            // lstPopulationSettings
+            // radioMultiRun
             // 
-            this.lstPopulationSettings.AllowDrop = true;
-            this.lstPopulationSettings.FormattingEnabled = true;
-            this.lstPopulationSettings.Location = new System.Drawing.Point(76, 85);
-            this.lstPopulationSettings.Name = "lstPopulationSettings";
-            this.lstPopulationSettings.Size = new System.Drawing.Size(204, 95);
-            this.lstPopulationSettings.TabIndex = 3;
-            this.lstPopulationSettings.DragDrop += new System.Windows.Forms.DragEventHandler(this.lstPopulationSettings_DragDrop);
-            this.lstPopulationSettings.DragEnter += new System.Windows.Forms.DragEventHandler(this.lstPopulationSettings_DragEnter);
+            this.radioMultiRun.AutoSize = true;
+            this.radioMultiRun.Checked = true;
+            this.radioMultiRun.Location = new System.Drawing.Point(12, 121);
+            this.radioMultiRun.Name = "radioMultiRun";
+            this.radioMultiRun.Size = new System.Drawing.Size(64, 17);
+            this.radioMultiRun.TabIndex = 5;
+            this.radioMultiRun.TabStop = true;
+            this.radioMultiRun.Text = "multi run";
+            this.radioMultiRun.UseVisualStyleBackColor = true;
+            // 
+            // radioSingleRun
+            // 
+            this.radioSingleRun.AutoSize = true;
+            this.radioSingleRun.Location = new System.Drawing.Point(12, 97);
+            this.radioSingleRun.Name = "radioSingleRun";
+            this.radioSingleRun.Size = new System.Drawing.Size(70, 17);
+            this.radioSingleRun.TabIndex = 4;
+            this.radioSingleRun.Text = "single run";
+            this.radioSingleRun.UseVisualStyleBackColor = true;
             // 
             // chkGeneticSettings
             // 
@@ -152,35 +166,43 @@
             this.txtGeneticSettings.Name = "txtGeneticSettings";
             this.txtGeneticSettings.Size = new System.Drawing.Size(204, 20);
             this.txtGeneticSettings.TabIndex = 1;
-            this.txtGeneticSettings.Text = "populationSettings.xml";
             // 
-            // radioSingleRun
+            // panel3
             // 
-            this.radioSingleRun.AutoSize = true;
-            this.radioSingleRun.Location = new System.Drawing.Point(12, 214);
-            this.radioSingleRun.Name = "radioSingleRun";
-            this.radioSingleRun.Size = new System.Drawing.Size(70, 17);
-            this.radioSingleRun.TabIndex = 4;
-            this.radioSingleRun.Text = "single run";
-            this.radioSingleRun.UseVisualStyleBackColor = true;
+            this.panel3.Controls.Add(this.radioSerialExecution);
+            this.panel3.Controls.Add(this.radioParallel);
+            this.panel3.Location = new System.Drawing.Point(145, 83);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(135, 77);
+            this.panel3.TabIndex = 6;
             // 
-            // radioMultiRun
+            // radioParallel
             // 
-            this.radioMultiRun.AutoSize = true;
-            this.radioMultiRun.Checked = true;
-            this.radioMultiRun.Location = new System.Drawing.Point(12, 238);
-            this.radioMultiRun.Name = "radioMultiRun";
-            this.radioMultiRun.Size = new System.Drawing.Size(64, 17);
-            this.radioMultiRun.TabIndex = 5;
-            this.radioMultiRun.TabStop = true;
-            this.radioMultiRun.Text = "multi run";
-            this.radioMultiRun.UseVisualStyleBackColor = true;
+            this.radioParallel.AutoSize = true;
+            this.radioParallel.Checked = true;
+            this.radioParallel.Location = new System.Drawing.Point(12, 14);
+            this.radioParallel.Name = "radioParallel";
+            this.radioParallel.Size = new System.Drawing.Size(58, 17);
+            this.radioParallel.TabIndex = 0;
+            this.radioParallel.TabStop = true;
+            this.radioParallel.Text = "parallel";
+            this.radioParallel.UseVisualStyleBackColor = true;
+            // 
+            // radioSerialExecution
+            // 
+            this.radioSerialExecution.AutoSize = true;
+            this.radioSerialExecution.Location = new System.Drawing.Point(12, 38);
+            this.radioSerialExecution.Name = "radioSerialExecution";
+            this.radioSerialExecution.Size = new System.Drawing.Size(98, 17);
+            this.radioSerialExecution.TabIndex = 1;
+            this.radioSerialExecution.Text = "serial execution";
+            this.radioSerialExecution.UseVisualStyleBackColor = true;
             // 
             // StatBootstrapForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(292, 325);
+            this.ClientSize = new System.Drawing.Size(292, 221);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "StatBootstrapForm";
@@ -188,6 +210,8 @@
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -203,9 +227,11 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.CheckBox chkGeneticSettings;
-        private System.Windows.Forms.TextBox txtGeneticSettings;
-        private System.Windows.Forms.ListBox lstPopulationSettings;
         private System.Windows.Forms.RadioButton radioMultiRun;
         private System.Windows.Forms.RadioButton radioSingleRun;
+        private System.Windows.Forms.TextBox txtGeneticSettings;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.RadioButton radioSerialExecution;
+        private System.Windows.Forms.RadioButton radioParallel;
     }
 }

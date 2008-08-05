@@ -16,22 +16,15 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
 
         private readonly List<Genome> results = new List<Genome>();
 
-        public List<Genome> Results
-        {
-            get { return results; }
-        }
-
         private readonly int runCount;
         private string pathToResults;
         private Population population;
 
-        public StatSimulation(int runCount, int boardSeed)
-            : this(runCount, boardSeed, PopulationSettings.Default)
+        public StatSimulation(int runCount, int boardSeed) : this(runCount, boardSeed, PopulationSettings.Default)
         {
         }
 
-        public StatSimulation(int runCount, int boardSeed, string populationSettingsPath)
-            : this(runCount, boardSeed, PopulationSettings.LoadFromXML(populationSettingsPath))
+        public StatSimulation(int runCount, int boardSeed, string populationSettingsPath) : this(runCount, boardSeed, PopulationSettings.LoadFromXML(populationSettingsPath))
         {
         }
 
@@ -42,6 +35,11 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
             this.populationSettings = populationSettings;
 
             boardSource = new BoardSourceStatistical(10, 10, this.boardSeed);
+        }
+
+        public List<Genome> Results
+        {
+            get { return results; }
         }
 
         public string PathToResults
@@ -56,7 +54,7 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
             Stopwatch stopwatch = Stopwatch.StartNew();
             for (int i = 0; i < runCount; i++)
             {
-                population = new Population(populationSettings, Board.FromIBoardSource(boardSource)) { IsReseedRequired = true };
+                population = new Population(populationSettings, Board.FromIBoardSource(boardSource)) {IsReseedRequired = true};
                 Genome genome = population.DetermineBestGenome();
 
                 results.Add(genome);
@@ -95,17 +93,27 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
         /// <returns>The path to the results directory.</returns>
         public string WriteAnalysis()
         {
-            pathToResults = string.Format("stat_analysis_{0}_{1}", boardSeed, DateTime.Now.ToFileTime());
+            WriteAnalysis(string.Format("stat_analysis_{0}_{1}", boardSeed, DateTime.Now.ToFileTime()));
+
+            return PathToResults;
+        }
+
+        /// <summary>
+        /// Writes the resutls to a directory.
+        /// </summary>
+        /// <param name="path">The directory which should be created and the results added to.</param>
+        public void WriteAnalysis(string path)
+        {
+            pathToResults = path;
             Directory.CreateDirectory(PathToResults);
 
             WriteResults();
             WriteInformationFile();
-            return PathToResults;
         }
 
         private void WriteInformationFile()
         {
-            using (FileStream fs = new FileStream(string.Format("{0}\\info.txt", pathToResults), FileMode.Create))
+            using (FileStream fs = new FileStream(string.Format(@"{0}\info.txt", pathToResults), FileMode.Create))
             {
                 using (StreamWriter sw = new StreamWriter(fs))
                 {

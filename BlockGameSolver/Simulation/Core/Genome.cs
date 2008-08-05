@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using BlockGameSolver.Simulation.Utility;
 
 namespace BlockGameSolver.Simulation.Core
 {
@@ -7,6 +8,7 @@ namespace BlockGameSolver.Simulation.Core
     {
         private static int nextID;
         private readonly Board board;
+        private readonly MersenneTwister rng = new MersenneTwister();
 
         public Genome(Board board) : this(board, true)
         {
@@ -21,7 +23,6 @@ namespace BlockGameSolver.Simulation.Core
 
             if (random)
             {
-                Random rng = RandomSource.Instance;
                 for (int i = 0; i < GameSettings.MaxMoves; i++)
                 {
                     Moves[i] = rng.Next(0, GameSettings.PieceCount);
@@ -39,12 +40,12 @@ namespace BlockGameSolver.Simulation.Core
 
         public int Crossover(Genome partner)
         {
-            double crossMethod = RandomSource.Instance.NextDoublePositive();
+            double crossMethod = rng.NextDoublePositive();
             if (crossMethod < 0.5)
             {
                 //Single point CO
                 int limit = (MoveCount > partner.MoveCount) ? partner.MoveCount : MoveCount;
-                int swapPoint = RandomSource.Instance.Next(0, limit);
+                int swapPoint = rng.Next(0, limit);
 
                 int?[] temp = new int?[Moves.Length];
 
@@ -59,8 +60,8 @@ namespace BlockGameSolver.Simulation.Core
             {
                 //Double point CO
                 int limit = (MoveCount > partner.MoveCount) ? partner.MoveCount : MoveCount;
-                int swapPoint1 = RandomSource.Instance.Next(0, limit);
-                int swapPoint2 = RandomSource.Instance.Next(0, limit);
+                int swapPoint1 = rng.Next(0, limit);
+                int swapPoint2 = rng.Next(0, limit);
 
                 if (swapPoint2 < swapPoint1)
                 {
@@ -80,7 +81,7 @@ namespace BlockGameSolver.Simulation.Core
             //Random CO
             for (int i = 0; i < Moves.Length; i++)
             {
-                if (RandomSource.Instance.NextDoublePositive() < 0.5)
+                if (rng.NextDoublePositive() < 0.5)
                 {
                     int? temp = Moves[i];
                     Moves[i] = partner.Moves[i];
@@ -118,12 +119,12 @@ namespace BlockGameSolver.Simulation.Core
             int mutations = 0;
             for (int i = 0; i < Moves.Length; i++)
             {
-                if (RandomSource.Instance.NextDoublePositive() < mutateRate)
+                if (rng.NextDoublePositive() < mutateRate)
                 {
                     //Select the mutation type
-                    double mutationProb = RandomSource.Instance.NextDoublePositive();
+                    double mutationProb = rng.NextDoublePositive();
 
-                    Moves[i] = mutationProb < 0.80 ? RandomSource.Instance.Next(0, GameSettings.PieceCount) : Moves[RandomSource.Instance.Next(0, Moves.Length)];
+                    Moves[i] = mutationProb < 0.80 ? rng.Next(0, GameSettings.PieceCount) : Moves[rng.Next(0, Moves.Length)];
 
                     mutations++;
                 }

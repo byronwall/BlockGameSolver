@@ -4,43 +4,28 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
 {
     public class StatSimulationMultiRunResult
     {
-        private PopulationSettings settings;
+        private readonly PopulationSettings settings;
+
+        public StatSimulationMultiRunResult(PopulationSettings settings, string settingsString)
+        {
+            this.settings = settings;
+            SettingsString = settingsString;
+        }
 
         public PopulationSettings Settings
         {
             get { return settings; }
         }
 
-        public string SettingsString
-        {
-            get { return settingsString; }
-        }
+        public string SettingsString { get; private set; }
 
-        private double averageScore;
-        private double standardDeviation;
-        private string settingsString;
+        public double AverageScore { get; set; }
 
-        public double AverageScore
-        {
-            get { return averageScore; }
-            set { averageScore = value; }
-        }
-
-        public double StandardDeviation
-        {
-            get { return standardDeviation; }
-            set { standardDeviation = value; }
-        }
+        public double StandardDeviation { get; set; }
 
         public override string ToString()
         {
-            return string.Format("{0},{1},{2}", settingsString, averageScore, standardDeviation);
-        }
-
-        public StatSimulationMultiRunResult(PopulationSettings settings, string settingsString)
-        {
-            this.settings = settings;
-            this.settingsString = settingsString;
+            return string.Format("{0},{1},{2}", SettingsString, AverageScore, StandardDeviation);
         }
     }
 }

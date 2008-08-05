@@ -2,35 +2,94 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using BlockGameSolver.Simulation.Core;
+using BlockGameSolver.StatisticalAnalysis.Visual;
 
 namespace BlockGameSolver.StatisticalAnalysis.Core
 {
     public class StatSimulationMultiRun
     {
-        private int boardSeed;
+        private readonly int boardSeed;
+        private readonly int id;
+        private readonly object locker = new object();
 
-        private string outputPath;
+        private readonly Dictionary<string, int> paramOrder = new Dictionary<string, int>();
+        private readonly int runCount;
+        private readonly List<StatSimulationMultiRunResult> Settingses = new List<StatSimulationMultiRunResult>();
+        private double count;
         private string paramHeader;
-        private Dictionary<string, int> paramOrder = new Dictionary<string, int>();
-        private int runCount;
-        private List<StatSimulationMultiRunResult> Settingses = new List<StatSimulationMultiRunResult>();
 
         public StatSimulationMultiRun(int runCount, int boardSeed)
         {
             this.runCount = runCount;
             this.boardSeed = boardSeed;
+            id = RandomSource.Instance.Next();
         }
 
-        public StatSimulationMultiRun(int runCount, int boardSeed, string path)
-            : this(runCount, boardSeed)
+        public StatSimulationMultiRun(int runCount, int boardSeed, string path) : this(runCount, boardSeed)
         {
             LoadPopulationSettingsFromCSV(path);
         }
 
+        private string TopFolder
+        {
+            get { return string.Format("multi_run_results_{0}", id); }
+        }
+
         private string outputHeader
         {
-            get { return string.Format("{0},{1},{2}", paramHeader, "average", "standardDev"); }
+            get { return string.Format("{0},{1},{2}", ParamHeader, "average", "standardDev"); }
+        }
+
+        public string ParamHeader
+        {
+            get
+            {
+                if (paramHeader.IsNullOrEmpty())
+                {
+                    paramHeader = PopulationSettings.DefaultParamHeader;
+                }
+                return paramHeader;
+            }
+        }
+
+        private double Count
+        {
+            get
+            {
+                lock (locker)
+                {
+                    return count;
+                }
+            }
+            set
+            {
+                lock (locker)
+                {
+                    count = value;
+                }
+            }
+        }
+
+        public bool ParallelExecution { get; set; }
+
+        public void CreateRandomPopulation(int paramSetCount)
+        {
+            for (int i = 0; i < paramSetCount; i++)
+            {
+                double crossRate = RandomSource.Instance.NextDoublePositive();
+                double filterRate = RandomSource.Instance.NextDoublePositive();
+                double mutateRate = RandomSource.Instance.NextDoublePositive();
+                int populationSize = RandomSource.Instance.Next(20, 200);
+                int generations = RandomSource.Instance.Next(1, 100);
+
+                PopulationSettings settings = new PopulationSettings(generations, populationSize, mutateRate, filterRate, populationSize, crossRate);
+
+                StatSimulationMultiRunResult result = new StatSimulationMultiRunResult(settings, settings.DefaultParamString);
+
+                Settingses.Add(result);
+            }
         }
 
         public void LoadPopulationSettingsFromCSV(string path)
@@ -40,7 +99,7 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
                 using (StreamReader reader = new StreamReader(fs))
                 {
                     paramHeader = reader.ReadLine();
-                    var splits = paramHeader.Split(new string[] { "," }, StringSplitOptions.None);
+                    string[] splits = ParamHeader.Split(new[] {","}, StringSplitOptions.None);
                     for (int i = 0; i < splits.Length; i++)
                     {
                         paramOrder.Add(splits[i], i);
@@ -50,13 +109,13 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
                     {
                         //filterRate,crossRate,mutateRate,populationSize,generations
                         string param = reader.ReadLine();
-                        var paramSplits = param.Split(new string[] { "," }, StringSplitOptions.None);
+                        string[] paramSplits = param.Split(new[] {","}, StringSplitOptions.None);
 
                         double crossRate = Convert.ToDouble(paramSplits[paramOrder["crossRate"]]);
                         double filterRate = Convert.ToDouble(paramSplits[paramOrder["filterRate"]]);
                         double mutateRate = Convert.ToDouble(paramSplits[paramOrder["mutateRate"]]);
-                        int populationSize = (int)Convert.ToDouble(paramSplits[paramOrder["populationSize"]]);
-                        int generations = (int)Convert.ToDouble(paramSplits[paramOrder["generations"]]);
+                        int populationSize = (int) Convert.ToDouble(paramSplits[paramOrder["populationSize"]]);
+                        int generations = (int) Convert.ToDouble(paramSplits[paramOrder["generations"]]);
 
                         PopulationSettings settings = new PopulationSettings(generations, populationSize, mutateRate, filterRate, populationSize, crossRate);
 
@@ -70,19 +129,33 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
 
         public void DoMultiRun()
         {
-            double count = 0;
-            foreach (StatSimulationMultiRunResult result in Settingses)
+            count = 0;
+
+            if (ParallelExecution)
             {
-                StatSimulation simulation = new StatSimulation(runCount, boardSeed, result.Settings);
-
-                simulation.RunAnalysis();
-                result.AverageScore = simulation.Results.Average(c => c.Fitness);
-                result.StandardDeviation = simulation.Results.StandardDeviation(c => c.Fitness);
-
-                InvokePercentCompleteChanged(new PercentCompleteEventArgs(++count / Settingses.Count));
+                Parallel.ForEach(Settingses, GetResultParallel);
             }
-            WriteToFile("stat_results.csv");
+            else
+            {
+                foreach (StatSimulationMultiRunResult result in Settingses)
+                {
+                    GetResultParallel(result);
+                }
+            }
+            WriteToFile(string.Format(@"{0}\stat_results.csv", TopFolder));
+
             InvokeMultiRunAnalysisComplete(EventArgs.Empty);
+        }
+
+        private void GetResultParallel(StatSimulationMultiRunResult result)
+        {
+            StatSimulation simulation = new StatSimulation(runCount, boardSeed, result.Settings);
+
+            simulation.RunAnalysis();
+            result.AverageScore = simulation.Results.Average(c => c.Fitness);
+            result.StandardDeviation = simulation.Results.StandardDeviation(c => c.Fitness);
+            simulation.WriteAnalysis(string.Format(@"{0}\{1}", TopFolder, result.SettingsString));
+            InvokePercentCompleteChanged(new PercentCompleteEventArgs(++Count/Settingses.Count));
         }
 
         public void WriteToFile(string path)
@@ -120,26 +193,6 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
             {
                 multiRunAnalysisCompleteHandler(this, e);
             }
-        }
-    }
-
-    public class PercentCompleteEventArgs : EventArgs
-    {
-        private double percentComplete;
-
-        public double PercentComplete
-        {
-            get { return percentComplete; }
-        }
-
-        public PercentCompleteEventArgs(double percentComplete)
-        {
-            if (percentComplete < 0 || percentComplete > 1)
-            {
-                throw new ArgumentException("Must be between 0 and 1");
-
-            }
-            this.percentComplete = percentComplete;
         }
     }
 }

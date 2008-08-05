@@ -7,11 +7,11 @@ namespace BlockGameSolver.Simulation.Core
 {
     public class Results : IDisposable
     {
-        private FileStream fs;
         private readonly MemoryStream ms;
 
         private readonly List<List<double>> scoreData = new List<List<double>>();
         private readonly StreamWriter sw;
+        private FileStream fs;
 
         public Results()
         {
@@ -49,12 +49,12 @@ namespace BlockGameSolver.Simulation.Core
             }
             DumpScoreData();
         }
-
+        [Obsolete]
         public void OpenWithExecutable()
         {
             OpenWithExecutable("notepad.exe");
         }
-
+        [Obsolete]
         public void OpenWithExecutable(string executable)
         {
             Process.Start(executable, ResultsFilename);

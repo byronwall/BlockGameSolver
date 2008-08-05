@@ -46,8 +46,6 @@
             this.lblFilterRate = new System.Windows.Forms.Label();
             this.lblInitSize = new System.Windows.Forms.Label();
             this.lblPopSize = new System.Windows.Forms.Label();
-            this.chkDelete = new System.Windows.Forms.CheckBox();
-            this.btnViewResults = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.btnRun = new System.Windows.Forms.Button();
             this.btnCreate = new System.Windows.Forms.Button();
@@ -75,8 +73,6 @@
             this.grpSimulation.Controls.Add(this.txtBestResult);
             this.grpSimulation.Controls.Add(this.progCompleted);
             this.grpSimulation.Controls.Add(this.grpSettings);
-            this.grpSimulation.Controls.Add(this.chkDelete);
-            this.grpSimulation.Controls.Add(this.btnViewResults);
             this.grpSimulation.Controls.Add(this.button1);
             this.grpSimulation.Controls.Add(this.btnRun);
             this.grpSimulation.Location = new System.Drawing.Point(12, 12);
@@ -331,29 +327,6 @@
             this.lblPopSize.TabIndex = 0;
             this.lblPopSize.Text = "population size";
             // 
-            // chkDelete
-            // 
-            this.chkDelete.AutoSize = true;
-            this.chkDelete.Checked = true;
-            this.chkDelete.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDelete.Location = new System.Drawing.Point(5, 150);
-            this.chkDelete.Name = "chkDelete";
-            this.chkDelete.Size = new System.Drawing.Size(76, 17);
-            this.chkDelete.TabIndex = 1;
-            this.chkDelete.Text = "delete files";
-            this.chkDelete.UseVisualStyleBackColor = true;
-            // 
-            // btnViewResults
-            // 
-            this.btnViewResults.Enabled = false;
-            this.btnViewResults.Location = new System.Drawing.Point(7, 76);
-            this.btnViewResults.Name = "btnViewResults";
-            this.btnViewResults.Size = new System.Drawing.Size(75, 23);
-            this.btnViewResults.TabIndex = 0;
-            this.btnViewResults.Text = "view results";
-            this.btnViewResults.UseVisualStyleBackColor = true;
-            this.btnViewResults.Click += new System.EventHandler(this.btnOpen_Click);
-            // 
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(8, 20);
@@ -483,7 +456,6 @@
             this.Controls.Add(this.grpSimulation);
             this.Name = "GameForm";
             this.Text = "GameForm";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GameForm_FormClosing);
             this.grpSimulation.ResumeLayout(false);
             this.grpSimulation.PerformLayout();
             this.grpSettings.ResumeLayout(false);
@@ -505,8 +477,6 @@
 
         private System.Windows.Forms.GroupBox grpSimulation;
         private System.Windows.Forms.Button btnRun;
-        private System.Windows.Forms.Button btnViewResults;
-        private System.Windows.Forms.CheckBox chkDelete;
         private System.Windows.Forms.GroupBox grpSettings;
         private System.Windows.Forms.Label lblPopSize;
         private System.Windows.Forms.NumericUpDown numMutateRatio;

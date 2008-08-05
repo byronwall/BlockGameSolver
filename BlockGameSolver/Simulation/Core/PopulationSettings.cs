@@ -63,6 +63,16 @@ namespace BlockGameSolver.Simulation.Core
             get { return new PopulationSettings(15, 50, 0.01, 0.01, 50, 0.95); }
         }
 
+        public string DefaultParamString
+        {
+            get { return string.Format("{0},{1},{2},{3},{4}", filterRate, crossoverRatio, mutateRatio, populationSize, maxGenerations); }
+        }
+
+        public static string DefaultParamHeader
+        {
+            get { return "filterRate,crossRate,mutateRate,populationSize,generations"; }
+        }
+
         public void SaveToXML(string path)
         {
             XDocument document = new XDocument();
