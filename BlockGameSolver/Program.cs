@@ -26,10 +26,7 @@ namespace BlockGameSolver
 
             int seed = (int) DateTime.Now.Ticks;
 
-            if (parser["seed"] != null)
-            {
-                seed = Convert.ToInt32(parser["seed"]);
-            }
+            if (parser["seed"] != null) seed = Convert.ToInt32(parser["seed"]);
 
             switch (parser["mode"])
             {
@@ -53,7 +50,7 @@ namespace BlockGameSolver
 
         private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
         {
-            MessageBox.Show(e.ToString());    
+            MessageBox.Show(e.ToString());
         }
     }
 }
