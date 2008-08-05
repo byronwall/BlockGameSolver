@@ -1,7 +1,9 @@
 using System;
+using System.Threading;
 using System.Windows.Forms;
 using BlockGameSolver.GamePlayer.Visual;
 using BlockGameSolver.Simulation.Core;
+using BlockGameSolver.StatisticalAnalysis.Core;
 using BlockGameSolver.StatisticalAnalysis.Visual;
 using BlockGameSolver.Utility.CommandLine;
 
@@ -19,10 +21,12 @@ namespace BlockGameSolver
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.Automatic);
+            Application.ThreadException += Application_ThreadException;
 
             int seed = (int) DateTime.Now.Ticks;
-            
-            if (parser["seed"]!=null)
+
+            if (parser["seed"] != null)
             {
                 seed = Convert.ToInt32(parser["seed"]);
             }
@@ -31,22 +35,25 @@ namespace BlockGameSolver
             {
                 case "profile":
                 {
-                    Population population = new Population(Board.FromIBoardSource(new StatisticalAnalysis.Core.BoardSourceStatistical(10, 10, seed)));
+                    Population population = new Population(Board.FromIBoardSource(new BoardSourceStatistical(10, 10, seed)));
                     population.DetermineBestGenome();
-                
+
                     return;
                 }
                 case "stats":
                 {
                     Application.Run(new StatBootstrapForm());
 
-
                     return;
                 }
             }
-            
-            
+
             Application.Run(new GamePlayerForm());
+        }
+
+        private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+        {
+            MessageBox.Show(e.ToString());
         }
     }
 }
