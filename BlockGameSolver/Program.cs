@@ -50,7 +50,7 @@ namespace BlockGameSolver
 
         private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
         {
-            MessageBox.Show(e.ToString());       
+            MessageBox.Show(e.ToString());          
         } 
     }
 }
