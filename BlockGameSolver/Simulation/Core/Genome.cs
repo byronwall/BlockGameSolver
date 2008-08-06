@@ -6,6 +6,7 @@ namespace BlockGameSolver.Simulation.Core
 {
     public class Genome
     {
+        private static readonly MersenneTwister rngStatic = new MersenneTwister();
         private static int nextID;
         private readonly Board board;
         private readonly MersenneTwister rng = new MersenneTwister();
@@ -38,30 +39,40 @@ namespace BlockGameSolver.Simulation.Core
 
         public int MoveCount { get; set; }
 
-        public int Crossover(Genome partner)
+        private static MersenneTwister RngStatic
         {
-            double crossMethod = rng.NextDoublePositive();
+            get
+            {
+                lock (rngStatic)
+                {
+                    return rngStatic;
+                }
+            }
+        }
+
+        public static Genome Crossover(Genome genomeStart, Genome genomeEnd)
+        {
+            Genome genomeOutput = new Genome(genomeStart.board, false);
+            double crossMethod = RngStatic.NextDoublePositive();
             if (crossMethod < 0.5)
             {
                 //Single point CO
-                int limit = (MoveCount > partner.MoveCount) ? partner.MoveCount : MoveCount;
-                int swapPoint = rng.Next(0, limit);
+                int limit = (genomeStart.MoveCount > genomeEnd.MoveCount) ? genomeEnd.MoveCount : genomeStart.MoveCount;
+                int swapPoint = RngStatic.Next(0, limit);
 
-                int?[] temp = new int?[Moves.Length];
-
-                Moves.CopyTo(temp, 0);
-
-                Array.Copy(partner.Moves, swapPoint, Moves, swapPoint, Moves.Length - swapPoint);
-                Array.Copy(temp, swapPoint, partner.Moves, swapPoint, Moves.Length - swapPoint);
-
-                return swapPoint;
+                for (int i = 0; i < limit; i++)
+                {
+                    if (i < swapPoint) genomeOutput.Moves[i] = genomeStart.Moves[i];
+                    else genomeOutput.Moves[i] = genomeEnd.Moves[i];
+                }
+                genomeOutput.MoveCount = genomeEnd.MoveCount;
             }
             if (crossMethod < 0.8)
             {
                 //Double point CO
-                int limit = (MoveCount > partner.MoveCount) ? partner.MoveCount : MoveCount;
-                int swapPoint1 = rng.Next(0, limit);
-                int swapPoint2 = rng.Next(0, limit);
+                int limit = (genomeStart.MoveCount > genomeEnd.MoveCount) ? genomeEnd.MoveCount : genomeStart.MoveCount;
+                int swapPoint1 = RngStatic.Next(0, limit);
+                int swapPoint2 = RngStatic.Next(0, limit);
 
                 if (swapPoint2 < swapPoint1)
                 {
@@ -69,44 +80,40 @@ namespace BlockGameSolver.Simulation.Core
                     swapPoint1 = swapPoint2;
                     swapPoint2 = tempPoint;
                 }
-                int?[] temp = new int?[Moves.Length];
-
-                Moves.CopyTo(temp, 0);
-
-                Array.Copy(partner.Moves, swapPoint1, Moves, swapPoint1, swapPoint2 - swapPoint1);
-                Array.Copy(temp, swapPoint1, partner.Moves, swapPoint1, swapPoint2 - swapPoint1);
-
-                return swapPoint1;
-            }
-            //Random CO
-            for (int i = 0; i < Moves.Length; i++)
-            {
-                if (rng.NextDoublePositive() < 0.5)
+                for (int i = 0; i < limit; i++)
                 {
-                    int? temp = Moves[i];
-                    Moves[i] = partner.Moves[i];
-                    partner.Moves[i] = temp;
+                    if (i < swapPoint1 || i > swapPoint2) genomeOutput.Moves[i] = genomeStart.Moves[i];
+                    else genomeOutput.Moves[i] = genomeEnd.Moves[i];
                 }
+                genomeOutput.MoveCount = limit;
             }
-            return 0;
+            else
+            {
+                //Random mix
+                int limit = (genomeStart.MoveCount > genomeEnd.MoveCount) ? genomeEnd.MoveCount : genomeStart.MoveCount;
+
+                for (int i = 0; i < limit; i++)
+                {
+                    if (RngStatic.NextDoublePositive() < 0.5) genomeOutput.Moves[i] = genomeStart.Moves[i];
+                    else genomeOutput.Moves[i] = genomeEnd.Moves[i];
+                }
+                genomeOutput.MoveCount = limit;
+            }
+            return genomeOutput;
         }
 
         public override string ToString()
         {
-            
-
             return ID.ToString();
         }
+
         public string GetMoveList()
         {
             StringBuilder sb = new StringBuilder();
 
             for (int i = 0; i < Moves.Length; i++)
             {
-                if (Moves[i] == null)
-                {
-                    break;
-                }
+                if (Moves[i] == null) break;
 
                 sb.Append(Moves[i]);
                 sb.Append(",");
@@ -114,22 +121,23 @@ namespace BlockGameSolver.Simulation.Core
             return sb.ToString();
         }
 
-        public int Mutate(double mutateRate)
+        public static Genome Mutate(Genome genomeSource,double mutateRate)
         {
-            int mutations = 0;
-            for (int i = 0; i < Moves.Length; i++)
+            Genome genomeOutput = new Genome(genomeSource.board, false);
+            for (int i = 0; i < genomeSource.Moves.Length; i++)
             {
-                if (rng.NextDoublePositive() < mutateRate)
+                if (RngStatic.NextDoublePositive() < mutateRate)
                 {
                     //Select the mutation type
-                    double mutationProb = rng.NextDoublePositive();
 
-                    Moves[i] = mutationProb < 0.80 ? rng.Next(0, GameSettings.PieceCount) : Moves[rng.Next(0, Moves.Length)];
-
-                    mutations++;
+                    genomeOutput.Moves[i] = RngStatic.Next(0, GameSettings.PieceCount);
+                }
+                else
+                {
+                    genomeOutput.Moves[i] = genomeSource.Moves[i];
                 }
             }
-            return mutations;
+            return genomeOutput;
         }
 
         public void Evaluate()
