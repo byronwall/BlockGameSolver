@@ -46,10 +46,7 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
         {
             get
             {
-                if (paramHeader.IsNullOrEmpty())
-                {
-                    paramHeader = PopulationSettings.DefaultParamHeader;
-                }
+                if (paramHeader.IsNullOrEmpty()) paramHeader = PopulationSettings.DefaultParamHeader;
                 return paramHeader;
             }
         }
@@ -99,6 +96,7 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
                 using (StreamReader reader = new StreamReader(fs))
                 {
                     paramHeader = reader.ReadLine();
+
                     string[] splits = ParamHeader.Split(new[] {","}, StringSplitOptions.None);
                     for (int i = 0; i < splits.Length; i++)
                     {
@@ -114,8 +112,8 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
                         double crossRate = Convert.ToDouble(paramSplits[paramOrder["crossRate"]]);
                         double filterRate = Convert.ToDouble(paramSplits[paramOrder["filterRate"]]);
                         double mutateRate = Convert.ToDouble(paramSplits[paramOrder["mutateRate"]]);
-                        int populationSize = (int) Convert.ToDouble(paramSplits[paramOrder["populationSize"]]);
-                        int generations = (int) Convert.ToDouble(paramSplits[paramOrder["generations"]]);
+                        int populationSize = Convert.ToInt32(paramSplits[paramOrder["populationSize"]]);
+                        int generations = Convert.ToInt32(paramSplits[paramOrder["generations"]]);
 
                         PopulationSettings settings = new PopulationSettings(generations, populationSize, mutateRate, filterRate, populationSize, crossRate);
 
@@ -131,10 +129,7 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
         {
             count = 0;
 
-            if (ParallelExecution)
-            {
-                Parallel.ForEach(Settingses, GetResultParallel);
-            }
+            if (ParallelExecution) Parallel.ForEach(Settingses, GetResultParallel);
             else
             {
                 foreach (StatSimulationMultiRunResult result in Settingses)
@@ -178,10 +173,7 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
         private void InvokePercentCompleteChanged(PercentCompleteEventArgs e)
         {
             EventHandler<PercentCompleteEventArgs> percentCompleteChangedHandler = PercentCompleteChanged;
-            if (percentCompleteChangedHandler != null)
-            {
-                percentCompleteChangedHandler(this, e);
-            }
+            if (percentCompleteChangedHandler != null) percentCompleteChangedHandler(this, e);
         }
 
         public event EventHandler MultiRunAnalysisComplete;
@@ -189,10 +181,7 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
         private void InvokeMultiRunAnalysisComplete(EventArgs e)
         {
             EventHandler multiRunAnalysisCompleteHandler = MultiRunAnalysisComplete;
-            if (multiRunAnalysisCompleteHandler != null)
-            {
-                multiRunAnalysisCompleteHandler(this, e);
-            }
+            if (multiRunAnalysisCompleteHandler != null) multiRunAnalysisCompleteHandler(this, e);
         }
     }
 }

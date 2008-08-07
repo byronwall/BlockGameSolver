@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using BlockGameSolver.Simulation.Core;
+using BlockGameSolver.Simulation.Strategy;
 using BlockGameSolver.StatisticalAnalysis.Visual;
 
 namespace BlockGameSolver.StatisticalAnalysis.Core
@@ -18,7 +19,7 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
 
         private readonly int runCount;
         private string pathToResults;
-        private Population population;
+        private PopulationSingleRun populationSingleRun;
 
         public StatSimulation(int runCount, int boardSeed) : this(runCount, boardSeed, PopulationSettings.Default)
         {
@@ -54,8 +55,8 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
             Stopwatch stopwatch = Stopwatch.StartNew();
             for (int i = 0; i < runCount; i++)
             {
-                population = new Population(populationSettings, Board.FromIBoardSource(boardSource)) {IsReseedRequired = true};
-                Genome genome = population.DetermineBestGenome();
+                populationSingleRun = new PopulationSingleRun(populationSettings, Board.FromIBoardSource(boardSource)) {IsReseedRequired = true};
+                Genome genome = populationSingleRun.GetBestGenome();
 
                 results.Add(genome);
                 InvokeRunFinished(new RunEventArgs(i + 1));
@@ -119,7 +120,7 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
                 {
                     sw.WriteLine("***ANALYSIS INFORMATION***");
                     sw.WriteLine(pathToResults);
-                    sw.WriteLine(population.PopulationBoard);
+                    sw.WriteLine(populationSingleRun.PopulationBoard);
                     sw.WriteLine(this);
                     sw.WriteLine(populationSettings);
                     sw.WriteLine(string.Format("{0}\t{1}\r\n", "run time:", RunTimeElapsed));

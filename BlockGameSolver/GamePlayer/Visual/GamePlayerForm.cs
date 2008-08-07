@@ -7,6 +7,7 @@ using BlockGameSolver.ImageAnalyzer.Core;
 using BlockGameSolver.ImageAnalyzer.Utility;
 using BlockGameSolver.ImageAnalyzer.Visual;
 using BlockGameSolver.Simulation.Core;
+using BlockGameSolver.Simulation.Strategy;
 using BlockGameSolver.Simulation.Visual;
 using BlockGameSolver.StatisticalAnalysis.Visual;
 using DataFormats = System.Windows.DataFormats;
@@ -21,7 +22,7 @@ namespace BlockGameSolver.GamePlayer.Visual
         private Genome bestGenome;
         private string boardDataPath = "boardData.xml";
         private int currentIndex;
-        private Population population;
+        private PopulationBase populationSingleRun;
         private Timer timer;
 
         public GamePlayerForm()
@@ -31,7 +32,7 @@ namespace BlockGameSolver.GamePlayer.Visual
 
         private void btnShowSim_Click(object sender, EventArgs e)
         {
-            new GameForm(population).Show();
+            new GameForm(populationSingleRun).Show();
         }
 
         private void btnShowAnalyzer_Click(object sender, EventArgs e)
@@ -53,8 +54,8 @@ namespace BlockGameSolver.GamePlayer.Visual
 
                 Board board = Board.FromIBoardSource(analyzer);
 
-                population = new Population(board);
-                bestGenome = population.DetermineBestGenome();
+                populationSingleRun = new PopulationSingleRun(board);
+                bestGenome = populationSingleRun.GetBestGenome();
                 timer = new Timer { Interval = 1500 };
                 timer.Tick += timer_Tick;
                 timer.Start();
@@ -119,7 +120,7 @@ namespace BlockGameSolver.GamePlayer.Visual
                 string path = strings[0];
 
                 analyzer.SetScreenshot(path);
-                population = new Population(Board.FromIBoardSource(analyzer));
+                populationSingleRun = new PopulationSingleRun(Board.FromIBoardSource(analyzer));
             }
         }
 

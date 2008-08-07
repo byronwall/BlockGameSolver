@@ -3,6 +3,7 @@ using System.Threading;
 using System.Windows.Forms;
 using BlockGameSolver.GamePlayer.Visual;
 using BlockGameSolver.Simulation.Core;
+using BlockGameSolver.Simulation.Strategy;
 using BlockGameSolver.StatisticalAnalysis.Core;
 using BlockGameSolver.StatisticalAnalysis.Visual;
 using BlockGameSolver.Utility.CommandLine;
@@ -32,8 +33,8 @@ namespace BlockGameSolver
             {
                 case "profile":
                 {
-                    Population population = new Population(Board.FromIBoardSource(new BoardSourceStatistical(10, 10, seed)));
-                    population.DetermineBestGenome();
+                    PopulationSingleRun populationSingleRun = new PopulationSingleRun(Board.FromIBoardSource(new BoardSourceStatistical(10, 10, seed)));
+                    populationSingleRun.GetBestGenome();
 
                     return;
                 }
@@ -50,7 +51,7 @@ namespace BlockGameSolver
 
         private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
         {
-            MessageBox.Show(e.ToString());          
-        } 
+            MessageBox.Show(e.ToString());
+        }
     }
 }

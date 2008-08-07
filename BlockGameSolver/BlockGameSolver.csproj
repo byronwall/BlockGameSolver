@@ -103,12 +103,16 @@
     <Compile Include="Simulation\Core\GameSettings.cs" />
     <Compile Include="Simulation\Core\GenerationEventArgs.cs" />
     <Compile Include="Simulation\Core\Genome.cs" />
+    <Compile Include="Simulation\Core\GenomeOperations.cs" />
     <Compile Include="Simulation\Core\IBoardSource.cs" />
+    <Compile Include="Simulation\Core\PopulationBase.cs" />
+    <Compile Include="Simulation\Strategy\PopulationMultiRun.cs" />
+    <Compile Include="Simulation\Strategy\PopulationMultiRunSuperPopulation.cs" />
     <Compile Include="Simulation\Utility\MersenneTwister.cs" />
     <Compile Include="Simulation\Core\Point.cs" />
     <Compile Include="Simulation\Core\PopulationSettings.cs" />
     <Compile Include="Simulation\Core\Piece.cs" />
-    <Compile Include="Simulation\Core\Population.cs" />
+    <Compile Include="Simulation\Strategy\PopulationSingleRun.cs" />
     <Compile Include="Simulation\Core\RandomSource.cs" />
     <Compile Include="Simulation\Core\Results.cs" />
     <Compile Include="Program.cs" />

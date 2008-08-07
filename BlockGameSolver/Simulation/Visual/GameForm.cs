@@ -4,6 +4,7 @@ using System.Threading;
 using System.Windows.Forms;
 using BlockGameSolver.Properties;
 using BlockGameSolver.Simulation.Core;
+using BlockGameSolver.Simulation.Strategy;
 using Point=BlockGameSolver.Simulation.Core.Point;
 
 namespace BlockGameSolver.Simulation.Visual
@@ -13,16 +14,16 @@ namespace BlockGameSolver.Simulation.Visual
         private Genome Best;
         private BoardMode boardMode = BoardMode.FreePlay;
         private int currentMove;
-        private Population population;
+        private PopulationBase populationBase;
 
         public GameForm()
         {
             InitializeComponent();
         }
 
-        public GameForm(Population population) : this()
+        public GameForm(PopulationBase populationBase) : this()
         {
-            this.population = population;
+            this.populationBase = populationBase;
         }
 
         private void btnRun_Click(object sender, EventArgs e)
@@ -37,21 +38,22 @@ namespace BlockGameSolver.Simulation.Visual
 
             PopulationSettings settings = new PopulationSettings(generations, popSize, mutateRatio, filterRate, initSize, crossRatio);
 
-            if (population == null)
+            if (populationBase == null)
             {
-                population = new Population(settings, Board.CreateRandomBoard());
+                //populationBase = new PopulationSingleRun(settings, Board.CreateRandomBoard());
+                populationBase = new PopulationMultiRunSuperPopulation(settings, Board.CreateRandomBoard()) {IsReseedRequired = true};
             }
-            population.PopulationFinished += population_PopulationFinished;
-            population.GenerationCompleted += population_GenerationCompleted;
+            populationBase.PopulationFinished += population_PopulationFinished;
+            populationBase.GenerationCompleted += population_GenerationCompleted;
 
             btnRun.Enabled = false;
 
             progCompleted.Minimum = 0;
             progCompleted.Maximum = generations;
 
-            population.PopulationBoard.LoadOldBoard();
+            populationBase.PopulationBoard.LoadOldBoard();
 
-            Thread t = new Thread(population.BeginGeneticProcess) {IsBackground = true};
+            Thread t = new Thread(populationBase.BeginGeneticProcess) {IsBackground = true};
             t.Start();
         }
 
@@ -83,7 +85,7 @@ namespace BlockGameSolver.Simulation.Visual
             {
                 btnRun.Enabled = true;
                 btnPlayBest.Enabled = true;
-                Best = population.GenomeBest;
+                Best = populationBase.GenomeBest;
                 txtBestResult.Text = Best.ToString();
                 txtBestFitness.Text = Best.Fitness.ToString();
             }
@@ -97,7 +99,7 @@ namespace BlockGameSolver.Simulation.Visual
         {
             currentMove = 0;
             boardMode = BoardMode.FreePlay;
-            population.PopulationBoard.LoadOldBoard();
+            populationBase.PopulationBoard.LoadOldBoard();
 
             RedrawBoard();
         }
@@ -107,7 +109,7 @@ namespace BlockGameSolver.Simulation.Visual
             Panel send = (Panel) sender;
             Piece piece = (Piece) send.Tag;
 
-            population.PopulationBoard.RemoveGroup(piece.Row, piece.Column);
+            populationBase.PopulationBoard.RemoveGroup(piece.Row, piece.Column);
             RedrawBoard();
         }
 
@@ -116,7 +118,7 @@ namespace BlockGameSolver.Simulation.Visual
             tableBoard.Visible = false;
             tableBoard.Controls.Clear();
 
-            foreach (Piece piece in population.PopulationBoard.Pieces)
+            foreach (Piece piece in populationBase.PopulationBoard.Pieces)
             {
                 if (piece == null)
                 {
@@ -134,7 +136,7 @@ namespace BlockGameSolver.Simulation.Visual
                     Label lblPieceNum = new Label {Text = piece.ToString(), Enabled = false};
                     back.Controls.Add(lblPieceNum);
                 }
-                if (population.PopulationBoard.HasMoves && boardMode == BoardMode.FreePlay)
+                if (populationBase.PopulationBoard.HasMoves && boardMode == BoardMode.FreePlay)
                 {
                     back.MouseClick += back_MouseClick;
                 }
@@ -143,7 +145,7 @@ namespace BlockGameSolver.Simulation.Visual
             }
 
             tableBoard.Visible = true;
-            txtScore.Text = population.PopulationBoard.Score.ToString();
+            txtScore.Text = populationBase.PopulationBoard.Score.ToString();
         }
 
         private void btnPlayBest_Click(object sender, EventArgs e)
@@ -151,7 +153,7 @@ namespace BlockGameSolver.Simulation.Visual
             //Move the best result over to the board to see it played.
             currentMove = 0;
             boardMode = BoardMode.GuidedPlay;
-            population.PopulationBoard.LoadOldBoard();
+            populationBase.PopulationBoard.LoadOldBoard();
             RedrawBoard();
             btnNextMove.Enabled = true;
             lblPlayingMode.Text = string.Format("Board: {0}", boardMode);
@@ -165,13 +167,13 @@ namespace BlockGameSolver.Simulation.Visual
 
         private void btnNextMove_Click(object sender, EventArgs e)
         {
-            population.PopulationBoard.RemoveGroup(Best.Moves[currentMove++].Value);
+            populationBase.PopulationBoard.RemoveGroup(Best.Moves[currentMove++].Value);
             UpdateNextButton();
 
             RedrawBoard();
             if (currentMove == Best.MoveCount)
             {
-                population.PopulationBoard.RemoveGroup(0);
+                populationBase.PopulationBoard.RemoveGroup(0);
                 RedrawBoard();
                 btnNextMove.Enabled = false;
             }
