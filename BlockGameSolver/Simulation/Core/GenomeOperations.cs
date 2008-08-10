@@ -4,14 +4,13 @@ namespace BlockGameSolver.Simulation.Core
 {
     public class GenomeOperations
     {
-        private static readonly MersenneTwister rngStatic = new MersenneTwister();
+        private readonly MersenneTwister RngStatic = new MersenneTwister();
 
         private static GenomeOperations instance;
 
-        private GenomeOperations()
+        public GenomeOperations()
         {
         }
-
         public static GenomeOperations Instance
         {
             get
@@ -19,11 +18,6 @@ namespace BlockGameSolver.Simulation.Core
                 if (instance == null) instance = new GenomeOperations();
                 return instance;
             }
-        }
-
-        private static MersenneTwister RngStatic
-        {
-            get { return rngStatic; }
         }
 
         public virtual Genome CrossoverNew(Genome genomeStart, Genome genomeEnd)

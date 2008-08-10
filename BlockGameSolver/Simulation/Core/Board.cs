@@ -6,13 +6,13 @@ namespace BlockGameSolver.Simulation.Core
 {
     public class Board
     {
-        private readonly Piece[,] backupPieces = new Piece[GameSettings.Rows,GameSettings.Columns];
+        private readonly Piece[,] backupPieces = new Piece[GameSettings.Rows, GameSettings.Columns];
 
         private readonly Piece[] currentPieces = new Piece[GameSettings.PieceCount];
 
-        private readonly Point[] lookDirections = new[] {new Point(0, 1, Direction.Right), new Point(0, -1, Direction.Left), new Point(1, 0, Direction.Bottom), new Point(-1, 0, Direction.Top)};
+        private readonly RowColumnPoint[] lookDirections = new[] { new RowColumnPoint(0, 1, Direction.Right), new RowColumnPoint(0, -1, Direction.Left), new RowColumnPoint(1, 0, Direction.Bottom), new RowColumnPoint(-1, 0, Direction.Top) };
 
-        private readonly Piece[,] pieces = new Piece[GameSettings.Rows,GameSettings.Columns];
+        private readonly Piece[,] pieces = new Piece[GameSettings.Rows, GameSettings.Columns];
         private int currentPieceCount;
 
         private bool hasMoves = true;
@@ -81,10 +81,10 @@ namespace BlockGameSolver.Simulation.Core
                 {
                     if (groups[i] == null)
                     {
-                        groups[i] = RandomSource.Instance.Next(0, GameSettings.PieceCount);
+                        groups[i] = new MersenneTwister().Next(0, GameSettings.PieceCount);
                     }
-
-                    int? removed = RemoveGroup(groups[i].Value/GameSettings.Columns, groups[i].Value%GameSettings.Columns);
+                    RowColumnPoint location = GameSettings.GetLocationFromNumber(groups[i].Value);
+                    int? removed = RemoveGroup( location.Row, location.Column);
 
                     if (removed == null)
                     {
@@ -109,7 +109,7 @@ namespace BlockGameSolver.Simulation.Core
             return CreateRandomBoard(null, null);
         }
 
-        public static Board CreateRandomBoard(int? rowMissing, int? colMissing)
+        private static Board CreateRandomBoard(int? rowMissing, int? colMissing)
         {
             Board output = new Board();
             MersenneTwister rng = RandomSource.Instance;
@@ -149,40 +149,49 @@ namespace BlockGameSolver.Simulation.Core
                 return 0;
             }
 
-            if (pieces[row, col].IsBomb && row == GameSettings.Rows - 1 && currentPieceCount == 0)
+            if (pieces[row, col].IsBomb)
             {
-                AddSurroundingPiecesForBomb(row, col);
-                return GameSettings.GroupSize;
+                if (row == GameSettings.Rows - 1 && currentPieceCount == 0)
+                {
+                    AddSurroundingPiecesForBomb(row, col);
+                    return GameSettings.GroupSize;
+                }
+                return 0;
             }
             currentPieces[currentPieceCount++] = pieces[row, col];
 
             for (int i = 0; i < lookDirections.Length; i++)
             {
-                Point nextPoint = lookDirections[i];
+                RowColumnPoint nextRowColumnPoint = lookDirections[i];
 
-                //This code checks that the path is not backtracked, the rows and columns are within bounds, the new piece exists, the new piece has not been checked, and that the colors match.
-
-                int nextColumn = col + nextPoint.ColInc;
-                int nextRow = row + nextPoint.RowInc;
-                if (dirFrom != Point.GetOppositeDirection(nextPoint.Dir) && 0 <= nextRow && nextRow < GameSettings.Rows && 0 <= nextColumn && nextColumn < GameSettings.Columns && Pieces[nextRow, nextColumn] != null && !Pieces[row, col].IsBomb && Pieces[nextRow, nextColumn].Color == Pieces[row, col].Color)
+                int nextColumn = col + nextRowColumnPoint.Column;
+                int nextRow = row + nextRowColumnPoint.Row;
+                if (dirFrom != RowColumnPoint.GetOppositeDirection(nextRowColumnPoint.Dir) && GameSettings.IsRowValid(nextRow) && GameSettings.IsColumnValid(nextColumn) && !IsPieceNull(nextRow, nextColumn) && Pieces[nextRow, nextColumn].Color == Pieces[row, col].Color)
                 {
-                    bool isAlreadyContained = false;
-                    for (int j = 0; j < currentPieceCount; j++)
+                    if (!GetIsAlreadyContained(nextRow, nextColumn))
                     {
-                        if (currentPieces[j] == Pieces[nextRow, nextColumn])
-                        {
-                            isAlreadyContained = true;
-                            break;
-                        }
-                    }
-
-                    if (!isAlreadyContained)
-                    {
-                        count += DetermineGroup(nextRow, nextColumn, nextPoint.Dir);
+                        count += DetermineGroup(nextRow, nextColumn, nextRowColumnPoint.Dir);
                     }
                 }
             }
             return count;
+        }
+
+        private bool IsPieceNull(int nextRow, int nextColumn)
+        {
+            return Pieces[nextRow, nextColumn] == null;
+        }
+
+        private bool GetIsAlreadyContained(int nextRow, int nextColumn)
+        {
+            for (int j = 0; j < currentPieceCount; j++)
+            {
+                if (currentPieces[j] == Pieces[nextRow, nextColumn])
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private void AddSurroundingPiecesForBomb(int row, int col)
@@ -208,9 +217,9 @@ namespace BlockGameSolver.Simulation.Core
         /// <returns>The number of pieces that were removed.</returns>
         public int? RemoveGroup(int number)
         {
-            Point location = GameSettings.GetLocationFromNumber(number);
+            RowColumnPoint location = GameSettings.GetLocationFromNumber(number);
 
-            return RemoveGroup(location.RowInc, location.ColInc);
+            return RemoveGroup(location.Row, location.Column);
         }
 
         /// <summary>
@@ -227,7 +236,7 @@ namespace BlockGameSolver.Simulation.Core
                 if (range >= GameSettings.Rows || range >= GameSettings.Columns)
                 {
                     //No more groups to remove.
-                    Score += (int) ((1 - (double) PieceCount/(GameSettings.Rows*GameSettings.Columns))*100);
+                    Score += (int)((1 - (double)PieceCount / (GameSettings.Rows * GameSettings.Columns)) * 100);
                     HasMoves = false;
                     return null;
                 }
@@ -249,15 +258,11 @@ namespace BlockGameSolver.Simulation.Core
                         {
                             continue;
                         }
-
-                        //currentGroup.Clear();
                         currentPieceCount = 0;
 
                         int count = DetermineGroup(row + i, col + j, Direction.None);
                         if (count >= GameSettings.GroupSize)
                         {
-                            //return currentGroup;
-
                             int multiplier = 1;
                             int maxRow = 0,
                                 minCol = GameSettings.Columns - 1;
@@ -279,7 +284,7 @@ namespace BlockGameSolver.Simulation.Core
                             }
 
                             FillEmptySpaces(maxRow, minCol);
-                            Score += count*count*multiplier;
+                            Score += count * count * multiplier;
 
                             return GameSettings.GetNumberFromLocation(row + i, col + j);
                         }

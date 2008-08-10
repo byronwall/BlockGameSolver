@@ -95,7 +95,7 @@ namespace BlockGameSolver.Simulation.Strategy
             InvokePopulationFinished(EventArgs.Empty);
         }
 
-        public virtual void InitializeAndRun()
+        protected virtual void InitializeAndRun()
         {
             generationNum = 0;
             GenerateInitialPopulation();

@@ -39,7 +39,7 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
 
         private string outputHeader
         {
-            get { return string.Format("{0},{1},{2}", ParamHeader, "average", "standardDev"); }
+            get { return string.Format("{0},{1},{2},{3}", ParamHeader, "average", "standardDev", "runTimeElapsed"); }
         }
 
         public string ParamHeader
@@ -78,8 +78,8 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
                 double crossRate = RandomSource.Instance.NextDoublePositive();
                 double filterRate = RandomSource.Instance.NextDoublePositive();
                 double mutateRate = RandomSource.Instance.NextDoublePositive();
-                int populationSize = RandomSource.Instance.Next(20, 200);
-                int generations = RandomSource.Instance.Next(1, 100);
+                int populationSize = RandomSource.Instance.Next(20, 100);
+                int generations = RandomSource.Instance.Next(1, 50);
 
                 PopulationSettings settings = new PopulationSettings(generations, populationSize, mutateRate, filterRate, populationSize, crossRate);
 
@@ -149,6 +149,7 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
             simulation.RunAnalysis();
             result.AverageScore = simulation.Results.Average(c => c.Fitness);
             result.StandardDeviation = simulation.Results.StandardDeviation(c => c.Fitness);
+            result.RunTimeElapsed = simulation.RunTimeElapsed;
             simulation.WriteAnalysis(string.Format(@"{0}\{1}", TopFolder, result.SettingsString));
             InvokePercentCompleteChanged(new PercentCompleteEventArgs(++Count/Settingses.Count));
         }

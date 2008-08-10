@@ -12,7 +12,7 @@ namespace BlockGameSolver.Simulation.Strategy
         {
         }
 
-        public override void InitializeAndRun()
+        protected override void InitializeAndRun()
         {
             base.InitializeAndRun();
 

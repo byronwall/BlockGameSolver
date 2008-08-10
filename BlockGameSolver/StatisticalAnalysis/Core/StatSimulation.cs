@@ -48,7 +48,7 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
             get { return pathToResults; }
         }
 
-        private long RunTimeElapsed { get; set; }
+        public long RunTimeElapsed { get; set; }
 
         public void RunAnalysis()
         {

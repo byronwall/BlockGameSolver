@@ -21,7 +21,7 @@ namespace BlockGameSolver.Simulation.Core
             this.settings = settings;
             this.board = board;
 
-            genomeOperations = GenomeOperations.Instance;
+            genomeOperations = new GenomeOperations();
         }
 
         public PopulationBase(Board board) : this(PopulationSettings.Default, board)

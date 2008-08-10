@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Drawing;
-using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 using BlockGameSolver.GamePlayer.Core;
 using BlockGameSolver.ImageAnalyzer.Core;
-using BlockGameSolver.ImageAnalyzer.Utility;
 using BlockGameSolver.ImageAnalyzer.Visual;
 using BlockGameSolver.Simulation.Core;
 using BlockGameSolver.Simulation.Strategy;
 using BlockGameSolver.Simulation.Visual;
 using BlockGameSolver.StatisticalAnalysis.Visual;
 using DataFormats = System.Windows.DataFormats;
-using Point = BlockGameSolver.Simulation.Core.Point;
+using Timer = System.Windows.Forms.Timer;
 
 namespace BlockGameSolver.GamePlayer.Visual
 {
@@ -49,68 +48,26 @@ namespace BlockGameSolver.GamePlayer.Visual
         {
             try
             {
-                Bitmap screenshot = BitmapUtility.BitmapFromScreenshot(this);
-                analyzer.SetScreenshot(screenshot);
+                Hide();
+                using (GameManager manager = new GameManager())
+                {
+                    manager.Start();
+                    manager.ReadyToReturn.WaitOne();
+                }
 
-                Board board = Board.FromIBoardSource(analyzer);
-
-                populationSingleRun = new PopulationSingleRun(board);
-                bestGenome = populationSingleRun.GetBestGenome();
-                timer = new Timer { Interval = 1500 };
-                timer.Tick += timer_Tick;
-                timer.Start();
+                Show();
             }
             catch (Exception)
             {
                 MessageBox.Show("Board was not found on the screen.  No harm.  Try again.");
+                Show();
             }
-        }
-
-        void hook_KeyPressed(object sender, KeyPressedEventArgs e)
-        {
-            if (timer != null && timer.Enabled)
-            {
-                timer.Start();
-                ShowNextMove();
-            }
-        }
-
-        private void timer_Tick(object sender, EventArgs e)
-        {
-            ShowNextMove();
-        }
-
-        private void ShowNextMove()
-        {
-            if (bestGenome.Moves[currentIndex] == null)
-            {
-                timer.Stop();
-                nextPieceForm.Hide();
-                return;
-            }
-            Point locationFromNumber = GameSettings.GetLocationFromNumber(bestGenome.Moves[currentIndex].Value);
-            System.Drawing.Point location = analyzer.GetPointFromLocation(locationFromNumber.RowInc, locationFromNumber.ColInc, new System.Drawing.Point(0, 0));
-
-            nextPieceForm.Hide();
-            nextPieceForm.Location = location;
-            nextPieceForm.UpdateMoveNum(currentIndex);
-
-            nextPieceForm.Show();
-            currentIndex++;
         }
 
         private void GamePlayerForm_Load(object sender, EventArgs e)
         {
-            if (File.Exists(boardDataPath))
-            {
-                analyzer = new Analyzer(ImageSettings.LoadDataFromXML(boardDataPath));
-            }
-            hook = new KeyboardHook();
-            hook.KeyPressed += hook_KeyPressed;
-            hook.RegisterHotKey(Core.ModifierKeys.Control|Core.ModifierKeys.Alt, Keys.F3);
-
+            analyzer = new Analyzer(ImageSettings.LoadDataFromResource());
         }
-        KeyboardHook hook;
 
         private void btnPlayBoard_DragDrop(object sender, DragEventArgs e)
         {
@@ -126,10 +83,7 @@ namespace BlockGameSolver.GamePlayer.Visual
 
         private void btnPlayBoard_DragEnter(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
-            {
-                e.Effect = DragDropEffects.Copy;
-            }
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
         }
 
         private void btnShowStats_Click(object sender, EventArgs e)
@@ -139,7 +93,6 @@ namespace BlockGameSolver.GamePlayer.Visual
 
         private void GamePlayerForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            hook.Dispose();
         }
     }
 }

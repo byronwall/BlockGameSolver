@@ -36,8 +36,9 @@ namespace BlockGameSolver.GamePlayer.Visual
             // lblMoveNum
             // 
             this.lblMoveNum.AutoSize = true;
-            this.lblMoveNum.BackColor = System.Drawing.Color.Transparent;
+            this.lblMoveNum.BackColor = System.Drawing.Color.Black;
             this.lblMoveNum.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMoveNum.ForeColor = System.Drawing.Color.White;
             this.lblMoveNum.Location = new System.Drawing.Point(0, 0);
             this.lblMoveNum.Margin = new System.Windows.Forms.Padding(0);
             this.lblMoveNum.Name = "lblMoveNum";
@@ -48,6 +49,7 @@ namespace BlockGameSolver.GamePlayer.Visual
             // GamePlayerNextPieceForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.BackColor = System.Drawing.Color.Black;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(30, 30);
             this.Controls.Add(this.lblMoveNum);

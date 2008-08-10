@@ -29,9 +29,12 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="Microsoft.DirectX.DirectDraw, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -65,9 +68,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GamePlayer\Core\ModifierKeys.cs" />
-    <Compile Include="GamePlayer\Core\KeyboardHook.cs" />
-    <Compile Include="GamePlayer\Core\KeyPressedEventArgs.cs" />
+    <Compile Include="GamePlayer\Core\GameFlowState.cs" />
+    <Compile Include="GamePlayer\Core\GameManager.cs" />
     <Compile Include="GamePlayer\Visual\GamePlayerForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -81,6 +83,12 @@
       <DependentUpon>GamePlayerNextPieceForm.cs</DependentUpon>
     </Compile>
     <Compile Include="GamePlayer\Visual\MouseClick.cs" />
+    <Compile Include="GamePlayer\Visual\PlayBoardForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GamePlayer\Visual\PlayBoardForm.Designer.cs">
+      <DependentUpon>PlayBoardForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ImageAnalyzer\Core\Analyzer.cs" />
     <Compile Include="ImageAnalyzer\Core\AnchorPoint.cs" />
     <Compile Include="ImageAnalyzer\Core\ColorPoint.cs" />
@@ -109,7 +117,7 @@
     <Compile Include="Simulation\Strategy\PopulationMultiRun.cs" />
     <Compile Include="Simulation\Strategy\PopulationMultiRunSuperPopulation.cs" />
     <Compile Include="Simulation\Utility\MersenneTwister.cs" />
-    <Compile Include="Simulation\Core\Point.cs" />
+    <Compile Include="Simulation\Core\RowColumnPoint.cs" />
     <Compile Include="Simulation\Core\PopulationSettings.cs" />
     <Compile Include="Simulation\Core\Piece.cs" />
     <Compile Include="Simulation\Strategy\PopulationSingleRun.cs" />
@@ -130,6 +138,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GamePlayer\Visual\GamePlayerNextPieceForm.resx">
       <DependentUpon>GamePlayerNextPieceForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GamePlayer\Visual\PlayBoardForm.resx">
+      <DependentUpon>PlayBoardForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ImageAnalyzer\Visual\ColorsForm.resx">
@@ -183,12 +195,24 @@
     </Compile>
     <Compile Include="StatisticalAnalysis\Visual\StringExtensions.cs" />
     <Compile Include="Utility\CommandLine\CommandLineParser.cs" />
+    <Compile Include="Utility\Hooks\UserActivityHook.cs" />
+    <Compile Include="GamePlayer\Visual\OverlayManager.cs" />
+    <Compile Include="Utility\ResourceUtilities\ResourceToStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\klick-klack-double.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\boardData.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\boardData.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ControlPanel\Visual\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

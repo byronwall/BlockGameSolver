@@ -15,7 +15,7 @@ namespace BlockGameSolver.Simulation.Strategy
         {
         }
 
-        public override void InitializeAndRun()
+        protected override void InitializeAndRun()
         {
             for (int i = 0; i < 15; i++)
             {

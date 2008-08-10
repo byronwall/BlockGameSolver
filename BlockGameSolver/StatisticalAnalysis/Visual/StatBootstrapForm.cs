@@ -52,7 +52,7 @@ namespace BlockGameSolver.StatisticalAnalysis.Visual
                     else
                     {
                         multiRun = new StatSimulationMultiRun(runCount, seed);
-                        multiRun.CreateRandomPopulation(5);
+                        multiRun.CreateRandomPopulation(2);
                     }
                     multiRun.ParallelExecution = radioParallel.Checked;
                     multiRun.PercentCompleteChanged += simulationMultiRun_PercentCompleteChanged;

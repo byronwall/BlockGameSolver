@@ -23,9 +23,11 @@ namespace BlockGameSolver.StatisticalAnalysis.Core
 
         public double StandardDeviation { get; set; }
 
+        public long RunTimeElapsed { get; set; }
+
         public override string ToString()
         {
-            return string.Format("{0},{1},{2}", SettingsString, AverageScore, StandardDeviation);
+            return string.Format("{0},{1},{2}, {3}", SettingsString, AverageScore, StandardDeviation, RunTimeElapsed);
         }
     }
 }

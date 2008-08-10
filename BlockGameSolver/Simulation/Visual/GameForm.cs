@@ -5,7 +5,6 @@ using System.Windows.Forms;
 using BlockGameSolver.Properties;
 using BlockGameSolver.Simulation.Core;
 using BlockGameSolver.Simulation.Strategy;
-using Point=BlockGameSolver.Simulation.Core.Point;
 
 namespace BlockGameSolver.Simulation.Visual
 {
@@ -182,9 +181,9 @@ namespace BlockGameSolver.Simulation.Visual
         private void UpdateNextButton()
         {
             int move = Best.Moves[currentMove] ?? 0;
-            Point location = GameSettings.GetLocationFromNumber(move);
+            RowColumnPoint location = GameSettings.GetLocationFromNumber(move);
 
-            btnNextMove.Text = string.Format("next: {0}- {1},{2}", move, location.RowInc, location.ColInc);
+            btnNextMove.Text = string.Format("next: {0}- {1},{2}", move, location.Row, location.Column);
         }
     }
 

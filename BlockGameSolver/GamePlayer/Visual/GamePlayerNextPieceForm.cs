@@ -29,27 +29,12 @@ namespace BlockGameSolver.GamePlayer.Visual
             exstyle |= WS_EX_TRANSPARENT;
             SetWindowLong(Handle, GWL_EXSTYLE, exstyle);
             Size = new Size(30, 30);
-            Timer timer = new Timer();
-            timer.Interval = 200;
-            timer.Start();
-            timer.Tick += new EventHandler(timer_Tick);
-        }
+            BackColor = Color.Black;
+            lblMoveNum.ForeColor = Color.White;
+            lblMoveNum.Text = "35";
 
-        private bool whiteBack;
-        void timer_Tick(object sender, EventArgs e)
-        {
-            whiteBack = !whiteBack;
-            if (whiteBack)
-            {
-                lblMoveNum.ForeColor = Color.Black;
-                BackColor = Color.White;
-            }
-            else
-            {
-                lblMoveNum.ForeColor = Color.White;
-                BackColor = Color.Black;
-            }
-
+            TopMost = true;
+            
         }
 
         public void UpdateMoveNum(int moveNum)

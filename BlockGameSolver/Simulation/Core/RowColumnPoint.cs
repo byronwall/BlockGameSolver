@@ -1,10 +1,10 @@
 namespace BlockGameSolver.Simulation.Core
 {
-    public class Point
+    public class RowColumnPoint
     {
         private static readonly Direction[] opposite = new Direction[4];
 
-        static Point()
+        static RowColumnPoint()
         {
             opposite[(int) Direction.Bottom] = Direction.Top;
             opposite[(int) Direction.Left] = Direction.Right;
@@ -12,21 +12,21 @@ namespace BlockGameSolver.Simulation.Core
             opposite[(int) Direction.Top] = Direction.Bottom;
         }
 
-        private readonly int colInc;
+        private readonly int column;
         private readonly Direction dir;
-        private readonly int rowInc;
+        private readonly int row;
 
-        public Point(int rowInc, int colInc, Direction dir)
+        public RowColumnPoint(int rowInc, int colInc, Direction dir)
         {
-            this.rowInc = rowInc;
+            this.row = rowInc;
             this.dir = dir;
-            this.colInc = colInc;
+            this.column = colInc;
         }
 
-        public Point(int row, int col)
+        public RowColumnPoint(int row, int col)
         {
-            rowInc = row;
-            colInc = col;
+            this.row = row;
+            column = col;
             dir = Direction.None;
         }
 
@@ -35,14 +35,14 @@ namespace BlockGameSolver.Simulation.Core
             get { return dir; }
         }
 
-        public int ColInc
+        public int Column
         {
-            get { return colInc; }
+            get { return column; }
         }
 
-        public int RowInc
+        public int Row
         {
-            get { return rowInc; }
+            get { return row; }
         }
 
         public static Direction GetOppositeDirection(Direction direction)

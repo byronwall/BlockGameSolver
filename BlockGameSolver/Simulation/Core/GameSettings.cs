@@ -21,9 +21,19 @@ namespace BlockGameSolver.Simulation.Core
             return row*Columns + col;
         }
 
-        public static Point GetLocationFromNumber(int number)
+        public static RowColumnPoint GetLocationFromNumber(int number)
         {
-            return new Point(number/Columns, number%Columns);
+            return new RowColumnPoint(number/Columns, number%Columns);
+        }
+
+        public static bool IsColumnValid(int nextColumn)
+        {
+            return 0 <= nextColumn && nextColumn < Columns;
+        }
+
+        public static bool IsRowValid(int nextRow)
+        {
+            return 0 <= nextRow && nextRow < Rows;
         }
     }
 }

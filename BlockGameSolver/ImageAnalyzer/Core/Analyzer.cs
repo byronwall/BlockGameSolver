@@ -2,15 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using BlockGameSolver.ImageAnalyzer.Utility;
 using BlockGameSolver.Simulation.Core;
 using BlockGameSolver.Simulation.Visual;
-using Point=System.Drawing.Point;
 
 namespace BlockGameSolver.ImageAnalyzer.Core
 {
     public class Analyzer : IBoardSource
     {
+        private readonly List<Size> acceptableSizes = new List<Size>() { new Size(10, 10), new Size(10, 15), new Size(10, 20) };
         private readonly ImageSettings settings;
+
         private Bitmap screenshot;
 
         public Analyzer(ImageSettings settings)
@@ -19,9 +21,16 @@ namespace BlockGameSolver.ImageAnalyzer.Core
         }
 
         public Analyzer(Bitmap screenshot, ImageSettings settings)
+            : this(settings)
         {
-            this.settings = settings;
             SetScreenshot(screenshot);
+        }
+
+        public bool IsValidBoard { get; private set; }
+
+        public ImageSettings Settings
+        {
+            get { return settings; }
         }
 
         #region IBoardSource Members
@@ -59,16 +68,16 @@ namespace BlockGameSolver.ImageAnalyzer.Core
             get { return Settings.Columns; }
         }
 
-        public ImageSettings Settings
-        {
-            get { return settings; }
-        }
-
         #endregion
 
         public void SetScreenshot(string path)
         {
-            SetScreenshot((Bitmap) Image.FromFile(path));
+            SetScreenshot((Bitmap)Image.FromFile(path));
+        }
+
+        public void SetScreenshot()
+        {
+            SetScreenshot(BitmapUtility.BitmapFromScreenshot());
         }
 
         public void SetScreenshot(Bitmap bitmap)
@@ -81,7 +90,17 @@ namespace BlockGameSolver.ImageAnalyzer.Core
             Settings.Rows = boardSize.Height;
         }
 
-        public Point GetPointFromLocation(int row, int col, Point offset)
+        public Rectangle GetPieceRectanlge(int row, int col)
+        {
+            return new Rectangle(GetPixelForPieceLocation(row, col), new Size(settings.PieceWidth, settings.PieceHeight));
+        }
+
+        public Point GetPixelForPieceLocation(int row, int col)
+        {
+            return GetPixelForPieceLocation(row, col, new Point(0, 0));
+        }
+
+        public Point GetPixelForPieceLocation(int row, int col, Point offset)
         {
             int x = Settings.PieceCorner.X + offset.X + Settings.PieceWidth * col;
             int y = Settings.PieceCorner.Y + offset.Y + Settings.PieceHeight * row;
@@ -90,33 +109,24 @@ namespace BlockGameSolver.ImageAnalyzer.Core
 
         private string GetColorNameFromImage(int row, int col, Point offset)
         {
-            int x = Settings.PieceCorner.X + offset.X + Settings.PieceWidth*col;
-            int y = Settings.PieceCorner.Y + offset.Y + Settings.PieceHeight*row;
+            int x = Settings.PieceCorner.X + offset.X + Settings.PieceWidth * col;
+            int y = Settings.PieceCorner.Y + offset.Y + Settings.PieceHeight * row;
 
             int key = screenshot.GetPixel(x, y).ToArgb();
             string value;
-            if (Settings.ColorData.TryGetValue(key, out value))
-            {
-                return value;
-            }
+            if (Settings.ColorData.TryGetValue(key, out value)) return value;
             return null;
         }
 
         private Point DetermineAnchorPoint()
         {
-            if (Settings == null)
-            {
-                throw new ArgumentException("The settings for the analyzer have not been established");
-            }
+            if (Settings == null) throw new ArgumentException("The settings for the analyzer have not been established");
 
             for (int i = 0; i < screenshot.Width; i++)
             {
                 for (int j = 0; j < screenshot.Height; j++)
                 {
-                    if (screenshot.GetPixel(i, j).ToArgb() != Settings.AnchorData[0].Color)
-                    {
-                        continue;
-                    }
+                    if (screenshot.GetPixel(i, j).ToArgb() != Settings.AnchorData[0].Color) continue;
                     Point anchor = new Point(i - Settings.AnchorData[0].XOffset, j - Settings.AnchorData[0].YOffset);
                     bool pointFound = true;
                     foreach (AnchorPoint anchorPoint in Settings.AnchorData)
@@ -130,15 +140,19 @@ namespace BlockGameSolver.ImageAnalyzer.Core
                     if (pointFound)
                     {
                         Settings.AnchorCorner = anchor;
+                        IsValidBoard = true;
                         return anchor;
                     }
                 }
             }
-            throw new ArgumentException("The image does not contain the specified anchor.");
+            IsValidBoard = false;
+            Console.WriteLine("Anchor not found.");
+            return new Point();
         }
 
         private Size DetermineBoardSize()
         {
+            if (!IsValidBoard) return Size.Empty;
             Point piece = Settings.PieceCorner;
             int rows = Int32.MaxValue,
                 cols = Int32.MaxValue,
@@ -152,14 +166,8 @@ namespace BlockGameSolver.ImageAnalyzer.Core
                     int color = screenshot.GetPixel(i + Settings.ColorOffset.X, j + Settings.ColorOffset.Y).ToArgb();
                     if (!Settings.ColorData.Any(c => c.Key == color && c.Value != "double"))
                     {
-                        if (curRows == 0)
-                        {
-                            break;
-                        }
-                        if (curRows < rows)
-                        {
-                            rows = curRows;
-                        }
+                        if (curRows == 0) break;
+                        if (curRows < rows) rows = curRows;
 
                         break;
                     }
@@ -167,16 +175,15 @@ namespace BlockGameSolver.ImageAnalyzer.Core
                 }
                 if (curRows == 0)
                 {
-                    if (curCols < cols)
-                    {
-                        cols = curCols;
-                    }
+                    if (curCols < cols) cols = curCols;
                     break;
                 }
                 curCols++;
             }
 
-            return new Size(cols, rows);
+            Size size = new Size(cols, rows);
+            IsValidBoard = acceptableSizes.Contains(size);
+            return size;
         }
     }
 }
