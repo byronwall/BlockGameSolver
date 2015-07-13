@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using BlockGameSolver.Simulation.Core;
 using BlockGameSolver.StatisticalAnalysis.Visual;
+using System.Threading.Tasks;
 
 namespace BlockGameSolver.StatisticalAnalysis.Core
 {

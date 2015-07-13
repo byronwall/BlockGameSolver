@@ -44,9 +44,6 @@ namespace BlockGameSolver
 
                     return;
                 }
-                case "play":
-                    Application.Run(new PlayBoardForm());
-                    return;
             }
 
             Application.Run(new GamePlayerForm());

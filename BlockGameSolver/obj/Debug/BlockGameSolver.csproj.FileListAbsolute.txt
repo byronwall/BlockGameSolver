@@ -1,0 +1,10 @@
+C:\projects\BlockGameSolver\BlockGameSolver\obj\Debug\BlockGameSolver.csprojResolveAssemblyReference.cache
+C:\projects\BlockGameSolver\BlockGameSolver\obj\Debug\BlockGameSolver.GamePlayer.Visual.GamePlayerForm.resources
+C:\projects\BlockGameSolver\BlockGameSolver\obj\Debug\BlockGameSolver.Properties.Resources.resources
+C:\projects\BlockGameSolver\BlockGameSolver\obj\Debug\BlockGameSolver.Simulation.Visual.GameForm.resources
+C:\projects\BlockGameSolver\BlockGameSolver\obj\Debug\BlockGameSolver.StatisticalAnalysis.Visual.StatBootstrapForm.resources
+C:\projects\BlockGameSolver\BlockGameSolver\obj\Debug\BlockGameSolver.csproj.GenerateResource.Cache
+C:\projects\BlockGameSolver\BlockGameSolver\bin\Debug\BlockGameSolver.exe
+C:\projects\BlockGameSolver\BlockGameSolver\bin\Debug\BlockGameSolver.pdb
+C:\projects\BlockGameSolver\BlockGameSolver\obj\Debug\BlockGameSolver.exe
+C:\projects\BlockGameSolver\BlockGameSolver\obj\Debug\BlockGameSolver.pdb
